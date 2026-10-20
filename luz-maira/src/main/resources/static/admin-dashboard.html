@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Panadería Luz Mayra</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@700&family=Cormorant+Garamond:wght@600;700&family=DM+Sans:wght@400;500;700&family=Fraunces:wght@600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/estilos.css">
+</head>
+<body class="" data-menu="admin" data-lateral="" data-appclase="app-admin">
+<main class="principal" id="principal">
+<div class="encabezado-pagina"><div><h1 class="titulo-app">Resumen del negocio</h1><p class="sub" id="dash-sub">Decisiones claras para la operación de hoy</p></div>
+<div class="rango" id="rango" role="group" aria-label="Periodo"></div></div>
+<p class="sub">Haz clic en una barra, un producto o un estado para filtrar todo el tablero. Con Ctrl o Mayús puedes elegir varios.</p>
+<div class="filtros-activos" id="filtros-activos" hidden></div>
+<div class="kpis"><div class="kpi" data-vistas="ventas"><small>Ventas totales</small><strong id="kpi-ventas">—</strong><small class="sub-kpi" id="kpi-ventas-sub"></small></div><div class="kpi" data-vistas="pedidos"><small>Pedidos entregados</small><strong id="kpi-pedidos">—</strong><small class="sub-kpi" id="kpi-pedidos-sub"></small></div><div class="kpi" data-vistas="pedidos ventas"><small>Clientes atendidos</small><strong id="kpi-clientes">—</strong><small class="sub-kpi" id="kpi-clientes-sub"></small></div></div>
+<div class="dash-fila">
+  <div class="panel-dash" data-vistas="ventas"><h3>Tendencia de ventas</h3><p class="sub">Ingresos diarios del periodo</p><div class="barras" id="barras" role="group" aria-label="Ventas por día"></div><div class="barras-dias" id="barras-dias"></div></div>
+  <div class="panel-dash ranking" data-vistas="produccion"><h3>Más vendidos</h3><p class="sub">Unidades en el periodo</p><div id="ranking"></div></div>
+  <div class="panel-dash oscuro" data-vistas="pedidos"><h3>Estado de pedidos</h3><div class="estado-pedidos"><div class="dona" id="dona" role="img" aria-label="Porcentaje de pedidos entregados"><span id="dona-texto">0%</span></div><ul class="leyenda" id="leyenda"></ul></div><p class="nota-dash" id="nota-estados"></p></div>
+</div>
+<div class="dash-fila segunda">
+  <div class="panel-dash" data-vistas="ventas produccion"><h3>Rendimiento por producto <button class="enlace" id="btn-reporte">Descargar reporte →</button></h3><div class="tabla-scroll" id="rendimiento"></div></div>
+  <div class="panel-dash" data-vistas="inventario"><h3>Materias primas</h3><p class="sub">Mayor consumo frente al inventario</p><div id="materias"></div><div class="alerta" id="alerta" hidden></div></div>
+</div>
+</main>
+    <script src="js/config.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/paginas/dashboard.js"></script>
+</body>
+</html>

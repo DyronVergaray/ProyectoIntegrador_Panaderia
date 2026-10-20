@@ -80,6 +80,19 @@ const UI = {
         UI.temporizador = setTimeout(() => { aviso.hidden = true; }, 3800);
     },
 
+    // Aviso emergente con SweetAlert2 (si no se cargó la librería, usa el aviso simple)
+    alerta(icono, titulo, texto) {
+        console.log(titulo + (texto ? " - " + texto : ""));
+        if (typeof Swal === "undefined") {
+            UI.toast(titulo, icono === "success");
+            return;
+        }
+        Swal.fire({
+            toast: true, position: "top-end", icon: icono, title: titulo, text: texto,
+            showConfirmButton: false, timer: 2000, timerProgressBar: true, confirmButtonColor: "#d0814f"
+        });
+    },
+
     estado(contenedor, texto) {
         console.log(texto);
         contenedor.replaceChildren(h("p", { class: "vacio", texto: texto }));
@@ -117,7 +130,23 @@ const UI = {
             h("div", { class: "tarjeta-cuerpo" },
                 h("h3", { texto: p.nombre }),
                 h("p", { texto: p.descripcion || "" }),
+                UI.lineaStock(p, modo),
                 h("div", { class: "fila" }, h("span", { class: "precio", texto: UI.soles(p.precio) }), accion)));
+    },
+
+    // Estado del stock: los panes (stock null) no controlan stock y no muestran nada a los clientes
+    lineaStock(p, modo) {
+        if (p.stock === null || p.stock === undefined) {
+            return modo === "admin" ? h("small", { class: "stock-linea", texto: "Sin control de stock (pan)" }) : null;
+        }
+        if (p.stock === 0) {
+            return h("small", { class: "stock-linea bajo", texto: "Agotado" });
+        }
+        const bajo = p.stockMinimo !== null && p.stock <= p.stockMinimo;
+        if (modo === "admin") {
+            return h("small", { class: "stock-linea" + (bajo ? " bajo" : ""), texto: "Stock: " + p.stock + " (mín. " + p.stockMinimo + ")" });
+        }
+        return bajo ? h("small", { class: "stock-linea bajo", texto: "¡Quedan " + p.stock + "!" }) : null;
     },
 
     // ---------- Ventanas (modales) ----------
@@ -142,30 +171,122 @@ const UI = {
         };
     },
 
-    // Formulario en ventana. campos: { id, etiqueta, tipo, opciones:[{valor,texto}], placeholder, requerido, maxlength }
-    modalForm({ id, titulo, etiqueta, campos, boton, alGuardar }) {
+    // Zona para arrastrar y soltar una imagen, o buscarla en las carpetas del equipo (clic o Enter)
+    zonaImagen({ accept, maxBytes }) {
+        const permitidos = accept.split(",");
+        let archivo = null;
+        let urlActual = null;          // foto que ya tiene el producto (al editar)
+        let urlTemporal = null;        // vista previa del archivo recién elegido
+
+        const entrada = h("input", { type: "file", accept: accept, hidden: true, "aria-label": "Elegir imagen" });
+        const miniatura = h("img", { class: "zona-miniatura", alt: "Vista previa de la imagen", hidden: true });
+        const texto = h("span", { class: "zona-texto" }, "Arrastra una imagen aquí o ", h("u", { texto: "busca en tus carpetas" }));
+        const aviso = h("small", { class: "zona-aviso", texto: "JPG, PNG o WEBP · máximo " + Math.round(maxBytes / 1024 / 1024) + " MB" });
+        const mensaje = h("small", { class: "zona-error", role: "alert" });
+        const quitar = h("button", { class: "zona-quitar", type: "button", hidden: true }, "Quitar imagen");
+        const zona = h("div", { class: "zona-imagen", tabindex: "0", role: "button", "aria-label": "Arrastrar o elegir una imagen" },
+            miniatura, texto, aviso, quitar, entrada);
+
+        function mostrar(url) {
+            miniatura.hidden = url === null;
+            if (url !== null) {
+                miniatura.src = url;
+            }
+            texto.hidden = url !== null;
+            aviso.hidden = url !== null;
+        }
+
+        function elegir(nuevo) {
+            mensaje.innerText = "";
+            if (!nuevo) {
+                return;
+            }
+            if (!permitidos.includes(nuevo.type)) {
+                mensaje.innerText = "Solo se permiten imágenes JPG, PNG o WEBP";
+                return;
+            }
+            if (nuevo.size > maxBytes) {
+                mensaje.innerText = "La imagen supera el tamaño máximo permitido";
+                return;
+            }
+            if (urlTemporal) {
+                URL.revokeObjectURL(urlTemporal);
+            }
+            archivo = nuevo;
+            urlTemporal = URL.createObjectURL(nuevo);
+            mostrar(urlTemporal);
+            quitar.hidden = false;
+        }
+
+        zona.onclick = () => entrada.click();
+        zona.onkeydown = (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); entrada.click(); } };
+        entrada.onclick = (e) => e.stopPropagation();
+        entrada.onchange = () => elegir(entrada.files[0]);
+        zona.ondragover = (e) => { e.preventDefault(); zona.classList.add("arrastrando"); };
+        zona.ondragleave = () => zona.classList.remove("arrastrando");
+        zona.ondrop = (e) => {
+            e.preventDefault();
+            zona.classList.remove("arrastrando");
+            elegir(e.dataTransfer.files[0]);
+        };
+        quitar.onclick = (e) => {
+            e.stopPropagation();
+            archivo = null;
+            entrada.value = "";
+            mensaje.innerText = "";
+            mostrar(urlActual);
+            quitar.hidden = true;
+        };
+
+        return {
+            el: h("div", {}, zona, mensaje),
+            archivo: () => archivo,
+            // Reinicia la zona; urlFoto = foto actual del producto (o null)
+            reiniciar(urlFoto) {
+                archivo = null;
+                entrada.value = "";
+                mensaje.innerText = "";
+                urlActual = urlFoto || null;
+                mostrar(urlActual);
+                quitar.hidden = true;
+            }
+        };
+    },
+
+    // Formulario en ventana.
+    // campos: { id, etiqueta, tipo (text|number|select|password|imagen...), opciones:[{valor,texto}], placeholder, requerido, maxlength, accept }
+    // alCambiar(controles, etiquetas): se llama cuando cambia un campo y al abrir (sirve para mostrar u ocultar campos).
+    modalForm({ id, titulo, etiqueta, campos, boton, alGuardar, alCambiar }) {
         const mensaje = h("div", { class: "mensaje", role: "alert" });
         const controles = {};
+        const etiquetas = {};
+        const zonas = {};
         const filas = campos.map((c) => {
+            if (c.tipo === "imagen") {
+                zonas[c.id] = UI.zonaImagen({ accept: c.accept, maxBytes: 2 * 1024 * 1024 });
+                etiquetas[c.id] = h("div", { class: "campo" }, h("span", { texto: c.etiqueta }), zonas[c.id].el);
+                return etiquetas[c.id];
+            }
             const control = c.tipo === "select"
                 ? h("select", {}, (c.opciones || []).map((o) => h("option", { value: o.valor, texto: o.texto })))
-                : c.tipo === "file" ? h("input", { type: "file", accept: c.accept })
                 : h("input", { type: c.tipo || "text", placeholder: c.placeholder, maxlength: c.maxlength, min: c.min, step: c.step });
+            control.onchange = () => { if (alCambiar) { alCambiar(controles, etiquetas); } };
             controles[c.id] = control;
-            return h("label", { class: "campo" }, h("span", { texto: c.etiqueta }), control);
+            etiquetas[c.id] = h("label", { class: "campo" }, h("span", { texto: c.etiqueta }), control);
+            return etiquetas[c.id];
         });
 
         const guardar = async (cerrar) => {
             try {
                 const datos = {};
                 for (const c of campos) {
-                    if (c.tipo === "file") {
-                        datos[c.id] = controles[c.id].files[0] || null;
+                    if (c.tipo === "imagen") {
+                        datos[c.id] = zonas[c.id].archivo();
                         continue;
                     }
                     const crudo = controles[c.id].value;
                     datos[c.id] = c.tipo === "password" ? crudo : crudo.trim();
-                    if (c.requerido && datos[c.id] === "") {
+                    if (c.requerido && datos[c.id] === "" && !etiquetas[c.id].hidden) {
                         throw new Error("Completa el campo: " + c.etiqueta);
                     }
                 }
@@ -183,14 +304,22 @@ const UI = {
             botones: [{ texto: "Cancelar", clase: "btn-claro", onclick: (cerrar) => cerrar() }, { texto: boton, onclick: guardar }]
         });
         return Object.assign(modal, {
-            // Abre el formulario, con valores iniciales opcionales ({campo: valor})
+            // Abre el formulario, con valores iniciales opcionales ({campo: valor}); para "imagen", el valor es la URL actual
             abrir(valores, nuevoTitulo) {
                 for (const c of campos) {
-                    controles[c.id].value = c.tipo !== "file" && valores && valores[c.id] !== undefined ? valores[c.id] : "";
+                    const valor = valores && valores[c.id] !== undefined ? valores[c.id] : "";
+                    if (c.tipo === "imagen") {
+                        zonas[c.id].reiniciar(valor || null);
+                    } else {
+                        controles[c.id].value = valor;
+                    }
                 }
                 mensaje.innerText = "";
                 if (nuevoTitulo) {
                     modal.ponerTitulo(nuevoTitulo);
+                }
+                if (alCambiar) {
+                    alCambiar(controles, etiquetas);
                 }
                 modal.el.hidden = false;
             },
@@ -208,7 +337,9 @@ const UI = {
                 h("span", { class: "logo", texto: "LUZ MAYRA" }),
                 h("span", {}, h("strong", { texto: "Panaderia Luz Mayra" }), h("small", { texto: "PANADERÍA & PASTELERÍA" }))),
             h("nav", { class: "cabecera-nav", "aria-label": "Navegación" },
-                items.map(([texto, enlace]) => h("a", { class: "pastilla" + (enlace === actual ? " activa" : ""), href: enlace, texto: texto }))),
+                items.map(([texto, enlace]) => h("a", {
+                    class: "pastilla" + (enlace === actual ? " activa" : "") + (texto.startsWith("←") ? " pastilla-volver" : ""),
+                    href: enlace, texto: texto }))),
             h("div", { class: "cabecera-sesion" },
                 UI.usuario ? h("span", { class: "cabecera-usuario", texto: UI.usuario.nombre + " · " + UI.usuario.rol }) : null,
                 h("a", { class: "pastilla", href: "index.html", onclick: (e) => { e.preventDefault(); UI.cerrarSesion(); } }, "Cerrar Sesión")));
@@ -252,6 +383,16 @@ const UI = {
         return bloque;
     },
 
+    // Menú lateral del administrador (se muestra también cuando entra a las pantallas del almacén)
+    bloqueAdmin() {
+        const enAlmacen = location.pathname.includes("almacen-");
+        return h("div", { class: "lateral-bloque menu-admin" }, h("h3", { texto: "ADMINISTRACIÓN" }),
+            ENLACES_ADMIN.map(([texto, enlace]) => h("a", {
+                href: enlace, texto: texto,
+                class: (enAlmacen ? enlace.startsWith("almacen-") : enlace === location.pathname.split("/").pop()) ? "activo" : null
+            })));
+    },
+
     bloqueResumen(lineas) {
         return h("div", { class: "resumen", id: "resumen" }, h("h3", { texto: "Resumen" }), lineas.map((l) => h("p", { texto: l })));
     },
@@ -289,6 +430,11 @@ const UI = {
         }
         const partes = (datos.lateral || "").split(",").filter(Boolean);
         const lateral = h("aside", { class: "lateral", id: "lateral" });
+        // El administrador que entra al almacén conserva su menú y un botón para volver a su panel
+        const adminEnAlmacen = UI.usuario.rol === "Administrador" && datos.menu === "almacen";
+        if (adminEnAlmacen) {
+            lateral.append(UI.bloqueAdmin());
+        }
         if (partes.includes("buscador")) {
             lateral.append(UI.bloqueBuscador());
         }
@@ -300,7 +446,8 @@ const UI = {
         }
         const panel = datos.panel ? h("aside", { class: "panel-pedido", id: "panel", "aria-label": "Tu pedido" }) : null;
         const app = h("div", { class: "app " + (panel ? "con-panel " : "") + (datos.appclase || "") }, lateral, principal, panel);
-        document.body.prepend(UI.cabecera(MENUS[datos.menu] || []), app);
+        const menu = adminEnAlmacen ? [["← Panel Admin", "admin-dashboard.html"]].concat(MENUS.almacen) : (MENUS[datos.menu] || []);
+        document.body.prepend(UI.cabecera(menu), app);
     }
 };
 

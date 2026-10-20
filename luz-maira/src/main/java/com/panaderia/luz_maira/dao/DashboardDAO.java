@@ -27,7 +27,7 @@ public class DashboardDAO extends BaseDAO {
             + "JOIN Producto p ON p.id_producto = co.id_producto";
 
     /** Datos crudos de materias primas (el servicio calcula porcentajes y alertas). */
-    public record MateriaBruta(String nombre, String unidad, BigDecimal consumo, BigDecimal stock) { }
+    public record MateriaBruta(String nombre, String unidad, BigDecimal consumo, BigDecimal stock, BigDecimal stockMinimo) { }
 
     public DashboardDAO(JdbcTemplate jdbc) {
         super(jdbc);
@@ -100,13 +100,13 @@ public class DashboardDAO extends BaseDAO {
         Clausula w = new Clausula().y("rd.fecha BETWEEN ? AND ?", Date.valueOf(f.desde()), Date.valueOf(f.hasta()));
         w.en("rd.fecha", f.dias().stream().map(Date::valueOf).toList());
         return jdbc.query("SELECT m.nombre_materia, u.nombre_medicion, SUM(lm.cantidad_materia), "
-                + "MAX(TRY_CAST(m.stock AS DECIMAL(12, 2))) "
+                + "MAX(TRY_CAST(m.stock AS DECIMAL(12, 2))), MAX(m.stock_minimo) "
                 + "FROM Lista_Materia lm "
                 + "JOIN Registro_Diario rd ON rd.id_RegistroDiario = lm.id_RegistroDiario "
                 + "JOIN Materia_P m ON m.id_materia_P = lm.id_materia_P "
                 + "JOIN Medicion u ON u.id_medicion = m.id_medicion" + w.sql()
                 + " GROUP BY m.nombre_materia, u.nombre_medicion",
-                (rs, n) -> new MateriaBruta(rs.getString(1), rs.getString(2), rs.getBigDecimal(3), rs.getBigDecimal(4)),
+                (rs, n) -> new MateriaBruta(rs.getString(1), rs.getString(2), rs.getBigDecimal(3), rs.getBigDecimal(4), rs.getBigDecimal(5)),
                 w.args());
     }
 }

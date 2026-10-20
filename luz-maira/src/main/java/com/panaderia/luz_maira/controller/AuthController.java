@@ -2,6 +2,8 @@ package com.panaderia.luz_maira.controller;
 
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -34,6 +36,8 @@ import jakarta.validation.Valid;
 @RequestMapping("/api")
 public class AuthController {
 
+    private static final Logger log = LoggerFactory.getLogger(AuthController.class);
+
     private final DbUserDetailsService usuarios;
     private final PasswordEncoder codificador;
     private final UsuarioService servicio;
@@ -65,6 +69,7 @@ public class AuthController {
         contexto.setAuthentication(UsernamePasswordAuthenticationToken.authenticated(usuario, null, usuario.getAuthorities()));
         SecurityContextHolder.getContextHolderStrategy().setContext(contexto);
         repositorio.saveContext(contexto, req, res);      // guarda el inicio de sesión en la sesión HTTP
+        log.info("Inicio de sesión: {} ({})", usuario.getUsername(), usuario.getRol());
         return datos(usuario);
     }
 
@@ -94,6 +99,7 @@ public class AuthController {
     }
 
     private ResponseStatusException credencialesInvalidas() {
+        log.warn("Intento de inicio de sesión fallido");
         return new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Correo o contraseña incorrectos");
     }
 }

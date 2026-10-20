@@ -87,13 +87,25 @@ public class PedidoDAO extends BaseDAO {
                 (rs, n) -> new TipoPedido(rs.getInt(1), rs.getString(2)), nombre).stream().findFirst().orElse(null);
     }
 
-    /** Precios vigentes (el precio siempre se toma de la BD, nunca del navegador). */
-    public Map<Integer, BigDecimal> preciosDe(Collection<Integer> idsProducto) {
+    /** Datos del producto al momento de comprar (el precio y el stock siempre se toman de la BD). */
+    public record ProductoPedido(String nombre, BigDecimal precio, Integer stock) { }
+
+    public Map<Integer, ProductoPedido> productosParaPedido(Collection<Integer> idsProducto) {
         Clausula donde = new Clausula().en("id_producto", List.copyOf(idsProducto));
-        Map<Integer, BigDecimal> precios = new HashMap<>();
-        jdbc.query("SELECT id_producto, precio_unitario FROM Producto" + donde.sql(),
-                rs -> { precios.put(rs.getInt(1), rs.getBigDecimal(2)); }, donde.args());
-        return precios;
+        Map<Integer, ProductoPedido> productos = new HashMap<>();
+        jdbc.query("SELECT id_producto, nombre_producto, precio_unitario, stock FROM Producto" + donde.sql(),
+                rs -> {
+                    int stock = rs.getInt(4);
+                    boolean sinControl = rs.wasNull();      // los panes tienen stock NULL: no se controla
+                    productos.put(rs.getInt(1), new ProductoPedido(rs.getString(2), rs.getBigDecimal(3), sinControl ? null : stock));
+                }, donde.args());
+        return productos;
+    }
+
+    /** Descuenta stock de forma segura: solo si todavía alcanza (evita que dos compras dejen stock negativo). */
+    public boolean descontarStock(int idProducto, int cantidad) {
+        return jdbc.update("UPDATE Producto SET stock = stock - ? WHERE id_producto = ? AND stock >= ?",
+                cantidad, idProducto, cantidad) == 1;
     }
 
     public int insertarCarrito(int idUsuario, BigDecimal total) {

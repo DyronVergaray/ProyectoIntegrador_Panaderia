@@ -3,10 +3,11 @@
 Arquitectura: **Vista (HTML/CSS/JS) → Controller → Service → DAO (JdbcTemplate) → SQL Server**.
 
 ## Cómo ponerlo a funcionar
-1. En SQL Server ejecuta, en orden: `01_schema.sql`, `02_datos_demo.sql`, `03_roles_codigos_imagenes.sql`
-   (tablas, datos de demostración, y la columna de imagen + tipo "Presencial" + códigos de 3 dígitos).
+1. En SQL Server ejecuta, en orden: `01_schema.sql`, `02_datos_demo.sql`, `03_roles_codigos_imagenes.sql` y
+   `04_stock_y_minimos.sql` (tablas, datos de demostración, columna de imagen + tipo "Presencial" + códigos de
+   3 dígitos, y stock / stock mínimo).
    Si tu usuario SQL no puede iniciar sesión, ejecuta antes `00_usuario_sql.sql` (crea el usuario `pan`).
-   **Sin el script 03 la aplicación falla** (falta la columna `imagen`).
+   **Sin los scripts 03 y 04 la aplicación falla** (faltan las columnas `imagen`, `stock` y `stock_minimo`).
 2. Pon tu clave de SQL Server en la variable de entorno `DB_PASS` (o edita `application.properties`).
    Opcionales: `DB_URL`, `DB_USER`. El puerto 1433 debe estar habilitado (SQL Server Configuration Manager → TCP/IP).
 3. Ejecuta `LuzMairaApplication` (o `./mvnw spring-boot:run`) y abre **http://localhost:8080**.
@@ -33,7 +34,7 @@ El inicio de sesión usa la sesión HTTP de Spring Security (`POST /api/login`, 
 |---|---|---|
 | Cliente | catalogo, historial | Ver productos, consolidar pedidos, ver solo su historial |
 | Cajero | cajera, historial | Registrar ventas en caja (tipo Presencial), ver todos los pedidos |
-| Almacenero | almacen-* | Pantallas de almacén (maquetas) |
+| Almacenero | almacen-* | Productos base y stock de productos (desde la BD); el resto del almacén son maquetas |
 | Despachador | despachador | Pantalla de despacho (maqueta) |
 | Entregador | entregador | Pantalla de entrega (maqueta) |
 | Administrador | admin-*, almacen-* | Productos (crear, editar, imagen), usuarios, pedidos personalizados, dashboard |
@@ -47,9 +48,32 @@ Al consolidar, el servidor genera un código aleatorio de 3 dígitos (100–999)
 pendientes. Se guarda en `Codigo` y se muestra al cliente y en el recibo de la cajera.
 
 ## Imágenes de productos
-Admin → Productos → Editar / Añadir → campo "Imagen" (JPG, PNG o WEBP, máx. 2 MB). El archivo se guarda en la carpeta
-`imagenes-productos/` (propiedad `app.imagenes.carpeta`) y en la BD solo queda su nombre (columna `Producto.imagen`).
-Se sirven desde `/img/productos/...`. Los productos sin foto muestran el cuadro rayado.
+Admin → Productos → Editar / Añadir → zona "Imagen del producto": se **arrastra y suelta** la foto o se hace clic para
+buscarla en las carpetas (JPG, PNG o WEBP, máx. 2 MB). Se guarda en `src/main/resources/static/img/productos/`
+(propiedad `app.imagenes.carpeta`; si publicas el .jar usa una ruta absoluta) con un nombre único (UUID), así que no
+hay conflictos de nombre. En la BD solo queda el nombre del archivo (`Producto.imagen`). Sin foto, se ve el cuadro rayado.
+
+## Stock
+- `Producto.stock` y `Producto.stock_minimo`; `Materia_P.stock_minimo`.
+- **Los panes (categoría "Panes") no controlan stock**: su stock es NULL y nunca se verifica.
+- Productos agotados (stock 0): no aparecen en el catálogo del cliente ni de la cajera (el admin sí los ve para editarlos).
+- No se puede pedir más de lo disponible: se valida en pantalla y otra vez en el servidor, y al consolidar el pedido
+  se descuenta el stock en la misma transacción.
+- El almacenero ve en "Stock de productos" todos los productos con stock (agotados, bajos y disponibles).
+
+## Reporte en Excel (Apache POI)
+Dashboard → "Exportar a Excel": descarga un .xlsx con lo que esté marcado en los gráficos (periodo, días, productos,
+estados). Hojas: Resumen, Ventas por día, Productos, Estado de pedidos y Materias primas.
+
+## Registro de errores (Logback)
+Configurado en `src/main/resources/logback-spring.xml`. Genera en la carpeta `logs/`:
+`luz-maira.log` (actividad: inicios de sesión, pedidos, productos, reportes) y `errores.log` (solo WARN y ERROR, con la
+traza completa). Rotan por día/tamaño y se borran a los 30 días. Los errores inesperados de la API quedan ahí y el
+usuario ve un mensaje sencillo.
+
+## Librerías
+Spring Boot (web, jdbc, security, validation, mongodb), mssql-jdbc, Apache POI (Excel), Logback (logs).
+Front: SweetAlert2 (avisos), guardada en `js/lib/` para que funcione sin internet.
 
 ## Front: dónde está cada cosa (sin código repetido)
 - `js/ui.js`: `h()` para crear elementos, cabecera, barra lateral, tablas, tarjetas, ventanas y formularios.

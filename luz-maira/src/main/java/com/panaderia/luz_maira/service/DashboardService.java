@@ -31,6 +31,11 @@ public class DashboardService {
     }
 
     public Dashboard obtener(String rango, List<String> dias, List<Integer> productos, List<String> estados) {
+        return obtener(rango, dias, productos, estados, false);
+    }
+
+    /** completo = true entrega todos los productos y materias (para el reporte de Excel). */
+    public Dashboard obtener(String rango, List<String> dias, List<Integer> productos, List<String> estados, boolean completo) {
         LocalDate hoy = LocalDate.now();
         LocalDate desde = switch (rango) {
             case "7" -> hoy.minusDays(6);
@@ -53,9 +58,9 @@ public class DashboardService {
                 new Dashboard.Rango(desde.toString(), hoy.toString(), totalDias),
                 indicadores(filtro, anterior, comparar),
                 ventasPorDia(filtro),
-                productos(filtro, anterior, comparar),
+                productos(filtro, anterior, comparar, completo),
                 dao.estados(filtro),
-                materias(filtro, diasMarcados.isEmpty() ? totalDias : diasMarcados.size()),
+                materias(filtro, completo),
                 alerta(filtro, diasMarcados.isEmpty() ? totalDias : diasMarcados.size()));
     }
 
@@ -81,7 +86,7 @@ public class DashboardService {
     }
 
     // ---------- Productos: los más vendidos + los seleccionados, con su variación ----------
-    private List<Dashboard.ProductoVenta> productos(FiltroDashboard f, FiltroDashboard anterior, boolean comparar) {
+    private List<Dashboard.ProductoVenta> productos(FiltroDashboard f, FiltroDashboard anterior, boolean comparar, boolean completo) {
         List<Dashboard.ProductoVenta> todos = dao.productos(f);
         Map<Integer, BigDecimal> ventasAnteriores = new HashMap<>();
         if (comparar) {
@@ -90,7 +95,7 @@ public class DashboardService {
         List<Dashboard.ProductoVenta> resultado = new ArrayList<>();
         for (int i = 0; i < todos.size(); i++) {
             Dashboard.ProductoVenta p = todos.get(i);
-            if (i < PRODUCTOS_VISIBLES || f.productos().contains(p.id())) {
+            if (completo || i < PRODUCTOS_VISIBLES || f.productos().contains(p.id())) {
                 Double var = comparar ? variacion(p.ventas(), ventasAnteriores.get(p.id())) : null;
                 resultado.add(new Dashboard.ProductoVenta(p.id(), p.nombre(), p.unidades(), p.ventas(), p.ingresoProm(), var));
             }
@@ -99,11 +104,11 @@ public class DashboardService {
     }
 
     // ---------- Materias primas ----------
-    private List<Dashboard.Materia> materias(FiltroDashboard f, int dias) {
+    private List<Dashboard.Materia> materias(FiltroDashboard f, boolean completo) {
         return dao.materias(f).stream()
                 .map(m -> new Dashboard.Materia(m.nombre(), m.unidad(), m.consumo(), porcentajeConsumido(m)))
                 .sorted(Comparator.comparingDouble(Dashboard.Materia::porcentaje).reversed())
-                .limit(3).toList();
+                .limit(completo ? Long.MAX_VALUE : 3).toList();
     }
 
     /** Consumo del periodo frente al inventario (consumo + stock actual). */
@@ -115,17 +120,26 @@ public class DashboardService {
         return total.signum() == 0 ? 0 : redondear(m.consumo().doubleValue() / total.doubleValue() * 100);
     }
 
-    /** Avisa de la materia prima que se acabaría antes (menos de 3 días de stock). */
+    /**
+     * Avisa de la materia prima en riesgo: primero las que llegaron a su stock mínimo y,
+     * si no hay, la que se acabaría antes (menos de 3 días de stock).
+     */
     private Dashboard.Alerta alerta(FiltroDashboard f, int dias) {
         Dashboard.Alerta peor = null;
         for (MateriaBruta m : dao.materias(f)) {
-            double promedioDiario = m.consumo().doubleValue() / Math.max(dias, 1);
-            if (m.stock() == null || promedioDiario <= 0) {
+            if (m.stock() == null) {
                 continue;
             }
-            double diasDeStock = redondear(m.stock().doubleValue() / promedioDiario);
-            if (diasDeStock < DIAS_MINIMOS_STOCK && (peor == null || diasDeStock < peor.diasDeStock())) {
-                peor = new Dashboard.Alerta(m.nombre(), diasDeStock);
+            boolean bajoMinimo = m.stockMinimo() != null && m.stock().compareTo(m.stockMinimo()) <= 0;
+            double promedioDiario = m.consumo().doubleValue() / Math.max(dias, 1);
+            double diasDeStock = promedioDiario <= 0 ? 999 : redondear(m.stock().doubleValue() / promedioDiario);
+            if (!bajoMinimo && diasDeStock >= DIAS_MINIMOS_STOCK) {
+                continue;
+            }
+            boolean mejor = peor == null || (bajoMinimo && !peor.bajoMinimo())
+                    || (bajoMinimo == peor.bajoMinimo() && diasDeStock < peor.diasDeStock());
+            if (mejor) {
+                peor = new Dashboard.Alerta(m.nombre(), diasDeStock, bajoMinimo);
             }
         }
         return peor;

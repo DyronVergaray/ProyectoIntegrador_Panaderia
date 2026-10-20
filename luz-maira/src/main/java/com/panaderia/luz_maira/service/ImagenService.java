@@ -4,7 +4,10 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Map;
+import java.util.UUID;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -15,6 +18,7 @@ import org.springframework.web.server.ResponseStatusException;
 @Service
 public class ImagenService {
 
+    private static final Logger log = LoggerFactory.getLogger(ImagenService.class);
     private static final Map<String, String> EXTENSIONES = Map.of("image/jpeg", ".jpg", "image/png", ".png", "image/webp", ".webp");
     private static final long MAXIMO_BYTES = 2L * 1024 * 1024;
 
@@ -23,6 +27,7 @@ public class ImagenService {
     public ImagenService(@Value("${app.imagenes.carpeta:imagenes-productos}") String ruta) throws IOException {
         this.carpeta = Path.of(ruta).toAbsolutePath().normalize();
         Files.createDirectories(carpeta);
+        log.info("Las imágenes de productos se guardan en: {}", carpeta);
     }
 
     public Path carpeta() {
@@ -36,6 +41,7 @@ public class ImagenService {
         }
         String extension = EXTENSIONES.get(archivo.getContentType());
         if (extension == null) {
+            log.warn("Imagen rechazada para el producto {}: tipo {}", idProducto, archivo.getContentType());
             throw error("Solo se permiten imágenes JPG, PNG o WEBP");
         }
         if (archivo.getSize() > MAXIMO_BYTES) {
@@ -45,10 +51,13 @@ public class ImagenService {
             if (!esImagenReal(archivo.getBytes(), extension)) {
                 throw error("El archivo no es una imagen válida");
             }
-            String nombre = idProducto + "-" + System.currentTimeMillis() + extension;
+            // UUID: nunca se repite el nombre, aunque dos personas suban el mismo archivo a la vez
+            String nombre = UUID.randomUUID() + extension;
             archivo.transferTo(carpeta.resolve(nombre));
+            log.info("Imagen guardada para el producto {}: {}", idProducto, nombre);
             return nombre;
         } catch (IOException e) {
+            log.error("No se pudo guardar la imagen del producto {}", idProducto, e);
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "No se pudo guardar la imagen");
         }
     }

@@ -10,6 +10,8 @@ import java.time.format.DateTimeParseException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,6 +27,7 @@ import com.panaderia.luz_maira.security.UsuarioAutenticado;
 @Service
 public class PedidoService {
 
+    private static final Logger log = LoggerFactory.getLogger(PedidoService.class);
     private static final int INTENTOS_CODIGO = 100;
     private final PedidoDAO dao;
     private final SecureRandom azar = new SecureRandom();
@@ -61,26 +64,42 @@ public class PedidoService {
             }
         }
 
-        // Une productos repetidos y toma los precios de la base de datos
+        // Une productos repetidos y toma precios y stock de la base de datos
         Map<Integer, Integer> cantidades = new LinkedHashMap<>();
         f.items().forEach(i -> cantidades.merge(i.idProducto(), i.cantidad(), Integer::sum));
-        Map<Integer, BigDecimal> precios = dao.preciosDe(cantidades.keySet());
+        Map<Integer, PedidoDAO.ProductoPedido> productos = dao.productosParaPedido(cantidades.keySet());
         BigDecimal total = BigDecimal.ZERO;
         for (Map.Entry<Integer, Integer> e : cantidades.entrySet()) {
-            BigDecimal precio = precios.get(e.getKey());
-            if (precio == null) {
+            PedidoDAO.ProductoPedido producto = productos.get(e.getKey());
+            if (producto == null) {
                 throw error("Uno de los productos ya no existe");
             }
-            total = total.add(precio.multiply(BigDecimal.valueOf(e.getValue())));
+            // Los panes tienen stock null: no se verifica. El resto no puede superar lo disponible.
+            if (producto.stock() != null && e.getValue() > producto.stock()) {
+                log.warn("Stock insuficiente de '{}': pedidos={}, disponible={}", producto.nombre(), e.getValue(), producto.stock());
+                throw error(producto.stock() == 0 ? producto.nombre() + " está agotado"
+                        : "No hay stock suficiente de " + producto.nombre() + " (quedan " + producto.stock() + ")");
+            }
+            total = total.add(producto.precio().multiply(BigDecimal.valueOf(e.getValue())));
         }
 
         int idCarrito = dao.insertarCarrito(usuario.getId(), total);
-        cantidades.forEach((idProducto, cantidad) -> dao.insertarItem(idCarrito, idProducto, cantidad, precios.get(idProducto)));
+        for (Map.Entry<Integer, Integer> e : cantidades.entrySet()) {
+            PedidoDAO.ProductoPedido producto = productos.get(e.getKey());
+            dao.insertarItem(idCarrito, e.getKey(), e.getValue(), producto.precio());
+            // Descuento atómico: si otra compra se llevó el stock mientras tanto, se cancela todo (rollback)
+            if (producto.stock() != null && !dao.descontarStock(e.getKey(), e.getValue())) {
+                log.warn("El stock de '{}' cambió durante la compra", producto.nombre());
+                throw error("El stock de " + producto.nombre() + " acaba de cambiar. Intenta de nuevo.");
+            }
+        }
         int idPedido = dao.insertarPedido(idCarrito, tipo.id(), Date.valueOf(fecha), Time.valueOf(hora),
                 enCaja ? "Entregado" : "Pendiente", direccion);
 
         String codigo = generarCodigo();
         dao.insertarCodigo(idPedido, codigo);
+        log.info("Pedido {} registrado por {} ({}): tipo={}, total={}, código={}",
+                idPedido, usuario.getUsername(), usuario.getRol(), tipo.nombre(), total, codigo);
         return new Pedidos.Confirmacion(idPedido, codigo, total);
     }
 

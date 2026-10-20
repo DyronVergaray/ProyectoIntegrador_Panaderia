@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Registro del sistema con Logback. Se generan tres salidas:
+    - Consola ................ todo lo que pasa mientras la app corre.
+    - logs/luz-maira.log ..... actividad general (inicios de sesión, pedidos, productos, reportes...).
+    - logs/errores.log ....... SOLO advertencias y errores (WARN y ERROR), con la traza completa del fallo.
+  Los archivos rotan por día y por tamaño, y se borran solos pasados 30 días.
+-->
+<configuration>
+
+    <!-- Carpeta de logs: sale de application.properties (app.logs.carpeta) -->
+    <springProperty scope="context" name="CARPETA_LOGS" source="app.logs.carpeta" defaultValue="logs"/>
+    <property name="PATRON" value="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%thread] %logger{36} - %msg%n"/>
+
+    <appender name="CONSOLA" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>${PATRON}</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+
+    <!-- Actividad general -->
+    <appender name="ARCHIVO" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${CARPETA_LOGS}/luz-maira.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${CARPETA_LOGS}/luz-maira.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <maxFileSize>10MB</maxFileSize>
+            <maxHistory>30</maxHistory>
+            <totalSizeCap>300MB</totalSizeCap>
+        </rollingPolicy>
+        <encoder>
+            <pattern>${PATRON}</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+
+    <!-- Solo problemas: WARN y ERROR -->
+    <appender name="ERRORES" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>WARN</level>
+        </filter>
+        <file>${CARPETA_LOGS}/errores.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${CARPETA_LOGS}/errores.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <maxFileSize>10MB</maxFileSize>
+            <maxHistory>30</maxHistory>
+            <totalSizeCap>200MB</totalSizeCap>
+        </rollingPolicy>
+        <encoder>
+            <pattern>${PATRON}</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+
+    <!-- Nuestro código registra con más detalle -->
+    <logger name="com.panaderia.luz_maira" level="DEBUG"/>
+
+    <root level="INFO">
+        <appender-ref ref="CONSOLA"/>
+        <appender-ref ref="ARCHIVO"/>
+        <appender-ref ref="ERRORES"/>
+    </root>
+</configuration>

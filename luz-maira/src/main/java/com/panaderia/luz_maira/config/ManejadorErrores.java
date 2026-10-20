@@ -10,6 +10,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -36,6 +37,11 @@ public class ManejadorErrores {
 
     @ExceptionHandler(ResponseStatusException.class)
     ResponseEntity<Map<String, String>> estado(ResponseStatusException e) {
+        if (e.getStatusCode().is5xxServerError()) {
+            log.error("Error {} en una solicitud: {}", e.getStatusCode().value(), e.getReason(), e);
+        } else {
+            log.warn("Solicitud rechazada ({}): {}", e.getStatusCode().value(), e.getReason());
+        }
         return error(e.getStatusCode().value(), e.getReason());
     }
 
@@ -69,5 +75,21 @@ public class ManejadorErrores {
     ResponseEntity<Map<String, String>> baseDeDatos(DataAccessException e) {
         log.error("Error de base de datos", e);
         return error(503, "No se pudo acceder a la base de datos. Revisa que SQL Server esté encendido y los datos de conexión.");
+    }
+
+    /**
+     * Cualquier otro error: se escribe completo (con su traza) en logs/errores.log y el usuario recibe un
+     * mensaje sencillo. Los errores propios de Spring (404, 405...) conservan su código.
+     */
+    @ExceptionHandler(Exception.class)
+    ResponseEntity<Map<String, String>> inesperado(Exception e) {
+        if (e instanceof ErrorResponse respuesta) {
+            int codigo = respuesta.getStatusCode().value();
+            log.warn("Solicitud no atendida ({}): {}", codigo, e.getMessage());
+            return error(codigo, codigo == 404 ? "No se encontró el recurso solicitado"
+                    : codigo == 405 ? "Método no permitido" : "La solicitud no se pudo atender");
+        }
+        log.error("Error inesperado en el sistema", e);
+        return error(500, "Ocurrió un error inesperado. Quedó registrado en el sistema para revisarlo.");
     }
 }

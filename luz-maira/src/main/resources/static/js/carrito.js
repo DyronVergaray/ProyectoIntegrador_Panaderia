@@ -70,21 +70,46 @@ const Carrito = {
     },
 
     // ---------- Productos del pedido ----------
+    // Cada vez que se agrega un producto sale un aviso (SweetAlert2). Los productos con stock no pueden
+    // superar lo disponible; los panes (stock null) no tienen ese límite.
     agregar(producto) {
         const existente = this.items.find((i) => i.id === producto.id);
+        const actual = existente ? existente.cantidad : 0;
+        if (!this.puedeSubir(producto.nombre, producto.stock, actual)) {
+            return;
+        }
         if (existente) {
             existente.cantidad++;
         } else {
-            this.items.push({ id: producto.id, nombre: producto.nombre, precio: Number(producto.precio), cantidad: 1 });
+            this.items.push({ id: producto.id, nombre: producto.nombre, precio: Number(producto.precio), cantidad: 1, stock: producto.stock });
         }
         this.dibujar();
+        UI.alerta("success", producto.nombre + " agregado", "Cantidad en tu pedido: " + (actual + 1));
     },
 
     cambiar(id, diferencia) {
         const item = this.items.find((i) => i.id === id);
+        if (diferencia > 0) {
+            if (!this.puedeSubir(item.nombre, item.stock, item.cantidad)) {
+                return;
+            }
+            UI.alerta("success", item.nombre + " agregado", "Cantidad en tu pedido: " + (item.cantidad + 1));
+        }
         item.cantidad += diferencia;
         this.items = this.items.filter((i) => i.cantidad > 0);
         this.dibujar();
+    },
+
+    puedeSubir(nombre, stock, cantidadActual) {
+        if (stock !== null && stock !== undefined && cantidadActual + 1 > stock) {
+            UI.alerta("warning", "Stock máximo alcanzado", "Solo quedan " + stock + " unidades de " + nombre);
+            return false;
+        }
+        if (cantidadActual + 1 > 50) {
+            UI.alerta("warning", "Cantidad máxima", "Puedes pedir hasta 50 unidades de cada producto");
+            return false;
+        }
+        return true;
     },
 
     suma() {

@@ -367,3 +367,28 @@ tr.fila-selec.atenuada td { opacity: .45; }
 .cajon .mensaje.ok { color: #c8f0cf; }
 .sesion-rol { text-align: center; color: #d9c4b0; margin: -.6rem 0 1.4rem; }
 .campo input[type="file"] { padding: .4rem; font-size: .75rem; }
+
+/* ===== Zona para arrastrar imágenes ===== */
+.zona-imagen { position: relative; display: grid; place-items: center; gap: .3rem; min-height: 120px; padding: .8rem; text-align: center; font-size: .78rem; color: var(--suave); border: 2px dashed #b99872; border-radius: 10px; background: #fbf5ec; cursor: pointer; transition: background .15s, border-color .15s; }
+.zona-imagen:hover, .zona-imagen.arrastrando { background: #fdebd2; border-color: var(--terracota); }
+.zona-imagen.arrastrando { border-style: solid; }
+.zona-miniatura { max-width: 100%; max-height: 150px; border-radius: 8px; object-fit: contain; }
+.zona-aviso { font-size: .68rem; }
+.zona-quitar { border: 0; background: none; padding: 0; color: #b3392b; font-size: .72rem; font-weight: 700; text-decoration: underline; cursor: pointer; }
+.zona-quitar:hover { background: none; }
+.zona-error { display: block; min-height: 1rem; margin-top: .25rem; font-size: .7rem; font-weight: 700; color: #b3392b; }
+
+/* ===== Stock ===== */
+.stock-linea { font-size: .7rem; color: var(--suave); }
+.stock-linea.bajo { color: #b3392b; font-weight: 700; }
+
+/* ===== Administrador dentro del almacén ===== */
+.pastilla-volver { background: var(--tinta); color: var(--marfil); font-weight: 700; }
+.pastilla-volver:hover { background: var(--terracota); border-color: var(--terracota); }
+.menu-admin a.activo { background: #f9e1d8; color: var(--terracota); font-weight: 700; border-color: #f0c9bb; }
+.lateral .menu-admin { margin-bottom: 1.5rem; }
+
+/* ===== Dashboard: exportar ===== */
+.dash-controles { display: flex; align-items: center; gap: .8rem; flex-wrap: wrap; }
+.dash-controles .btn { padding: .35rem .9rem; font-size: .75rem; }
+.panel-dash .enlace:disabled, .dash-controles .btn:disabled { opacity: .5; cursor: wait; }

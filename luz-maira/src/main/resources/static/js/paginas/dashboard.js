@@ -32,14 +32,19 @@
     }
 
     // ---------- Carga ----------
+    // Parámetros con la selección actual (sirven para cargar el dashboard y para exportarlo a Excel)
+    function consultaActual() {
+        const consulta = new URLSearchParams({ rango: estado.rango });
+        if (estado.dias.length) { consulta.set("dias", estado.dias.join(",")); }
+        if (estado.productos.length) { consulta.set("productos", estado.productos.join(",")); }
+        if (estado.estados.length) { consulta.set("estados", estado.estados.join(",")); }
+        return consulta.toString();
+    }
+
     async function cargar() {
         try {
-            const consulta = new URLSearchParams({ rango: estado.rango });
-            if (estado.dias.length) { consulta.set("dias", estado.dias.join(",")); }
-            if (estado.productos.length) { consulta.set("productos", estado.productos.join(",")); }
-            if (estado.estados.length) { consulta.set("estados", estado.estados.join(",")); }
             el("principal").classList.add("carga");
-            datos = await api("/api/dashboard?" + consulta.toString());
+            datos = await api("/api/dashboard?" + consultaActual());
             dibujar();
         } catch (e) {
             el("dash-sub").innerText = e.message;
@@ -159,7 +164,7 @@
         if (alerta) {
             el("alerta").replaceChildren(h("span", { texto: "⚠" }), h("div", {},
                 h("strong", { texto: "Reponer " + alerta.materia.toLowerCase() + " hoy" }),
-                "Stock para " + alerta.diasDeStock + " días al ritmo actual.", h("br"),
+                alerta.bajoMinimo ? "El stock llegó al mínimo permitido." : "Stock para " + alerta.diasDeStock + " días al ritmo actual.", h("br"),
                 h("a", { href: "almacen-solicitudes.html", texto: "Crear solicitud →" })));
         }
     }
@@ -211,18 +216,23 @@
     el("lateral").append(h("div", { class: "menu-admin" }, h("h3", { texto: "ADMINISTRACIÓN" }),
         VISTAS.map(([clave, texto]) => h("button", { "data-vista": clave, onclick: () => { vista = clave; aplicarVista(); } }, texto)),
         h("a", { href: "admin-productos.html", texto: "Productos" }),
-        h("a", { href: "almacen-proveedores.html", texto: "Proveedores" })));
+        h("a", { href: "almacen-productos.html", texto: "Almacén" })));
 
-    // ---------- Descargar reporte (CSV) ----------
-    el("btn-reporte").onclick = () => {
-        const filas = [["Producto", "Ventas", "Unidades", "Ingreso promedio", "Variación %"]]
-            .concat(datos.productos.map((p) => [p.nombre, p.ventas, p.unidades, p.ingresoProm, p.variacion == null ? "" : p.variacion]));
-        const csv = filas.map((f) => f.map((c) => '"' + String(c).replace(/"/g, '""') + '"').join(",")).join("\n");
-        const enlace = h("a", { href: URL.createObjectURL(new Blob(["\ufeff" + csv], { type: "text/csv;charset=utf-8" })), download: "rendimiento-productos.csv" });
-        document.body.append(enlace);
-        enlace.click();
-        enlace.remove();
-    };
+    // ---------- Exportar a Excel (lo genera el servidor con Apache POI, con los filtros marcados) ----------
+    async function exportarExcel() {
+        const botones = [el("btn-excel"), el("btn-reporte")];
+        try {
+            botones.forEach((b) => { b.disabled = true; });
+            await descargar("/api/dashboard/excel?" + consultaActual(), "reporte-panaderia.xlsx");
+            UI.alerta("success", "Reporte de Excel descargado");
+        } catch (e) {
+            UI.toast(e.message, false);
+        } finally {
+            botones.forEach((b) => { b.disabled = false; });
+        }
+    }
+    el("btn-excel").onclick = exportarExcel;
+    el("btn-reporte").onclick = exportarExcel;
 
     cargar();
 })();

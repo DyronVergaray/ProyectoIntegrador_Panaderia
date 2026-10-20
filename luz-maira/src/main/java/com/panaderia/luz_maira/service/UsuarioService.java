@@ -1,5 +1,7 @@
 package com.panaderia.luz_maira.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -13,6 +15,7 @@ import com.panaderia.luz_maira.model.UsuarioForm;
 @Service
 public class UsuarioService {
 
+    private static final Logger log = LoggerFactory.getLogger(UsuarioService.class);
     private final UsuarioDAO dao;
     private final PasswordEncoder codificador;
 
@@ -35,7 +38,9 @@ public class UsuarioService {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Ya existe un usuario con ese correo");
         }
         int idCredenciales = dao.insertarCredenciales(email, codificador.encode(f.password()));
-        return dao.insertarUsuario(f, idRol, idCredenciales);
+        int id = dao.insertarUsuario(f, idRol, idCredenciales);
+        log.info("Usuario creado: id={}, correo={}, idRol={}", id, email, idRol);
+        return id;
     }
 
     /** Registro público: siempre crea un Cliente (el rol nunca lo decide quien se registra). */

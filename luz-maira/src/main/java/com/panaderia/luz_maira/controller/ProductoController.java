@@ -6,6 +6,7 @@ import java.util.Map;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -13,28 +14,31 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.panaderia.luz_maira.dao.ProductoDAO;
 import com.panaderia.luz_maira.model.Categoria;
 import com.panaderia.luz_maira.model.Producto;
 import com.panaderia.luz_maira.model.ProductoForm;
+import com.panaderia.luz_maira.security.UsuarioAutenticado;
 import com.panaderia.luz_maira.service.ImagenService;
+import com.panaderia.luz_maira.service.ProductoService;
 
 import jakarta.validation.Valid;
 
-/** /api/categorias, /api/productos, /api/productos/favoritos */
+/** /api/categorias, /api/productos, /api/productos/favoritos y /api/stock. Permisos en SecurityConfig. */
 @RestController
 @RequestMapping("/api")
 public class ProductoController {
 
     private final ProductoDAO dao;
+    private final ProductoService servicio;
     private final ImagenService imagenes;
 
-    public ProductoController(ProductoDAO dao, ImagenService imagenes) {
+    public ProductoController(ProductoDAO dao, ProductoService servicio, ImagenService imagenes) {
         this.dao = dao;
+        this.servicio = servicio;
         this.imagenes = imagenes;
     }
 
@@ -43,10 +47,12 @@ public class ProductoController {
         return dao.categorias();
     }
 
+    /** Catálogo: clientes y cajera no ven los productos agotados; el administrador los ve todos para poder editarlos. */
     @GetMapping("/productos")
-    public List<Producto> productos(@RequestParam(required = false) String q,
+    public List<Producto> productos(@AuthenticationPrincipal UsuarioAutenticado usuario,
+                                    @RequestParam(required = false) String q,
                                     @RequestParam(required = false) List<Integer> categorias) {
-        return dao.buscar(q, categorias);
+        return dao.buscar(q, categorias, !usuario.getRol().equals("Administrador"));
     }
 
     @GetMapping("/productos/favoritos")
@@ -54,17 +60,22 @@ public class ProductoController {
         return dao.favoritos(4);
     }
 
+    /** Productos que controlan stock (todos menos los panes), para el almacenero. */
+    @GetMapping("/stock")
+    public List<Producto> stock(@RequestParam(required = false) String q,
+                                @RequestParam(required = false) List<Integer> categorias) {
+        return dao.conStock(q, categorias);
+    }
+
     @PostMapping("/productos")
     public ResponseEntity<Map<String, Object>> crear(@Valid @RequestBody ProductoForm form) {
-        int id = dao.crear(form);
+        int id = servicio.crear(form);
         return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("id", id, "mensaje", "Producto creado correctamente"));
     }
 
     @PutMapping("/productos/{id}")
     public Map<String, String> actualizar(@PathVariable int id, @Valid @RequestBody ProductoForm form) {
-        if (dao.actualizar(id, form) == 0) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "El producto no existe");
-        }
+        servicio.actualizar(id, form);
         return Map.of("mensaje", "Producto actualizado correctamente");
     }
 

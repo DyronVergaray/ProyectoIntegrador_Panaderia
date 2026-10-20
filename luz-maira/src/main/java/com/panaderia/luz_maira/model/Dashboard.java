@@ -21,5 +21,5 @@ public record Dashboard(Rango rango, Kpis kpis, List<PuntoVenta> ventasPorDia,
 
     public record Materia(String nombre, String unidad, BigDecimal consumo, double porcentaje) { }
 
-    public record Alerta(String materia, double diasDeStock) { }
+    public record Alerta(String materia, double diasDeStock, boolean bajoMinimo) { }
 }

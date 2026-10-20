@@ -1,0 +1,3 @@
+Aquí se guardan las fotos de los productos.
+Se llenan solas desde Admin > Productos > Editar/Añadir (arrastrar y soltar o buscar el archivo).
+Cada foto recibe un nombre único (UUID), así que nunca hay conflictos de nombre.

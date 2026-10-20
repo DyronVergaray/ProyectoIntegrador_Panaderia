@@ -2,6 +2,8 @@ package com.panaderia.luz_maira.config;
 
 import java.io.IOException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -21,6 +23,8 @@ import jakarta.servlet.http.HttpServletResponse;
 @Configuration
 public class SecurityConfig {
 
+    private static final Logger log = LoggerFactory.getLogger(SecurityConfig.class);
+
     @Bean
     SecurityFilterChain cadenaDeFiltros(HttpSecurity http) throws Exception {
         http.csrf(csrf -> csrf.disable())   // la API usa JSON y sesión del mismo origen; ver README
@@ -39,7 +43,8 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.GET, "/api/pedidos/mios").hasRole("Cliente")
                 .requestMatchers(HttpMethod.GET, "/api/pedidos").hasAnyRole("Cajero", "Administrador")
                 .requestMatchers(HttpMethod.GET, "/api/pedidos/*").hasAnyRole("Cliente", "Cajero", "Administrador")
-                .requestMatchers("/api/usuarios/**", "/api/roles", "/api/dashboard").hasRole("Administrador")
+                .requestMatchers(HttpMethod.GET, "/api/stock", "/api/materias").hasAnyRole("Almacenero", "Administrador")
+                .requestMatchers("/api/usuarios/**", "/api/roles", "/api/dashboard/**").hasRole("Administrador")
                 .requestMatchers("/api/**").denyAll()
 
                 // ----- Páginas por rol -----
@@ -60,6 +65,9 @@ public class SecurityConfig {
     }
 
     private void responder(HttpServletRequest req, HttpServletResponse res, int codigo, String mensaje, String redireccion) throws IOException {
+        if (codigo == 403) {
+            log.warn("Acceso denegado (403): {} {}", req.getMethod(), req.getRequestURI());
+        }
         if (req.getRequestURI().startsWith("/api/")) {
             res.setStatus(codigo);
             res.setContentType("application/json;charset=UTF-8");

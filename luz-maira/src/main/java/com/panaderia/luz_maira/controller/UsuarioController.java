@@ -19,7 +19,7 @@ import com.panaderia.luz_maira.service.UsuarioService;
 
 import jakarta.validation.Valid;
 
-/** /api/roles y /api/usuarios (más adelante: solo para el rol Administrador). */
+/** /api/roles y /api/usuarios (solo Administrador; ver SecurityConfig). */
 @RestController
 @RequestMapping("/api")
 public class UsuarioController {
@@ -44,7 +44,7 @@ public class UsuarioController {
 
     @PostMapping("/usuarios")
     public ResponseEntity<Map<String, Object>> crear(@Valid @RequestBody UsuarioForm form) {
-        int id = servicio.crear(form);
+        int id = servicio.crear(form, form.idRol());
         return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("id", id, "mensaje", "Usuario creado correctamente"));
     }
 }

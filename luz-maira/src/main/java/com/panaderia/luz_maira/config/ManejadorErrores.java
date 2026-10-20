@@ -9,10 +9,12 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.server.ResponseStatusException;
 
 /** Convierte los errores en JSON { "error": "mensaje" } para que el front los muestre. */
@@ -40,6 +42,16 @@ public class ManejadorErrores {
     @ExceptionHandler({DateTimeParseException.class, MethodArgumentTypeMismatchException.class})
     ResponseEntity<Map<String, String>> parametro(Exception e) {
         return error(400, "Algún parámetro de la solicitud no es válido");
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    ResponseEntity<Map<String, String>> cuerpoInvalido(HttpMessageNotReadableException e) {
+        return error(400, "Los datos enviados no tienen el formato esperado");
+    }
+
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    ResponseEntity<Map<String, String>> archivoGrande(MaxUploadSizeExceededException e) {
+        return error(413, "La imagen supera el tamaño máximo permitido (2 MB)");
     }
 
     @ExceptionHandler(EmptyResultDataAccessException.class)

@@ -270,3 +270,25 @@ INSERT INTO Producto (id_categoriaProducto, nombre_producto, descripcion, precio
 (3, 'Empanada de pollo',       'Masa hojaldrada rellena de pollo.',        4.50),
 (3, 'Alfajor de maicena',      'Alfajor relleno de manjar blanco.',        2.50),
 (4, 'Chicha morada 1 L',       'Chicha morada casera.',                    7.00);
+
+-- Usuarios de prueba
+DECLARE @cred INT;
+
+INSERT INTO Credenciales_usuario ([contraseña], email)
+VALUES (LOWER(CONVERT(VARCHAR(32), HASHBYTES('MD5', 'Admin123'), 2)), 'admin@luzmayra.com');
+SET @cred = SCOPE_IDENTITY();
+INSERT INTO Usuario (id_rol, id_credenciales, primer_nombre, primer_apellido, segundo_apellido, telefono)
+VALUES (4, @cred, 'Admin', 'Principal', 'Sistema', '999999999');
+
+INSERT INTO Credenciales_usuario ([contraseña], email)
+VALUES (LOWER(CONVERT(VARCHAR(32), HASHBYTES('MD5', 'Cajero123'), 2)), 'cajero@luzmayra.com');
+SET @cred = SCOPE_IDENTITY();
+INSERT INTO Usuario (id_rol, id_credenciales, primer_nombre, primer_apellido, segundo_apellido, telefono)
+VALUES (2, @cred, 'Carla', 'Quispe', 'Rojas', '988888888');
+
+INSERT INTO Credenciales_usuario ([contraseña], email)
+VALUES (LOWER(CONVERT(VARCHAR(32), HASHBYTES('MD5', 'Cliente123'), 2)), 'cliente@luzmayra.com');
+SET @cred = SCOPE_IDENTITY();
+INSERT INTO Usuario (id_rol, id_credenciales, primer_nombre, primer_apellido, segundo_apellido, telefono)
+VALUES (1, @cred, 'Luis', 'Paredes', 'Soto', '977777777');
+GO

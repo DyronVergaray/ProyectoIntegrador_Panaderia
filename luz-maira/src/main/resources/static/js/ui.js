@@ -53,6 +53,18 @@ const UI = {
         return new Date().toLocaleTimeString("es-PE", { hour: "2-digit", minute: "2-digit" });
     },
 
+    // ---------- Sesión ----------
+    usuario: null,                        // { id, nombre, rol, panel } del usuario que inició sesión
+
+    async cerrarSesion() {
+        try {
+            await api("/api/logout", "POST", null, true);
+        } catch (e) {
+            console.log(e.message);
+        }
+        location.href = "index.html";
+    },
+
     // ---------- Mensajes ----------
     toast(texto, ok) {
         console.log(texto);
@@ -97,8 +109,11 @@ const UI = {
         const accion = modo === "admin"
             ? h("button", { class: "pastilla-chica", onclick: () => alAccion(p) }, "✎ Editar")
             : h("button", { class: "mas", "aria-label": "Agregar " + p.nombre + " al pedido", onclick: () => alAccion(p) }, "+");
+        const foto = p.imagen
+            ? h("div", { class: "foto con-imagen" }, h("img", { src: p.imagen, alt: "Foto de " + p.nombre, loading: "lazy" }))
+            : h("div", { class: "foto", role: "img", "aria-label": "Foto de " + p.nombre, texto: p.nombre });
         return h("article", { class: "tarjeta" },
-            h("div", { class: "foto", role: "img", "aria-label": "Foto de " + p.nombre, texto: p.nombre }),
+            foto,
             h("div", { class: "tarjeta-cuerpo" },
                 h("h3", { texto: p.nombre }),
                 h("p", { texto: p.descripcion || "" }),
@@ -134,6 +149,7 @@ const UI = {
         const filas = campos.map((c) => {
             const control = c.tipo === "select"
                 ? h("select", {}, (c.opciones || []).map((o) => h("option", { value: o.valor, texto: o.texto })))
+                : c.tipo === "file" ? h("input", { type: "file", accept: c.accept })
                 : h("input", { type: c.tipo || "text", placeholder: c.placeholder, maxlength: c.maxlength, min: c.min, step: c.step });
             controles[c.id] = control;
             return h("label", { class: "campo" }, h("span", { texto: c.etiqueta }), control);
@@ -143,6 +159,10 @@ const UI = {
             try {
                 const datos = {};
                 for (const c of campos) {
+                    if (c.tipo === "file") {
+                        datos[c.id] = controles[c.id].files[0] || null;
+                        continue;
+                    }
                     const crudo = controles[c.id].value;
                     datos[c.id] = c.tipo === "password" ? crudo : crudo.trim();
                     if (c.requerido && datos[c.id] === "") {
@@ -166,7 +186,7 @@ const UI = {
             // Abre el formulario, con valores iniciales opcionales ({campo: valor})
             abrir(valores, nuevoTitulo) {
                 for (const c of campos) {
-                    controles[c.id].value = valores && valores[c.id] !== undefined ? valores[c.id] : "";
+                    controles[c.id].value = c.tipo !== "file" && valores && valores[c.id] !== undefined ? valores[c.id] : "";
                 }
                 mensaje.innerText = "";
                 if (nuevoTitulo) {
@@ -189,7 +209,9 @@ const UI = {
                 h("span", {}, h("strong", { texto: "Panaderia Luz Mayra" }), h("small", { texto: "PANADERÍA & PASTELERÍA" }))),
             h("nav", { class: "cabecera-nav", "aria-label": "Navegación" },
                 items.map(([texto, enlace]) => h("a", { class: "pastilla" + (enlace === actual ? " activa" : ""), href: enlace, texto: texto }))),
-            h("a", { class: "pastilla", href: "index.html", texto: "Cerrar Sesión" }));
+            h("div", { class: "cabecera-sesion" },
+                UI.usuario ? h("span", { class: "cabecera-usuario", texto: UI.usuario.nombre + " · " + UI.usuario.rol }) : null,
+                h("a", { class: "pastilla", href: "index.html", onclick: (e) => { e.preventDefault(); UI.cerrarSesion(); } }, "Cerrar Sesión")));
     },
 
     bloqueBuscador() {
@@ -259,6 +281,11 @@ const UI = {
         const principal = document.getElementById("principal");
         if (!datos.menu || !principal) {
             return;
+        }
+        try {
+            UI.usuario = await api("/api/me");
+        } catch (e) {
+            return;                       // sin sesión: api() ya llevó al inicio
         }
         const partes = (datos.lateral || "").split(",").filter(Boolean);
         const lateral = h("aside", { class: "lateral", id: "lateral" });

@@ -134,7 +134,7 @@ BEGIN
             SET @pedido = SCOPE_IDENTITY();
 
             INSERT INTO Codigo (id_pedido, codigo)
-            VALUES (@pedido, CHAR(65 + ABS(CHECKSUM(NEWID())) % 26) + CHAR(65 + ABS(CHECKSUM(NEWID())) % 26) + CHAR(65 + ABS(CHECKSUM(NEWID())) % 26));
+            VALUES (@pedido, CAST(100 + ABS(CHECKSUM(NEWID())) % 900 AS VARCHAR(3)));
 
             SET @k += 1;
         END

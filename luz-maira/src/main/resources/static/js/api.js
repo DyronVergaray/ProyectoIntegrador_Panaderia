@@ -1,8 +1,13 @@
 /* ===== Comunicación con el backend (única función que usa fetch) ===== */
 
-async function api(ruta, metodo, datos) {
-    const opciones = { method: metodo || "GET", headers: { "Content-Type": "application/json" } };
-    if (datos) {
+// datos puede ser un objeto (se envía como JSON) o un FormData (archivos).
+// silencioso = true evita redirigir al inicio cuando no hay sesión.
+async function api(ruta, metodo, datos, silencioso) {
+    const opciones = { method: metodo || "GET", headers: {} };
+    if (datos instanceof FormData) {
+        opciones.body = datos;
+    } else if (datos) {
+        opciones.headers["Content-Type"] = "application/json";
         opciones.body = JSON.stringify(datos);
     }
 
@@ -22,6 +27,10 @@ async function api(ruta, metodo, datos) {
     }
 
     if (!respuesta.ok) {
+        // Sesión vencida: vuelve al inicio con el panel de inicio de sesión abierto
+        if (respuesta.status === 401 && !silencioso && ruta !== "/api/login") {
+            location.href = "index.html?login=1";
+        }
         throw new Error((cuerpo && cuerpo.error) || "Error del servidor (" + respuesta.status + ")");
     }
     return cuerpo;

@@ -1,7 +1,12 @@
 package com.panaderia.luz_maira.dao;
 
 import java.math.BigDecimal;
+import java.sql.Date;
+import java.sql.Time;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -65,5 +70,59 @@ public class PedidoDAO extends BaseDAO {
                     rs.getString(5), rs.getString(6), rs.getString(7), rs.getString(8), rs.getString(9),
                     items, rs.getBigDecimal(11));
         }, id);
+    }
+
+    // ---------- Escritura (se usa dentro de la transacción de PedidoService) ----------
+
+    public TipoPedido tipoPorId(Integer id) {
+        if (id == null) {
+            return null;
+        }
+        return jdbc.query("SELECT id_tipo, nombre_tipo FROM Tipo_Pedido WHERE id_tipo = ?",
+                (rs, n) -> new TipoPedido(rs.getInt(1), rs.getString(2)), id).stream().findFirst().orElse(null);
+    }
+
+    public TipoPedido tipoPorNombre(String nombre) {
+        return jdbc.query("SELECT id_tipo, nombre_tipo FROM Tipo_Pedido WHERE nombre_tipo = ?",
+                (rs, n) -> new TipoPedido(rs.getInt(1), rs.getString(2)), nombre).stream().findFirst().orElse(null);
+    }
+
+    /** Precios vigentes (el precio siempre se toma de la BD, nunca del navegador). */
+    public Map<Integer, BigDecimal> preciosDe(Collection<Integer> idsProducto) {
+        Clausula donde = new Clausula().en("id_producto", List.copyOf(idsProducto));
+        Map<Integer, BigDecimal> precios = new HashMap<>();
+        jdbc.query("SELECT id_producto, precio_unitario FROM Producto" + donde.sql(),
+                rs -> { precios.put(rs.getInt(1), rs.getBigDecimal(2)); }, donde.args());
+        return precios;
+    }
+
+    public int insertarCarrito(int idUsuario, BigDecimal total) {
+        return insertar("INSERT INTO Carrito (id_usuario, estado, precio_total) VALUES (?, 'Confirmado', ?)", idUsuario, total);
+    }
+
+    public void insertarItem(int idCarrito, int idProducto, int cantidad, BigDecimal precio) {
+        jdbc.update("INSERT INTO Carrito_Objetos (id_producto, id_carrito, cantidad, precio) VALUES (?, ?, ?, ?)",
+                idProducto, idCarrito, cantidad, precio);
+    }
+
+    public int insertarPedido(int idCarrito, int idTipo, Date fecha, Time hora, String estado, String direccion) {
+        return insertar("INSERT INTO Pedido_Gestion (id_carrito, id_tipo, pedido_fecha, fecha_asignada, hora_asignada, "
+                        + "estado_pedido, direccion) VALUES (?, ?, CAST(GETDATE() AS DATE), ?, ?, ?, ?)",
+                idCarrito, idTipo, fecha, hora, estado, direccion);
+    }
+
+    public void insertarCodigo(int idPedido, String codigo) {
+        jdbc.update("INSERT INTO Codigo (id_pedido, codigo) VALUES (?, ?)", idPedido, codigo);
+    }
+
+    /** ¿Algún pedido pendiente ya usa este código? (así no se repite entre pedidos por entregar). */
+    public boolean codigoEnUso(String codigo) {
+        return existe("SELECT COUNT(*) FROM Codigo cd JOIN Pedido_Gestion pg ON pg.id_pedido = cd.id_pedido "
+                + "WHERE cd.codigo = ? AND pg.estado_pedido = 'Pendiente'", codigo);
+    }
+
+    public boolean esDelCliente(int idPedido, int idUsuario) {
+        return existe("SELECT COUNT(*) FROM Pedido_Gestion pg JOIN Carrito c ON c.id_carrito = pg.id_carrito "
+                + "WHERE pg.id_pedido = ? AND c.id_usuario = ?", idPedido, idUsuario);
     }
 }

@@ -26,7 +26,3 @@ const DESCRIPCION_ROL = {
     Despachador: "Despacha los pedidos virtuales",
     Entregador: "Entrega los pedidos delivery y personalizados"
 };
-
-// TEMPORAL: mientras no exista el inicio de sesión, el historial muestra los pedidos de este cliente.
-// Cuando se active la autenticación se reemplaza por el usuario de la sesión.
-const CLIENTE_DEMO_ID = 3;

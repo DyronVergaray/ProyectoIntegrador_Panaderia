@@ -33,6 +33,12 @@ public class UsuarioDAO extends BaseDAO {
                 rs.getInt(1), rs.getString(2), rs.getString(3), rs.getString(4), rs.getString(5)));
     }
 
+    /** id del rol por su nombre (null si no existe). */
+    public Integer idRolPorNombre(String nombre) {
+        List<Integer> ids = jdbc.query("SELECT id_rol FROM Roles WHERE nombre_rol = ?", (rs, n) -> rs.getInt(1), nombre);
+        return ids.isEmpty() ? null : ids.get(0);
+    }
+
     public boolean existeEmail(String email) {
         return existe("SELECT COUNT(*) FROM Credenciales_usuario WHERE email = ?", email);
     }
@@ -45,10 +51,10 @@ public class UsuarioDAO extends BaseDAO {
         return insertar("INSERT INTO Credenciales_usuario ([contraseña], email) VALUES (?, ?)", claveCifrada, email);
     }
 
-    public int insertarUsuario(UsuarioForm f, int idCredenciales) {
+    public int insertarUsuario(UsuarioForm f, int idRol, int idCredenciales) {
         return insertar("INSERT INTO Usuario (id_rol, id_credenciales, primer_nombre, primer_apellido, segundo_apellido, telefono) "
                         + "VALUES (?, ?, ?, ?, ?, ?)",
-                f.idRol(), idCredenciales, f.primerNombre().trim(), f.primerApellido().trim(),
+                idRol, idCredenciales, f.primerNombre().trim(), f.primerApellido().trim(),
                 vacioANulo(f.segundoApellido()), f.telefono());
     }
 }

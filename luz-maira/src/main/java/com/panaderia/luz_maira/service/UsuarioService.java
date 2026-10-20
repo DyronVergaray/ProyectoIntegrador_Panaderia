@@ -21,16 +21,26 @@ public class UsuarioService {
         this.codificador = codificador;
     }
 
+    /** Alta hecha por el administrador: el rol lo elige él. */
     @Transactional
-    public int crear(UsuarioForm f) {
+    public int crear(UsuarioForm f, Integer idRol) {
+        if (idRol == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Elige un rol");
+        }
         String email = f.email().trim().toLowerCase();
-        if (!dao.existeRol(f.idRol())) {
+        if (!dao.existeRol(idRol)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El rol seleccionado no existe");
         }
         if (dao.existeEmail(email)) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Ya existe un usuario con ese correo");
         }
         int idCredenciales = dao.insertarCredenciales(email, codificador.encode(f.password()));
-        return dao.insertarUsuario(f, idCredenciales);
+        return dao.insertarUsuario(f, idRol, idCredenciales);
+    }
+
+    /** Registro público: siempre crea un Cliente (el rol nunca lo decide quien se registra). */
+    @Transactional
+    public int registrarCliente(UsuarioForm f) {
+        return crear(f, dao.idRolPorNombre("Cliente"));
     }
 }

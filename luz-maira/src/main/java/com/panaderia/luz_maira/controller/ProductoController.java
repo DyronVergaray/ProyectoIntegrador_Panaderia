@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -19,6 +21,7 @@ import com.panaderia.luz_maira.dao.ProductoDAO;
 import com.panaderia.luz_maira.model.Categoria;
 import com.panaderia.luz_maira.model.Producto;
 import com.panaderia.luz_maira.model.ProductoForm;
+import com.panaderia.luz_maira.service.ImagenService;
 
 import jakarta.validation.Valid;
 
@@ -28,9 +31,11 @@ import jakarta.validation.Valid;
 public class ProductoController {
 
     private final ProductoDAO dao;
+    private final ImagenService imagenes;
 
-    public ProductoController(ProductoDAO dao) {
+    public ProductoController(ProductoDAO dao, ImagenService imagenes) {
         this.dao = dao;
+        this.imagenes = imagenes;
     }
 
     @GetMapping("/categorias")
@@ -61,5 +66,15 @@ public class ProductoController {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "El producto no existe");
         }
         return Map.of("mensaje", "Producto actualizado correctamente");
+    }
+
+    /** Sube o reemplaza la foto del producto (JPG, PNG o WEBP de hasta 2 MB). */
+    @PostMapping(path = "/productos/{id}/imagen", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public Map<String, String> subirImagen(@PathVariable int id, @RequestParam("archivo") MultipartFile archivo) {
+        String anterior = dao.nombreImagen(id);          // lanza 404 si el producto no existe
+        String nuevo = imagenes.guardar(id, archivo);
+        dao.actualizarImagen(id, nuevo);
+        imagenes.borrar(anterior);
+        return Map.of("imagen", ProductoDAO.RUTA_IMAGENES + nuevo, "mensaje", "Imagen actualizada correctamente");
     }
 }

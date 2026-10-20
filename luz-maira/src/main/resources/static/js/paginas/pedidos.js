@@ -2,17 +2,18 @@
 (async function () {
     await UI.listo;
     const modo = document.body.dataset.modo;            // "historial" o "admin"
+    const esCliente = UI.usuario.rol === "Cliente";     // el cliente ve solo lo suyo; cajera y admin ven todos
     const contenedor = document.getElementById("tabla-pedidos");
     const detalle = UI.modal({ id: "modal-detalle", titulo: "Detalle del Pedido", contenido: [] });
     let pedidos = [];
 
     async function cargar() {
         try {
-            const filtro = modo === "historial" ? "?clienteId=" + CLIENTE_DEMO_ID : "?tipo=Personalizado";
-            pedidos = await api("/api/pedidos" + filtro);
+            const ruta = modo === "admin" ? "/api/pedidos?tipo=Personalizado" : (esCliente ? "/api/pedidos/mios" : "/api/pedidos");
+            pedidos = await api(ruta);
             const pendientes = pedidos.filter((p) => p.estado === "Pendiente").length;
             const entregados = pedidos.filter((p) => p.estado === "Entregado").length;
-            UI.actualizarResumen(modo === "historial"
+            UI.actualizarResumen(esCliente
                 ? [pendientes + " solicitudes pendientes", entregados + " solicitudes recibidas"]
                 : [pendientes + " pedidos por recibir", entregados + " pedidos entregados"]);
             dibujar();
@@ -28,12 +29,14 @@
             UI.estado(contenedor, "No hay pedidos para mostrar.");
             return;
         }
-        const segunda = modo === "historial" ? "Tipo" : "Cliente";
-        contenedor.replaceChildren(UI.tabla(
-            ["ID", segunda, "Fecha de solicitud", "Fecha estimada de recepción", "Estado", "Info"],
-            vistos.map((p) => [String(p.id), modo === "historial" ? p.tipo : p.cliente, UI.fecha(p.fechaSolicitud),
-                UI.fecha(p.fechaEstimada), UI.chip(p.estado), UI.botonInfo(() => verDetalle(p.id))]),
-            vistos.length + (modo === "historial" ? " solicitudes" : " pedidos")));
+        const info = (p) => UI.botonInfo(() => verDetalle(p.id));
+        const cabeceras = esCliente
+            ? ["ID", "Tipo", "Fecha de solicitud", "Fecha estimada de recepción", "Estado", "Info"]
+            : ["ID", "Cliente", "Tipo", "Fecha de solicitud", "Fecha estimada de recepción", "Estado", "Info"];
+        const filas = vistos.map((p) => esCliente
+            ? [String(p.id), p.tipo, UI.fecha(p.fechaSolicitud), UI.fecha(p.fechaEstimada), UI.chip(p.estado), info(p)]
+            : [String(p.id), p.cliente, p.tipo, UI.fecha(p.fechaSolicitud), UI.fecha(p.fechaEstimada), UI.chip(p.estado), info(p)]);
+        contenedor.replaceChildren(UI.tabla(cabeceras, filas, vistos.length + (esCliente ? " solicitudes" : " pedidos")));
     }
 
     function dato(etiqueta, valor) {

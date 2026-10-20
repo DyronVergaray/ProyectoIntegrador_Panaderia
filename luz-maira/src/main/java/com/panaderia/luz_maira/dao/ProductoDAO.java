@@ -16,11 +16,15 @@ public class ProductoDAO extends BaseDAO {
 
     private static final String SELECT =
             "SELECT p.id_producto, p.nombre_producto, CAST(p.descripcion AS VARCHAR(MAX)), p.precio_unitario, "
-            + "c.id_categoriaProducto, c.nombre_categoria "
+            + "c.id_categoriaProducto, c.nombre_categoria, p.imagen "
             + "FROM Producto p JOIN Categoria_Producto c ON c.id_categoriaProducto = p.id_categoriaProducto";
 
+    /** Carpeta pública desde la que se sirven las fotos (ver WebConfig). */
+    public static final String RUTA_IMAGENES = "/img/productos/";
+
     private static final RowMapper<Producto> MAPA = (rs, n) -> new Producto(
-            rs.getInt(1), rs.getString(2), rs.getString(3), rs.getBigDecimal(4), rs.getInt(5), rs.getString(6));
+            rs.getInt(1), rs.getString(2), rs.getString(3), rs.getBigDecimal(4), rs.getInt(5), rs.getString(6),
+            rs.getString(7) == null ? null : RUTA_IMAGENES + rs.getString(7));
 
     public ProductoDAO(JdbcTemplate jdbc) {
         super(jdbc);
@@ -45,7 +49,7 @@ public class ProductoDAO extends BaseDAO {
     /** Los más vendidos de los últimos 7 días (si no hay ventas, devuelve productos por nombre). */
     public List<Producto> favoritos(int limite) {
         String sql = "SELECT TOP (" + limite + ") p.id_producto, p.nombre_producto, CAST(p.descripcion AS VARCHAR(MAX)), "
-                + "p.precio_unitario, c.id_categoriaProducto, c.nombre_categoria "
+                + "p.precio_unitario, c.id_categoriaProducto, c.nombre_categoria, p.imagen "
                 + "FROM Producto p JOIN Categoria_Producto c ON c.id_categoriaProducto = p.id_categoriaProducto "
                 + "LEFT JOIN (SELECT co.id_producto, SUM(co.cantidad) AS unidades "
                 + "           FROM Carrito_Objetos co JOIN Pedido_Gestion pg ON pg.id_carrito = co.id_carrito "
@@ -64,5 +68,14 @@ public class ProductoDAO extends BaseDAO {
         return jdbc.update("UPDATE Producto SET id_categoriaProducto = ?, nombre_producto = ?, descripcion = ?, "
                         + "precio_unitario = ? WHERE id_producto = ?",
                 f.idCategoria(), f.nombre().trim(), vacioANulo(f.descripcion()), f.precio(), id);
+    }
+
+    /** Nombre del archivo de imagen actual (null si no tiene). Lanza 404 si el producto no existe. */
+    public String nombreImagen(int id) {
+        return jdbc.queryForObject("SELECT imagen FROM Producto WHERE id_producto = ?", String.class, id);
+    }
+
+    public void actualizarImagen(int id, String nombreArchivo) {
+        jdbc.update("UPDATE Producto SET imagen = ? WHERE id_producto = ?", nombreArchivo, id);
     }
 }

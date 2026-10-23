@@ -217,7 +217,7 @@ const Carrito = {
         const recibo = UI.modal({
             id: "modal-recibo", ancho: "angosto",
             contenido: h("div", { class: "recibo" },
-                h("span", { class: "logo", texto: "LUZ MAYRA" }), h("h2", { texto: "Panaderia Luz Mayra" }),
+                h("img", { class: "logo", src: "img/Logo.png", alt: "Logo de Panadería Luz Mayra" }), h("h2", { texto: "Panaderia Luz Mayra" }),
                 h("small", { texto: "PANADERÍA & PASTELERÍA" }),
                 h("div", { class: "recibo-titulo" }, h("strong", { texto: "RECIBO DE COMPRA" }),
                     "Ticket #" + String(pedido.idPedido).padStart(5, "0") + " · Código " + pedido.codigo + " · " + fecha),

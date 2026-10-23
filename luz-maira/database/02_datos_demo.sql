@@ -44,7 +44,10 @@ JOIN Categoria_Producto c ON c.nombre_categoria = v.cat
 WHERE NOT EXISTS (SELECT 1 FROM Producto p WHERE p.nombre_producto = v.nombre);
 GO
 
-/* ---------- 3. USUARIOS DE PRUEBA (contraseñas con BCrypt) ----------*/
+/* ---------- 3. USUARIOS DE PRUEBA (contraseñas con BCrypt) ----------
+   admin@luzmayra.com / Admin123      cajero@luzmayra.com / Cajero123     cliente@luzmayra.com / Cliente123
+   almacen@luzmayra.com / Almacen123  despacho@luzmayra.com / Despacho123  entrega@luzmayra.com / Entrega123
+   Los 12 clientes de ejemplo usan la clave Cliente123 */
 UPDATE Credenciales_usuario SET [contraseña] = '$2b$10$YZyGBvdmw9LtWs66P2oTXOh0DGEs.zhUHWsnGP2BWGstMpiMj5dE2' WHERE email = 'admin@luzmayra.com';
 UPDATE Credenciales_usuario SET [contraseña] = '$2b$10$lNZY8VNe7HoClsDe0u1mYeIvx/r8XPev7woh79zjkWY5IMNRummLW' WHERE email = 'cajero@luzmayra.com';
 UPDATE Credenciales_usuario SET [contraseña] = '$2b$10$UC.ZnrzXf0b2fwhFgEEhZ.V3IN0w3i1cR13KfPbrxCLs9QVrfPm3m' WHERE email = 'cliente@luzmayra.com';

@@ -11,6 +11,13 @@ const Catalogo = {
             if (UI.filtro.categorias.length) {
                 consulta.set("categorias", UI.filtro.categorias.join(","));
             }
+            // Filtros de estado del stock (solo los marca el administrador; para los demás el servidor los ignora)
+            if (UI.filtro.pocoStock) {
+                consulta.set("pocoStock", "true");
+            }
+            if (UI.filtro.desabastecidos) {
+                consulta.set("desabastecidos", "true");
+            }
             const lista = await api("/api/productos?" + consulta.toString());
             this.dibujar(contenedor, lista, modo, alAccion, "No hay productos que coincidan con tu búsqueda.");
             return lista;

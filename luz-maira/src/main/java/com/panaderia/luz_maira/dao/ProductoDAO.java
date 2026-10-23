@@ -8,6 +8,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
+import com.panaderia.luz_maira.model.TipoImagen;
 import com.panaderia.luz_maira.model.Categoria;
 import com.panaderia.luz_maira.model.Producto;
 
@@ -16,7 +17,7 @@ import com.panaderia.luz_maira.model.Producto;
 public class ProductoDAO extends BaseDAO {
 
     /** Carpeta pública desde la que se sirven las fotos (ver WebConfig). */
-    public static final String RUTA_IMAGENES = "/img/productos/";
+    public static final String RUTA_IMAGENES = TipoImagen.PRODUCTOS.rutaPublica();
 
     private static final String SELECT =
             "SELECT p.id_producto, p.nombre_producto, CAST(p.descripcion AS VARCHAR(MAX)), p.precio_unitario, "
@@ -69,9 +70,26 @@ public class ProductoDAO extends BaseDAO {
      * los panes nunca se ocultan porque no controlan stock.
      */
     public List<Producto> buscar(String texto, List<Integer> categorias, boolean soloDisponibles) {
+        return buscar(texto, categorias, soloDisponibles, false, false);
+    }
+
+    /**
+     * Igual que la anterior, más los filtros de estado de stock del administrador:
+     * pocoStock = stock menor o igual a su stock mínimo; desabastecidos = stock en 0.
+     * Si se piden las dos, se muestran los que cumplan alguna. Los panes (stock NULL) nunca cumplen ninguna.
+     */
+    public List<Producto> buscar(String texto, List<Integer> categorias, boolean soloDisponibles,
+                                 boolean pocoStock, boolean desabastecidos) {
         Clausula donde = filtro(texto, categorias);
         if (soloDisponibles) {
             donde.y("(p.stock IS NULL OR p.stock > 0)");
+        }
+        if (pocoStock && desabastecidos) {
+            donde.y("(p.stock <= p.stock_minimo OR p.stock = 0)");
+        } else if (pocoStock) {
+            donde.y("p.stock <= p.stock_minimo");
+        } else if (desabastecidos) {
+            donde.y("p.stock = 0");
         }
         return consultar(donde);
     }

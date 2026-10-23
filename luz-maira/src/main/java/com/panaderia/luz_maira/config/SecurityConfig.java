@@ -32,18 +32,18 @@ public class SecurityConfig {
                 // ----- Público -----
                 .requestMatchers("/", "/index.html", "/css/**", "/js/**", "/img/**", "/favicon.ico", "/error").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/login", "/api/registro", "/api/logout").permitAll()
-                .requestMatchers(HttpMethod.GET, "/api/categorias", "/api/productos/favoritos").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/categorias", "/api/productos", "/api/productos/favoritos").permitAll()   // catálogo visible sin iniciar sesión
 
                 // ----- API por rol -----
                 .requestMatchers(HttpMethod.GET, "/api/me").authenticated()
-                .requestMatchers(HttpMethod.GET, "/api/productos").hasAnyRole("Cliente", "Cajero", "Administrador")
                 .requestMatchers("/api/productos/**").hasRole("Administrador")          // crear, editar, imagen
                 .requestMatchers("/api/tipos-pedido").hasAnyRole("Cliente", "Cajero")
                 .requestMatchers(HttpMethod.POST, "/api/pedidos").hasAnyRole("Cliente", "Cajero")
                 .requestMatchers(HttpMethod.GET, "/api/pedidos/mios").hasRole("Cliente")
                 .requestMatchers(HttpMethod.GET, "/api/pedidos").hasAnyRole("Cajero", "Administrador")
                 .requestMatchers(HttpMethod.GET, "/api/pedidos/*").hasAnyRole("Cliente", "Cajero", "Administrador")
-                .requestMatchers(HttpMethod.GET, "/api/stock", "/api/materias").hasAnyRole("Almacenero", "Administrador")
+                .requestMatchers(HttpMethod.GET, "/api/stock").hasAnyRole("Almacenero", "Administrador")
+                .requestMatchers("/api/materias/**", "/api/proveedores/**").hasAnyRole("Almacenero", "Administrador")   // listar, crear, editar, imagen
                 .requestMatchers("/api/usuarios/**", "/api/roles", "/api/dashboard/**").hasRole("Administrador")
                 .requestMatchers("/api/**").denyAll()
 

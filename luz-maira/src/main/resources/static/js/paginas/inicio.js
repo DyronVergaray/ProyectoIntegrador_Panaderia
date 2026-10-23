@@ -90,14 +90,26 @@ function irAMiPanel() {
     location.href = usuarioActual.panel;
 }
 
-// Los favoritos y el carrito de la portada llevan al catálogo (clientes) o piden iniciar sesión
+// Cada vez que alguien intenta agregar un producto (o abre el carrito) desde la portada:
+//  - sin sesión: aviso de SweetAlert2 y, al cerrarlo, se abre el panel de perfil (iniciar sesión / registrarse)
+//  - cliente: lo lleva a su catálogo, donde arma el pedido
 function irAlCatalogo() {
     if (usuarioActual === null) {
-        abrirLogin();
+        console.log("Para hacer un pedido hay que iniciar sesión");
+        if (typeof Swal === "undefined") {
+            UI.toast("Por favor, regístrese o inicie sesión para hacer su pedido", false);
+            abrirLogin();
+            return;
+        }
+        Swal.fire({
+            icon: "info", title: "Inicia sesión para continuar",
+            text: "Por favor, regístrese o inicie sesión para hacer su pedido.",
+            confirmButtonText: "Entendido", confirmButtonColor: "#d0814f"
+        }).then(() => abrirLogin());
     } else if (usuarioActual.rol === "Cliente") {
         location.href = "catalogo.html";
     } else {
-        UI.toast("Los pedidos desde el catálogo son solo para clientes.", false);
+        UI.alerta("info", "Los pedidos desde el catálogo son solo para clientes");
     }
 }
 
@@ -119,17 +131,73 @@ document.addEventListener("keydown", function (evento) {
 });
 
 // ---------- Datos de la base de datos ----------
+const grillaCatalogo = document.getElementById("grilla-catalogo");
+let categoriasPortada = [];
+
+// Catálogo completo (público): respeta la búsqueda y las categorías elegidas
+async function cargarCatalogo() {
+    const lista = await Catalogo.cargar(grillaCatalogo, "cliente", irAlCatalogo);
+    document.getElementById("cuenta-catalogo").innerText = lista.length + (lista.length === 1 ? " producto" : " productos");
+    dibujarFiltros();
+}
+
+// Categorías: sirven como filtro del catálogo de abajo
+function elegirCategoria(id) {
+    const pos = UI.filtro.categorias.indexOf(id);
+    if (pos >= 0) {
+        UI.filtro.categorias.splice(pos, 1);
+    } else {
+        UI.filtro.categorias.push(id);
+    }
+    cargarCatalogo();
+    document.getElementById("catalogo").scrollIntoView();
+}
+
+function limpiarFiltros() {
+    UI.filtro.categorias.length = 0;
+    UI.filtro.q = "";
+    document.getElementById("buscar-catalogo").value = "";
+    cargarCatalogo();
+}
+
+function dibujarFiltros() {
+    document.querySelectorAll("#categorias-lista .categoria-chip[data-id]").forEach((chip) => {
+        chip.setAttribute("aria-pressed", UI.filtro.categorias.includes(parseInt(chip.dataset.id, 10)));
+    });
+    const contenedor = document.getElementById("filtros-catalogo");
+    const pastillas = UI.filtro.categorias.map((id) => {
+        const categoria = categoriasPortada.find((c) => c.id === id);
+        return h("button", { class: "filtro-chip", title: "Quitar este filtro", onclick: () => elegirCategoria(id) }, (categoria ? categoria.nombre : "Categoría") + " ✕");
+    });
+    if (pastillas.length || UI.filtro.q !== "") {
+        pastillas.push(h("button", { class: "filtro-limpiar", onclick: limpiarFiltros }, "Limpiar filtros"));
+    }
+    contenedor.hidden = pastillas.length === 0;
+    contenedor.replaceChildren(...pastillas);
+}
+
+(function () {
+    const campo = document.getElementById("buscar-catalogo");
+    let espera = null;
+    campo.oninput = () => {
+        clearTimeout(espera);
+        espera = setTimeout(() => { UI.filtro.q = campo.value.trim(); cargarCatalogo(); }, 250);
+    };
+})();
+
+// Favoritos: mismo componente de tarjeta que el catálogo
 Catalogo.favoritos(document.getElementById("favoritos"), "cliente", irAlCatalogo);
 
 (async function () {
     const contenedor = document.getElementById("categorias-lista");
     try {
-        const categorias = await api("/api/categorias");
-        contenedor.replaceChildren(...categorias.map((c) =>
-            h("a", { class: "categoria-chip", href: "catalogo.html?categoria=" + c.id, texto: c.nombre })));
+        categoriasPortada = await api("/api/categorias");
+        contenedor.replaceChildren(...categoriasPortada.map((c) =>
+            h("button", { class: "categoria-chip", "data-id": c.id, "aria-pressed": false, onclick: () => elegirCategoria(c.id) }, c.nombre)));
     } catch (e) {
         UI.estado(contenedor, e.message);
     }
+    cargarCatalogo();
 })();
 
 // ---------- ¿Hay sesión iniciada? ----------

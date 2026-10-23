@@ -7,15 +7,17 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@700&family=Cormorant+Garamond:wght@600;700&family=DM+Sans:wght@400;500;700&family=Fraunces:wght@600;700&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/png" href="img/favicon.png">
     <link rel="stylesheet" href="css/estilos.css">
 </head>
 <body class="" data-menu="almacen" data-lateral="buscador">
 <main class="principal" id="principal">
-<h1 class="titulo-app">Proveedores</h1><div class="grilla"><article class="tarjeta" data-filtrable><button class="info" aria-label="Ver información" data-abrir="proveedor">i</button><div class="foto" role="img" aria-label="Imagen de Alicorp">Alicorp</div><div class="tarjeta-cuerpo"><h3>Alicorp</h3><span class="dato-destacado">Proveedor industrial masivo de harinas</span></div></article><article class="tarjeta" data-filtrable><button class="info" aria-label="Ver información" data-abrir="proveedor">i</button><div class="foto" role="img" aria-label="Imagen de Puratos Perú">Puratos Perú</div><div class="tarjeta-cuerpo"><h3>Puratos Perú</h3><span class="dato-destacado">Especialista en levaduras, masa madre, etc</span></div></article><article class="tarjeta" data-filtrable><button class="info" aria-label="Ver información" data-abrir="proveedor">i</button><div class="foto" role="img" aria-label="Imagen de Casa Grande">Casa Grande</div><div class="tarjeta-cuerpo"><h3>Casa Grande</h3><span class="dato-destacado">Proveedor Azucarero</span></div></article><article class="tarjeta" data-filtrable><button class="info" aria-label="Ver información" data-abrir="proveedor">i</button><div class="foto" role="img" aria-label="Imagen de La Calera">La Calera</div><div class="tarjeta-cuerpo"><h3>La Calera</h3><span class="dato-destacado">Distribuidor Avícola</span></div></article><article class="tarjeta" data-filtrable><button class="info" aria-label="Ver información" data-abrir="proveedor">i</button><div class="foto" role="img" aria-label="Imagen de Gloria">Gloria</div><div class="tarjeta-cuerpo"><h3>Gloria</h3><span class="dato-destacado">Distribuidor insumos lácteos</span></div></article><article class="tarjeta" data-filtrable><button class="info" aria-label="Ver información" data-abrir="proveedor">i</button><div class="foto" role="img" aria-label="Imagen de Machu Picchu Foods">Machu Picchu Foods</div><div class="tarjeta-cuerpo"><h3>Machu Picchu Foods</h3><span class="dato-destacado">Proveedor Chocolatero</span></div></article></div><button class="btn btn-nuevo" data-abrir="proveedor">+ Nuevo Proveedor</button>
+<h1 class="titulo-app">Proveedores</h1><div class="grilla" id="grilla-proveedores"><p class="vacio">Cargando…</p></div><button class="btn btn-nuevo" id="btn-nuevo">+ Nuevo Proveedor</button>
 </main>
     <script src="js/config.js"></script>
     <script src="js/api.js"></script>
     <script src="js/ui.js"></script>
-    <script src="js/paginas/maqueta.js"></script>
+    <script src="js/lib/sweetalert2.all.min.js"></script>
+    <script src="js/paginas/proveedores.js"></script>
 </body>
 </html>

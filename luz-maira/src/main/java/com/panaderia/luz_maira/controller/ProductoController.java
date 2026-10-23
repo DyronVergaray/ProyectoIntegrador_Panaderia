@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.panaderia.luz_maira.model.TipoImagen;
 import com.panaderia.luz_maira.dao.ProductoDAO;
 import com.panaderia.luz_maira.model.Categoria;
 import com.panaderia.luz_maira.model.Producto;
@@ -47,12 +48,21 @@ public class ProductoController {
         return dao.categorias();
     }
 
-    /** Catálogo: clientes y cajera no ven los productos agotados; el administrador los ve todos para poder editarlos. */
+    /**
+     * Catálogo (público): nadie ve los agotados excepto el administrador, que los necesita para editarlos.
+     * Solo el administrador puede filtrar por estado del stock:
+     *   pocoStock = stock menor o igual a su stock mínimo (incluye los agotados)
+     *   desabastecidos = stock en 0
+     * Si marca las dos, salen los productos que cumplan cualquiera de ellas.
+     */
     @GetMapping("/productos")
     public List<Producto> productos(@AuthenticationPrincipal UsuarioAutenticado usuario,
                                     @RequestParam(required = false) String q,
-                                    @RequestParam(required = false) List<Integer> categorias) {
-        return dao.buscar(q, categorias, !usuario.getRol().equals("Administrador"));
+                                    @RequestParam(required = false) List<Integer> categorias,
+                                    @RequestParam(defaultValue = "false") boolean pocoStock,
+                                    @RequestParam(defaultValue = "false") boolean desabastecidos) {
+        boolean esAdmin = usuario != null && usuario.getRol().equals("Administrador");
+        return dao.buscar(q, categorias, !esAdmin, esAdmin && pocoStock, esAdmin && desabastecidos);
     }
 
     @GetMapping("/productos/favoritos")
@@ -83,9 +93,9 @@ public class ProductoController {
     @PostMapping(path = "/productos/{id}/imagen", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public Map<String, String> subirImagen(@PathVariable int id, @RequestParam("archivo") MultipartFile archivo) {
         String anterior = dao.nombreImagen(id);          // lanza 404 si el producto no existe
-        String nuevo = imagenes.guardar(id, archivo);
+        String nuevo = imagenes.guardar(TipoImagen.PRODUCTOS, id, archivo);
         dao.actualizarImagen(id, nuevo);
-        imagenes.borrar(anterior);
-        return Map.of("imagen", ProductoDAO.RUTA_IMAGENES + nuevo, "mensaje", "Imagen actualizada correctamente");
+        imagenes.borrar(TipoImagen.PRODUCTOS, anterior);
+        return Map.of("imagen", TipoImagen.PRODUCTOS.rutaPublica() + nuevo, "mensaje", "Imagen actualizada correctamente");
     }
 }

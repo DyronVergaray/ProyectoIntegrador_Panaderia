@@ -34,7 +34,8 @@ const MESES = ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "o
 const ICONO_BUSCAR = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="9" r="6"/><path d="M14 14l4 4"/></svg>';
 
 const UI = {
-    filtro: { q: "", categorias: [] },   // lo que el usuario escribió/marcó en la barra lateral
+    // Lo que el usuario escribió/marcó en la barra lateral (pocoStock y desabastecidos: solo en Productos del administrador)
+    filtro: { q: "", categorias: [], pocoStock: false, desabastecidos: false },
     alFiltrar: null,                      // cada pantalla define qué hacer cuando cambia el filtro
     categorias: [],
     listo: null,
@@ -118,19 +119,26 @@ const UI = {
             pie ? h("div", { class: "tabla-pie" }, h("span", { texto: pie }), h("span", { texto: "Actualizado hoy, " + UI.hora() })) : null);
     },
 
+    // Foto de una tarjeta (productos, productos base y proveedores). Se muestra completa (contain) sobre una versión
+    // borrosa de sí misma, así ninguna se recorta. Si todavía no tiene foto, muestra el nombre sobre el fondo de pan.
+    foto(url, nombre) {
+        return url
+            ? h("div", { class: "foto con-imagen", style: "--imagen:url('" + url + "')" }, h("img", { src: url, alt: "Foto de " + nombre, loading: "lazy" }))
+            : h("div", { class: "foto", role: "img", "aria-label": "Foto de " + nombre, texto: nombre });
+    },
+
+    // Tarjeta de producto: todas miden lo mismo. Si la descripción es larga se desplaza hacia abajo
+    // dentro de su recuadro y el precio y el botón quedan siempre a la misma altura.
     tarjetaProducto(p, modo, alAccion) {
         const accion = modo === "admin"
             ? h("button", { class: "pastilla-chica", onclick: () => alAccion(p) }, "✎ Editar")
             : h("button", { class: "mas", "aria-label": "Agregar " + p.nombre + " al pedido", onclick: () => alAccion(p) }, "+");
-        const foto = p.imagen
-            ? h("div", { class: "foto con-imagen" }, h("img", { src: p.imagen, alt: "Foto de " + p.nombre, loading: "lazy" }))
-            : h("div", { class: "foto", role: "img", "aria-label": "Foto de " + p.nombre, texto: p.nombre });
         return h("article", { class: "tarjeta" },
-            foto,
+            UI.foto(p.imagen, p.nombre),
             h("div", { class: "tarjeta-cuerpo" },
-                h("h3", { texto: p.nombre }),
-                h("p", { texto: p.descripcion || "" }),
-                UI.lineaStock(p, modo),
+                h("h3", { texto: p.nombre, title: p.nombre }),
+                h("p", { class: "tarjeta-desc", tabindex: "0", texto: p.descripcion || "" }),
+                h("div", { class: "stock-espacio" }, UI.lineaStock(p, modo)),
                 h("div", { class: "fila" }, h("span", { class: "precio", texto: UI.soles(p.precio) }), accion)));
     },
 
@@ -334,7 +342,7 @@ const UI = {
         const actual = location.pathname.split("/").pop() || "index.html";
         return h("header", { class: "cabecera" },
             h("a", { class: "marca", href: "index.html" },
-                h("span", { class: "logo", texto: "LUZ MAYRA" }),
+                h("img", { class: "logo", src: "img/Logo.png", alt: "Logo de Panadería Luz Mayra", width: "44", height: "44" }),
                 h("span", {}, h("strong", { texto: "Panaderia Luz Mayra" }), h("small", { texto: "PANADERÍA & PASTELERÍA" }))),
             h("nav", { class: "cabecera-nav", "aria-label": "Navegación" },
                 items.map(([texto, enlace]) => h("a", {
@@ -379,6 +387,21 @@ const UI = {
                 UI.disparar();
             };
             bloque.append(h("label", { class: "check" }, marca, h("span", { texto: c.nombre })));
+        });
+        return bloque;
+    },
+
+    // Filtros por estado del stock (solo Productos del administrador). Se pueden marcar los dos a la vez:
+    // salen los productos que cumplan cualquiera de las dos condiciones.
+    bloqueStock() {
+        const bloque = h("div", { class: "lateral-bloque" }, h("h3", { class: "lateral-titulo", texto: "Estado del stock" }));
+        [["pocoStock", "Productos con poco stock"], ["desabastecidos", "Desabastecidos"]].forEach(([clave, texto]) => {
+            const marca = h("input", { type: "checkbox" });
+            marca.onchange = () => {
+                UI.filtro[clave] = marca.checked;
+                UI.disparar();
+            };
+            bloque.append(h("label", { class: "check" }, marca, h("span", { texto: texto })));
         });
         return bloque;
     },
@@ -440,6 +463,9 @@ const UI = {
         }
         if (partes.includes("categorias")) {
             lateral.append(await UI.bloqueCategorias());
+        }
+        if (partes.includes("stock")) {
+            lateral.append(UI.bloqueStock());
         }
         if (partes.includes("resumen")) {
             lateral.append(UI.bloqueResumen(JSON.parse(datos.resumen || "[]")));

@@ -1,0 +1,2 @@
+Aquí se guardan las fotos de los proveedores.
+Se llenan solas desde Almacén > Proveedores > Nuevo / Editar (arrastrar y soltar o buscar el archivo).

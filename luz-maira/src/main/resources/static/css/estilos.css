@@ -291,12 +291,6 @@ td.num, th.num { text-align: right; }
 @media (max-width: 480px) {
     .grilla, .grilla-2, .grilla-4 { grid-template-columns: 1fr; }
 }
-@media print {
-    body * { visibility: hidden; }
-    #modal-recibo, #modal-recibo * { visibility: visible; }
-    #modal-recibo { position: absolute; background: #fff; }
-    .modal-botones { display: none; }
-}
 @media (prefers-reduced-motion: reduce) {
     .cajon { transition: none; }
     html { scroll-behavior: auto; }
@@ -392,3 +386,61 @@ tr.fila-selec.atenuada td { opacity: .45; }
 .dash-controles { display: flex; align-items: center; gap: .8rem; flex-wrap: wrap; }
 .dash-controles .btn { padding: .35rem .9rem; font-size: .75rem; }
 .panel-dash .enlace:disabled, .dash-controles .btn:disabled { opacity: .5; cursor: wait; }
+
+/* =====================================================================
+   Tarjetas de producto: responsive, de altura uniforme y con fotos completas
+   ===================================================================== */
+.grilla, .grilla-4 { grid-template-columns: repeat(auto-fill, minmax(min(100%, 210px), 1fr)); }
+.grilla-2 { grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); }
+.tarjeta { min-width: 0; }
+.tarjeta .foto { height: 170px; }
+.tarjeta-cuerpo { padding: .8rem; gap: .25rem; }
+.tarjeta h3 { font-size: 1rem; line-height: 1.25; min-height: 2.5em; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; overflow-wrap: anywhere; }
+.tarjeta-rol h3 { min-height: 0; display: block; }
+/* La descripción tiene alto fijo: si es larga se desplaza hacia abajo y el precio/botón no se mueven */
+.tarjeta .tarjeta-desc { height: 4.2em; margin: 0; padding-right: .3rem; overflow-y: auto; overflow-wrap: anywhere; font-size: .75rem; line-height: 1.4; color: var(--suave); scrollbar-width: thin; scrollbar-color: #d6c2ac transparent; }
+.tarjeta .tarjeta-desc:focus-visible { outline: 2px solid var(--ambar); outline-offset: 2px; border-radius: 4px; }
+.stock-espacio { min-height: 1.1rem; }
+.tarjeta .fila { margin-top: auto; padding-top: .35rem; }
+
+/* La foto se ve completa (botellas, bolsas...) sobre una versión borrosa de sí misma */
+.foto.con-imagen { position: relative; background: #fff; }
+.foto.con-imagen::before { content: ""; position: absolute; inset: -14px; background: var(--imagen) center / cover no-repeat; filter: blur(16px) saturate(1.15); opacity: .55; }
+.foto.con-imagen img { position: relative; width: 100%; height: 100%; object-fit: contain; }
+
+/* ===== Logo ===== */
+.logo { display: block; width: 44px; height: 44px; padding: 0; border-radius: 50%; object-fit: cover; background: #fff; flex: none; }
+.recibo .logo { width: 64px; height: 64px; margin: 0 auto .4rem; }
+.pie-marca { display: flex; align-items: center; gap: .6rem; margin-bottom: .4rem; }
+.pie-marca .firma { font-size: 1.6rem; }
+
+/* ===== Portada: foto, mapa y catálogo completo ===== */
+.hero-imagen { position: relative; }
+.hero-imagen img { display: block; width: 100%; height: 320px; object-fit: cover; border-radius: 14px; box-shadow: 0 12px 30px rgba(91, 58, 37, .18); }
+.mapa { height: 380px; border-radius: 14px; overflow: hidden; background: #eadfd2; box-shadow: 0 6px 18px rgba(91, 58, 37, .12); }
+.mapa iframe { display: block; width: 100%; height: 100%; border: 0; }
+.mapa-enlace { display: inline-block; margin-top: .6rem; font-size: .8rem; font-weight: 700; color: var(--terracota); }
+.catalogo-controles { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: .8rem; margin-bottom: .6rem; }
+.catalogo-controles .filtros-activos { margin: 0; }
+.buscador-catalogo input { width: min(420px, 100%); padding: .6rem 1rem; border: 1.5px solid var(--terracota); border-radius: 999px; background: #fff; font: inherit; }
+.landing .sub-kpi { text-align: center; margin-bottom: 1rem; }
+button.categoria-chip { font: inherit; font-weight: 700; cursor: pointer; }
+.categoria-chip[aria-pressed="true"] { background: var(--ambar); border-color: var(--ambar); color: #fff; }
+.solo-lectores { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+@media (max-width: 760px) {
+    .hero-imagen img { height: 240px; }
+    .mapa { height: 300px; }
+}
+
+/* =====================================================================
+   Impresión de la boleta: solo se imprime el recibo (una hoja, sin páginas vacías)
+   ===================================================================== */
+@page { margin: 8mm; }
+@media print {
+    html, body { height: auto !important; background: #fff !important; }
+    body > *:not(#modal-recibo) { display: none !important; }
+    #modal-recibo { position: static !important; display: block !important; padding: 0 !important; overflow: visible !important; background: #fff !important; backdrop-filter: none !important; }
+    #modal-recibo .modal-caja { width: 100% !important; max-width: 90mm; margin: 0 auto; padding: 0; border-radius: 0; background: #fff; box-shadow: none; }
+    #modal-recibo .modal-botones, #modal-recibo .cerrar { display: none !important; }
+    .recibo { break-inside: avoid; page-break-inside: avoid; }
+}

@@ -3,11 +3,11 @@
 Arquitectura: **Vista (HTML/CSS/JS) → Controller → Service → DAO (JdbcTemplate) → SQL Server**.
 
 ## Cómo ponerlo a funcionar
-1. En SQL Server ejecuta, en orden: `01_schema.sql`, `02_datos_demo.sql`, `03_roles_codigos_imagenes.sql` y
-   `04_stock_y_minimos.sql` (tablas, datos de demostración, columna de imagen + tipo "Presencial" + códigos de
-   3 dígitos, y stock / stock mínimo).
+1. En SQL Server ejecuta, en orden: `01_schema.sql`, `02_datos_demo.sql`, `03_roles_codigos_imagenes.sql`,
+   `04_stock_y_minimos.sql` y `05_imagenes_materias_proveedores.sql` (tablas, datos de demostración, columna de imagen
+   + tipo "Presencial" + códigos de 3 dígitos, stock / stock mínimo, y fotos de productos base y proveedores).
    Si tu usuario SQL no puede iniciar sesión, ejecuta antes `00_usuario_sql.sql` (crea el usuario `pan`).
-   **Sin los scripts 03 y 04 la aplicación falla** (faltan las columnas `imagen`, `stock` y `stock_minimo`).
+   **Sin los scripts 03, 04 y 05 la aplicación falla** (faltan las columnas `imagen`, `stock`, `stock_minimo` y `descripcion`).
 2. Pon tu clave de SQL Server en la variable de entorno `DB_PASS` (o edita `application.properties`).
    Opcionales: `DB_URL`, `DB_USER`. El puerto 1433 debe estar habilitado (SQL Server Configuration Manager → TCP/IP).
 3. Ejecuta `LuzMairaApplication` (o `./mvnw spring-boot:run`) y abre **http://localhost:8080**.
@@ -50,8 +50,26 @@ pendientes. Se guarda en `Codigo` y se muestra al cliente y en el recibo de la c
 ## Imágenes de productos
 Admin → Productos → Editar / Añadir → zona "Imagen del producto": se **arrastra y suelta** la foto o se hace clic para
 buscarla en las carpetas (JPG, PNG o WEBP, máx. 2 MB). Se guarda en `src/main/resources/static/img/productos/`
-(propiedad `app.imagenes.carpeta`; si publicas el .jar usa una ruta absoluta) con un nombre único (UUID), así que no
+(propiedad `app.imagenes.carpeta`; la ruta relativa se cuenta desde la raíz del proyecto, no desde la carpeta que abra el IDE; si publicas el .jar usa una ruta absoluta) con un nombre único (UUID), así que no
 hay conflictos de nombre. En la BD solo queda el nombre del archivo (`Producto.imagen`). Sin foto, se ve el cuadro rayado.
+
+Lo mismo funciona en **Almacén → Productos Base** (`Materia_P.imagen`, carpeta `img/materias/`) y **Almacén → Proveedores**
+(`Proveedor_identidad.imagen`, carpeta `img/proveedores/`): botón "+ Nuevo..." o "✎ Editar" en cada tarjeta. Las tres carpetas
+quedan una al lado de la otra (la de productos es la que marca `app.imagenes.carpeta`; las otras dos se crean solas junto a ella).
+
+## Filtros de stock (Admin → Productos)
+En la barra lateral, bloque "Estado del stock": **Productos con poco stock** (stock menor o igual a su stock mínimo, incluye los
+agotados) y **Desabastecidos** (stock en 0). Se pueden combinar con la búsqueda y las categorías; si se marcan los dos salen los
+que cumplan cualquiera. Los panes no controlan stock, así que nunca aparecen en estos filtros. Solo el administrador puede usarlos
+(`GET /api/productos?pocoStock=true&desabastecidos=true`).
+
+## Portada pública
+- El **catálogo completo** se ve sin iniciar sesión, con búsqueda y filtro por categorías (el admin es el único que ve productos agotados).
+- Al intentar agregar un producto (o abrir el carrito) sin sesión sale un aviso de SweetAlert2 y, al aceptarlo, se abre el panel de perfil para iniciar sesión o registrarse. Un cliente con sesión pasa a su catálogo de pedidos.
+- Incluye el logo (`img/Logo.png`, también favicon), la foto de portada (`img/caradepan.jpg`) y el mapa de Google con la ubicación de la panadería.
+
+## Boleta de la cajera
+Al imprimir solo se manda el recibo (`@media print` en `estilos.css`): una sola hoja, sin páginas vacías.
 
 ## Stock
 - `Producto.stock` y `Producto.stock_minimo`; `Materia_P.stock_minimo`.
@@ -74,6 +92,10 @@ usuario ve un mensaje sencillo.
 ## Librerías
 Spring Boot (web, jdbc, security, validation, mongodb), mssql-jdbc, Apache POI (Excel), Logback (logs).
 Front: SweetAlert2 (avisos), guardada en `js/lib/` para que funcione sin internet.
+
+## Usuarios de prueba
+admin@luzmayra.com / Admin123 · cajero@luzmayra.com / Cajero123 · cliente@luzmayra.com / Cliente123 ·
+almacen@luzmayra.com / Almacen123 · despacho@luzmayra.com / Despacho123 · entrega@luzmayra.com / Entrega123
 
 ## Front: dónde está cada cosa (sin código repetido)
 - `js/ui.js`: `h()` para crear elementos, cabecera, barra lateral, tablas, tarjetas, ventanas y formularios.

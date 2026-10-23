@@ -271,7 +271,7 @@ INSERT INTO Producto (id_categoriaProducto, nombre_producto, descripcion, precio
 (3, 'Alfajor de maicena',      'Alfajor relleno de manjar blanco.',        2.50),
 (4, 'Chicha morada 1 L',       'Chicha morada casera.',                    7.00);
 
--- Usuarios de prueba
+-- Usuarios de prueba (contraseñas: Admin123 / Cajero123 / Cliente123)
 DECLARE @cred INT;
 
 INSERT INTO Credenciales_usuario ([contraseña], email)

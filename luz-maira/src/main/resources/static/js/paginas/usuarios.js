@@ -32,7 +32,12 @@
         try {
             const roles = await api("/api/roles");
             tarjetas.replaceChildren(...roles.filter((r) => r.nombre !== "Cliente").map((r) => h("article", { class: "tarjeta-rol" },
-                h("div", { class: "foto", role: "img", "aria-label": "Imagen del rol " + r.nombre, texto: r.nombre }),
+                h("div", { 
+                    class: "foto", 
+                    style: "background-image: url('/img/" + r.nombre + ".png'); background-size: cover; background-position: center;", 
+                    role: "img", 
+                    "aria-label": "Imagen del rol " + r.nombre 
+                }),
                 h("div", { class: "tarjeta-cuerpo" }, h("h3", { texto: r.nombre }), h("p", { texto: DESCRIPCION_ROL[r.nombre] || "" }),
                     h("button", { class: "pastilla-chica", onclick: () => { rolActual = r; formulario.abrir(null, "Nuevo usuario · " + r.nombre); } }, "+ Crear")))));
         } catch (e) {

@@ -28,17 +28,18 @@ SELECT c.id_categoriaProducto, v.nombre, v.descr, v.precio
 FROM (VALUES
     ('Panes',             'Pan de Mantequilla',       'Pan tradicional esponjoso',         2.00),
     ('Panes',             'Croissant de Almendras',   'Hojaldre relleno de crema',         4.50),
-    ('Pasteles',          'Pastel Tres Leches',       'Esponjoso bañado en tres leches',  18.00),
+    ('Pasteles',          'Rebanada de torta de Tres Leches',       'Esponjoso bañado en tres leches',  18.00),
     ('Panes',             'Concha Rústica',           'Toque clásico de vainilla',         3.00),
     ('Panes',             'Baguette de Masa Madre',   'Corteza crujiente y natural',      12.00),
-    ('Pasteles',          'Pastel de Chocolate Real', 'Para los amantes del cacao',       22.00),
+    ('Pasteles',          'Rebanada de torta de Chocolate', 'Para los amantes del cacao',       22.00),
     ('Postres',           'Flan de Vainilla',         'Cremoso con caramelo casero',       6.50),
     ('Postres',           'Gelatina de Fresa',        'Postre fresco de la casa',          3.50),
     ('Gaseosas',          'Inca Kola 500 ml',         'Gaseosa bien fría',                 3.50),
     ('Snacks',            'Tequeños x6',              'Rellenos de queso, listos para freír', 9.00),
-    ('Snacks',            'Sándwich de Pollo',        'Pan ciabatta con pollo deshilachado', 7.50),
-    ('Productos diarios', 'Pan Chapla',               'El pan de todos los días',          0.50),
-    ('Panetones',         'Panetón Clásico',          'Con frutas confitadas',            25.00)
+    ('Snacks',            'Pan de ajo',               'Rodajas de pan artesanal crujiente untadas con una generosa crema de mantequilla de ajo, finas hierbas y rellenas de queso mozzarella gratinado', 7.50),
+    ('Panes',             'Pan Chapla',               'El pan de todos los días',          0.50),
+    ('Panetones',         'Panetón Clásico',          'Con frutas confitadas',            25.00),
+    ('Pasteles',          'Cupcake',                  'Deliciosos mini pasteles individuales de textura esponjosa con un suave copete de crema', 5.50)
 ) v(cat, nombre, descr, precio)
 JOIN Categoria_Producto c ON c.nombre_categoria = v.cat
 WHERE NOT EXISTS (SELECT 1 FROM Producto p WHERE p.nombre_producto = v.nombre);

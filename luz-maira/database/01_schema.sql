@@ -262,7 +262,7 @@ INSERT INTO Medicion (nombre_medicion) VALUES ('Kilogramo'), ('Gramo'), ('Litro'
 INSERT INTO Categoria_Producto (nombre_categoria) VALUES ('Panes'), ('Pasteles'), ('Bocaditos'), ('Bebidas');
 
 INSERT INTO Producto (id_categoriaProducto, nombre_producto, descripcion, precio_unitario) VALUES
-(1, 'Pan francés (6 unidades)', 'Pan crocante recién horneado.',            1.50),
+(1, 'Pan francés',             'Pan crocante recién horneado.',            1.50),
 (1, 'Pan ciabatta',            'Pan rústico de corteza dorada.',           2.00),
 (1, 'Pan integral',            'Pan de molde integral con semillas.',      8.50),
 (2, 'Torta de chocolate',      'Torta húmeda con cobertura de fudge.',     45.00),

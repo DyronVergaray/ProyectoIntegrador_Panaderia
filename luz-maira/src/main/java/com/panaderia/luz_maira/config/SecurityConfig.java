@@ -47,7 +47,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/asignaciones/**", "/api/movimientos/**", "/api/solicitudes/**").hasAnyRole("Almacenero", "Administrador")
                 .requestMatchers("/api/despacho/**").hasRole("Despachador")        // pedidos Virtuales
                 .requestMatchers("/api/entregas/**").hasRole("Entregador")         // Delivery y Personalizados
-                .requestMatchers("/api/usuarios/**", "/api/roles", "/api/dashboard/**").hasRole("Administrador")
+                .requestMatchers("/api/usuarios/**", "/api/roles", "/api/dashboard/**", "/api/entregadores/**", "/api/vehiculos/**").hasRole("Administrador")
                 .requestMatchers("/api/**").denyAll()
 
                 // ----- Páginas por rol -----

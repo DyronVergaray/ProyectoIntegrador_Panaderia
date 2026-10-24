@@ -3,6 +3,7 @@ package com.panaderia.luz_maira.controller;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.panaderia.luz_maira.model.AsignacionForm;
 import com.panaderia.luz_maira.model.CodigoForm;
 import com.panaderia.luz_maira.model.Logistica;
+import com.panaderia.luz_maira.security.UsuarioAutenticado;
 import com.panaderia.luz_maira.service.EntregaService;
 
 import jakarta.validation.Valid;
@@ -21,7 +23,7 @@ import jakarta.validation.Valid;
  * Pantallas operativas de pedidos. Permisos en SecurityConfig:
  *  /api/despacho      -> Despachador (pedidos Virtuales)
  *  /api/asignaciones  -> Almacenero y Administrador (asignar conductor y vehículo)
- *  /api/entregas      -> Entregador (Delivery y Personalizados)
+ *  /api/entregas      -> Entregador (solo los Delivery y Personalizados que le asignaron a él)
  */
 @RestController
 @RequestMapping("/api")
@@ -67,13 +69,14 @@ public class EntregaController {
     // ----- Entregador -----
 
     @GetMapping("/entregas")
-    public List<Logistica.PedidoOperativo> entregas() {
-        return servicio.paraEntrega();
+    public List<Logistica.PedidoOperativo> entregas(@AuthenticationPrincipal UsuarioAutenticado usuario) {
+        return servicio.paraEntrega(usuario.getId());
     }
 
     @PostMapping("/entregas/{id}/confirmar")
-    public Map<String, String> confirmarEntrega(@PathVariable int id, @Valid @RequestBody CodigoForm form) {
-        servicio.confirmarEntrega(id, form.codigo());
+    public Map<String, String> confirmarEntrega(@AuthenticationPrincipal UsuarioAutenticado usuario,
+                                                @PathVariable int id, @Valid @RequestBody CodigoForm form) {
+        servicio.confirmarEntrega(usuario.getId(), id, form.codigo());
         return Map.of("mensaje", "Pedido entregado correctamente");
     }
 }

@@ -60,10 +60,20 @@ public class EntregaDAO extends BaseDAO {
         return consultar(TIPOS_REPARTO + " AND (pg.estado_pedido = 'Pendiente' OR " + ENTREGADO_RECIENTE + ")");
     }
 
-    /** Delivery y Personalizados ya asignados que faltan entregar, y los entregados esta semana (pantalla del entregador). */
-    public List<Fila> paraEntrega() {
-        return consultar(TIPOS_REPARTO + " AND ((pg.estado_pedido = 'Pendiente' AND pc.id_pedido IS NOT NULL) OR "
-                + ENTREGADO_RECIENTE + ")");
+    /**
+     * Pantalla del entregador: SOLO los pedidos asignados a él (cd.id_Conductor = su ficha de conductor):
+     * los que faltan entregar y los que entregó esta semana.
+     */
+    public List<Fila> paraEntrega(int idConductor) {
+        return jdbc.query(SELECT + "WHERE " + TIPOS_REPARTO + " AND pc.id_conductor = ? AND (pg.estado_pedido = 'Pendiente' OR "
+                + ENTREGADO_RECIENTE + ")" + ORDEN, (rs, n) -> new Fila(rs.getInt(1), rs.getString(2), rs.getString(3),
+                rs.getString(4), rs.getString(5), rs.getString(6), rs.getString(7), rs.getString(8),
+                rs.getObject(9) != null, rs.getString(10), rs.getString(11)), idConductor);
+    }
+
+    /** true si el pedido está asignado a ese conductor. */
+    public boolean esDelConductor(int idPedido, int idConductor) {
+        return existe("SELECT COUNT(*) FROM Pedido_Conductor WHERE id_pedido = ? AND id_conductor = ?", idPedido, idConductor);
     }
 
     /** Datos del pedido para validar; null si no existe. */

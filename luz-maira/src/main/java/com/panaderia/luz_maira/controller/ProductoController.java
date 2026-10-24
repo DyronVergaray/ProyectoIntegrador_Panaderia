@@ -70,11 +70,16 @@ public class ProductoController {
         return dao.favoritos(4);
     }
 
-    /** Productos que controlan stock (todos menos los panes), para el almacenero. */
+    /**
+     * Productos que controlan stock (todos menos los panes), para el almacenero y el administrador.
+     * Mismos filtros que /api/productos: pocoStock (stock <= mínimo) y desabastecidos (stock = 0).
+     */
     @GetMapping("/stock")
     public List<Producto> stock(@RequestParam(required = false) String q,
-                                @RequestParam(required = false) List<Integer> categorias) {
-        return dao.conStock(q, categorias);
+                                @RequestParam(required = false) List<Integer> categorias,
+                                @RequestParam(defaultValue = "false") boolean pocoStock,
+                                @RequestParam(defaultValue = "false") boolean desabastecidos) {
+        return dao.conStock(q, categorias, pocoStock, desabastecidos);
     }
 
     @PostMapping("/productos")

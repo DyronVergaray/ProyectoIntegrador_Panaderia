@@ -21,12 +21,18 @@
             if (UI.filtro.categorias.length) {
                 consulta.set("categorias", UI.filtro.categorias.join(","));
             }
+            if (UI.filtro.pocoStock) {
+                consulta.set("pocoStock", "true");
+            }
+            if (UI.filtro.desabastecidos) {
+                consulta.set("desabastecidos", "true");
+            }
             const lista = await api("/api/stock?" + consulta.toString());
             const agotados = lista.filter((p) => p.stock === 0).length;
             const bajos = lista.filter((p) => p.stock > 0 && p.stock <= p.stockMinimo).length;
             resumen.innerText = lista.length + " productos · " + bajos + " con stock bajo · " + agotados + " agotados";
             if (!lista.length) {
-                UI.estado(contenedor, "No hay productos que coincidan con tu búsqueda.");
+                UI.estado(contenedor, "No hay productos que coincidan con tu búsqueda o con el estado de stock elegido.");
                 return;
             }
             contenedor.replaceChildren(UI.tabla(["Producto", "Categoría", ">Stock", ">Mínimo", "Estado"],

@@ -57,4 +57,16 @@ public class UsuarioDAO extends BaseDAO {
                 idRol, idCredenciales, f.primerNombre().trim(), f.primerApellido().trim(),
                 vacioANulo(f.segundoApellido()), f.telefono());
     }
+
+    /** Cambia la contraseña (ya cifrada) de la cuenta de un usuario. */
+    public void actualizarClave(int idUsuario, String claveCifrada) {
+        jdbc.update("UPDATE Credenciales_usuario SET [contraseña] = ? "
+                + "WHERE id_credenciales = (SELECT id_credenciales FROM Usuario WHERE id_usuario = ?)", claveCifrada, idUsuario);
+    }
+
+    /** Nombre del rol (null si no existe). */
+    public String nombreRol(int idRol) {
+        return jdbc.query("SELECT nombre_rol FROM Roles WHERE id_rol = ?", (rs, n) -> rs.getString(1), idRol)
+                .stream().findFirst().orElse(null);
+    }
 }

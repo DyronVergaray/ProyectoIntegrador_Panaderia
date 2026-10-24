@@ -84,6 +84,11 @@ public class ProductoDAO extends BaseDAO {
         if (soloDisponibles) {
             donde.y("(p.stock IS NULL OR p.stock > 0)");
         }
+        return consultar(estadoDelStock(donde, pocoStock, desabastecidos));
+    }
+
+    /** Agrega a la consulta los filtros de poco stock / desabastecidos (si no se pide ninguno, no cambia nada). */
+    private Clausula estadoDelStock(Clausula donde, boolean pocoStock, boolean desabastecidos) {
         if (pocoStock && desabastecidos) {
             donde.y("(p.stock <= p.stock_minimo OR p.stock = 0)");
         } else if (pocoStock) {
@@ -91,12 +96,12 @@ public class ProductoDAO extends BaseDAO {
         } else if (desabastecidos) {
             donde.y("p.stock = 0");
         }
-        return consultar(donde);
+        return donde;
     }
 
-    /** Vista del almacenero: solo los productos que controlan stock (todos menos los panes). */
-    public List<Producto> conStock(String texto, List<Integer> categorias) {
-        return consultar(filtro(texto, categorias).y("p.stock IS NOT NULL"));
+    /** Vista del almacenero: solo los productos que controlan stock (todos menos los panes), con los mismos filtros de estado. */
+    public List<Producto> conStock(String texto, List<Integer> categorias, boolean pocoStock, boolean desabastecidos) {
+        return consultar(estadoDelStock(filtro(texto, categorias).y("p.stock IS NOT NULL"), pocoStock, desabastecidos));
     }
 
     /** Los más vendidos de los últimos 7 días (sin agotados). Si no hay ventas, ordena por nombre. */

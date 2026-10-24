@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.panaderia.luz_maira.dao.EntregaDAO;
+import com.panaderia.luz_maira.dao.FlotaDAO;
 import com.panaderia.luz_maira.model.AsignacionForm;
 import com.panaderia.luz_maira.model.Logistica;
 
@@ -26,9 +27,11 @@ public class EntregaService {
     private static final Logger log = LoggerFactory.getLogger(EntregaService.class);
 
     private final EntregaDAO dao;
+    private final FlotaDAO flota;
 
-    public EntregaService(EntregaDAO dao) {
+    public EntregaService(EntregaDAO dao, FlotaDAO flota) {
         this.dao = dao;
+        this.flota = flota;
     }
 
     // ---------- Listados (cada pantalla muestra los estados con sus propios nombres) ----------
@@ -43,8 +46,13 @@ public class EntregaService {
                 .map(f -> aPedido(f, f.estado().equals("Entregado") ? "Entregado" : f.asignado() ? "Asignado" : "Por asignar")).toList();
     }
 
-    public List<Logistica.PedidoOperativo> paraEntrega() {
-        return dao.paraEntrega().stream()
+    /** Pedidos del entregador que inició sesión (si su cuenta no está enlazada a un conductor, no ve ninguno). */
+    public List<Logistica.PedidoOperativo> paraEntrega(int idUsuario) {
+        Integer idConductor = flota.idConductorDeUsuario(idUsuario);
+        if (idConductor == null) {
+            return List.of();
+        }
+        return dao.paraEntrega(idConductor).stream()
                 .map(f -> aPedido(f, f.estado().equals("Entregado") ? "Entregado" : "Por entregar")).toList();
     }
 
@@ -97,8 +105,13 @@ public class EntregaService {
 
     /** El entregador cierra un Delivery / Personalizado cuando el cliente muestra su código. */
     @Transactional
-    public void confirmarEntrega(int idPedido, String codigo) {
+    public void confirmarEntrega(int idUsuario, int idPedido, String codigo) {
         EntregaDAO.Ficha ficha = ficha(idPedido);
+        Integer idConductor = flota.idConductorDeUsuario(idUsuario);
+        if (idConductor == null || !dao.esDelConductor(idPedido, idConductor)) {
+            log.warn("Usuario {} intentó confirmar el pedido {} que no es suyo", idUsuario, idPedido);
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Este pedido no está asignado a ti");
+        }
         if (!esReparto(ficha)) {
             throw error("Este pedido no es Delivery ni Personalizado");
         }

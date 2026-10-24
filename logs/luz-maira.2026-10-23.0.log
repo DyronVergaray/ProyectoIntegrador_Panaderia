@@ -1,0 +1,304 @@
+2026-10-23 07:03:09.688 INFO  [background-preinit] o.h.validator.internal.util.Version - HV000001: Hibernate Validator 9.1.3.Final
+2026-10-23 07:03:09.792 INFO  [restartedMain] c.p.luz_maira.LuzMairaApplication - Starting LuzMairaApplication using Java 25.0.4.1 with PID 32064 (C:\Users\tilac\Documents\Tareas\git\ProyectoIntegrador_Panaderia\luz-maira\target\classes started by tilac in C:\Users\tilac\Documents\Tareas\git\ProyectoIntegrador_Panaderia)
+2026-10-23 07:03:09.793 DEBUG [restartedMain] c.p.luz_maira.LuzMairaApplication - Running with Spring Boot v4.1.1, Spring v7.0.9
+2026-10-23 07:03:09.795 INFO  [restartedMain] c.p.luz_maira.LuzMairaApplication - No active profile set, falling back to 1 default profile: "default"
+2026-10-23 07:03:09.922 INFO  [restartedMain] o.s.b.d.e.DevToolsPropertyDefaultsPostProcessor - Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+2026-10-23 07:03:09.923 INFO  [restartedMain] o.s.b.d.e.DevToolsPropertyDefaultsPostProcessor - For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+2026-10-23 07:03:11.743 INFO  [restartedMain] o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data MongoDB repositories in DEFAULT mode.
+2026-10-23 07:03:11.794 INFO  [restartedMain] o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 39 ms. Found 0 MongoDB repository interfaces.
+2026-10-23 07:03:13.421 INFO  [restartedMain] o.s.boot.tomcat.TomcatWebServer - Tomcat initialized with port 8080 (http)
+2026-10-23 07:03:13.454 INFO  [restartedMain] o.a.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8080"]
+2026-10-23 07:03:13.459 INFO  [restartedMain] o.a.catalina.core.StandardService - Starting service [Tomcat]
+2026-10-23 07:03:13.459 INFO  [restartedMain] o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/11.0.24]
+2026-10-23 07:03:13.582 INFO  [restartedMain] o.s.b.w.c.s.WebApplicationContextInitializer - Root WebApplicationContext: initialization completed in 3656 ms
+2026-10-23 07:03:13.784 INFO  [restartedMain] c.p.luz_maira.service.ImagenService - Las imágenes de productos se guardan en: C:\Users\tilac\Documents\Tareas\git\ProyectoIntegrador_Panaderia\luz-maira\src\main\resources\static\img\productos
+2026-10-23 07:03:13.787 INFO  [restartedMain] c.p.luz_maira.service.ImagenService - Las imágenes de materias se guardan en: C:\Users\tilac\Documents\Tareas\git\ProyectoIntegrador_Panaderia\luz-maira\src\main\resources\static\img\materias
+2026-10-23 07:03:13.788 INFO  [restartedMain] c.p.luz_maira.service.ImagenService - Las imágenes de proveedores se guardan en: C:\Users\tilac\Documents\Tareas\git\ProyectoIntegrador_Panaderia\luz-maira\src\main\resources\static\img\proveedores
+2026-10-23 07:03:14.558 INFO  [restartedMain] o.s.s.c.a.a.c.InitializeUserDetailsBeanManagerConfigurer$InitializeUserDetailsManagerConfigurer - Global AuthenticationManager configured with UserDetailsService bean with name dbUserDetailsService
+2026-10-23 07:03:15.109 INFO  [restartedMain] o.s.b.w.a.WelcomePageHandlerMapping - Adding welcome page: class path resource [static/index.html]
+2026-10-23 07:03:15.951 INFO  [restartedMain] org.mongodb.driver.client - MongoClient with metadata {"driver": {"name": "mongo-java-driver|spring-boot|sync", "version": "5.8.1"}, "os": {"type": "Windows", "name": "Windows 11", "architecture": "amd64", "version": "10.0"}, "platform": "Java/Eclipse Adoptium/25.0.4.1+1-LTS"} created with settings MongoClientSettings{readPreference=primary, writeConcern=WriteConcern{w=null, wTimeout=null ms, journal=null}, retryWrites=true, retryReads=true, readConcern=ReadConcern{level=null}, credential=null, transportSettings=null, commandListeners=[], codecRegistry=ProvidersCodecRegistry{codecProviders=[ValueCodecProvider{}, BsonValueCodecProvider{}, DBRefCodecProvider{}, DBObjectCodecProvider{}, DocumentCodecProvider{}, CollectionCodecProvider{}, IterableCodecProvider{}, MapCodecProvider{}, GeoJsonCodecProvider{}, GridFSFileCodecProvider{}, Jsr310CodecProvider{}, JsonObjectCodecProvider{}, BsonCodecProvider{}, com.mongodb.client.model.mql.ExpressionCodecProvider@5de59c3a, com.mongodb.Jep395RecordCodecProvider@16b4dd83, com.mongodb.KotlinCodecProvider@727415ad, EnumCodecProvider{}]}, loggerSettings=LoggerSettings{maxDocumentLength=1000}, clusterSettings={hosts=[localhost:27017], srvServiceName=mongodb, mode=SINGLE, requiredClusterType=UNKNOWN, requiredReplicaSetName='null', serverSelector='null', clusterListeners='[]', serverSelectionTimeout='30000 ms', localThreshold='15 ms'}, socketSettings=SocketSettings{connectTimeoutMS=10000, readTimeoutMS=0, receiveBufferSize=0, proxySettings=ProxySettings{host=null, port=null, username=null, password=null}}, heartbeatSocketSettings=SocketSettings{connectTimeoutMS=10000, readTimeoutMS=10000, receiveBufferSize=0, proxySettings=ProxySettings{host=null, port=null, username=null, password=null}}, connectionPoolSettings=ConnectionPoolSettings{maxSize=100, minSize=0, maxWaitTimeMS=120000, maxConnectionLifeTimeMS=0, maxConnectionIdleTimeMS=0, maintenanceInitialDelayMS=0, maintenanceFrequencyMS=60000, connectionPoolListeners=[], maxConnecting=2}, serverSettings=ServerSettings{heartbeatFrequencyMS=10000, minHeartbeatFrequencyMS=500, serverMonitoringMode=AUTO, serverListeners='[]', serverMonitorListeners='[]'}, sslSettings=SslSettings{enabled=false, invalidHostNameAllowed=false, context=null}, applicationName='null', compressorList=[], uuidRepresentation=UNSPECIFIED, serverApi=null, autoEncryptionSettings=null, dnsClient=null, inetAddressResolver=null, contextProvider=null, timeoutMS=null}
+2026-10-23 07:03:15.946 INFO  [cluster-6adb4d0330913cdf73f55298-localhost:27017] org.mongodb.driver.cluster - Exception in monitor thread while connecting to server localhost:27017
+com.mongodb.MongoSocketOpenException: Exception opening socket
+	at com.mongodb.internal.connection.SocketStream.lambda$open$0(SocketStream.java:85)
+	at java.base/java.util.Optional.orElseThrow(Unknown Source)
+	at com.mongodb.internal.connection.SocketStream.open(SocketStream.java:85)
+	at com.mongodb.internal.connection.InternalStreamConnection.open(InternalStreamConnection.java:233)
+	at com.mongodb.internal.connection.DefaultServerMonitor$ServerMonitor.setupNewConnectionAndGetInitialDescription(DefaultServerMonitor.java:282)
+	at com.mongodb.internal.connection.DefaultServerMonitor$ServerMonitor.lookupServerDescription(DefaultServerMonitor.java:253)
+	at com.mongodb.internal.connection.DefaultServerMonitor$ServerMonitor.run(DefaultServerMonitor.java:203)
+Caused by: java.net.ConnectException: Connection refused: getsockopt
+	at java.base/sun.nio.ch.Net.pollConnect(Native Method)
+	at java.base/sun.nio.ch.Net.pollConnectNow(Unknown Source)
+	at java.base/sun.nio.ch.NioSocketImpl.timedFinishConnect(Unknown Source)
+	at java.base/sun.nio.ch.NioSocketImpl.connect(Unknown Source)
+	at java.base/java.net.SocksSocketImpl.connect(Unknown Source)
+	at java.base/java.net.Socket.connect(Unknown Source)
+	at com.mongodb.internal.connection.SocketStreamHelper.initialize(SocketStreamHelper.java:76)
+	at com.mongodb.internal.connection.SocketStream.initializeSocket(SocketStream.java:104)
+	at com.mongodb.internal.connection.SocketStream.open(SocketStream.java:79)
+	... 4 common frames omitted
+2026-10-23 07:03:17.076 INFO  [restartedMain] o.a.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8080"]
+2026-10-23 07:03:17.191 INFO  [restartedMain] o.s.boot.tomcat.TomcatWebServer - Tomcat started on port 8080 (http) with context path '/'
+2026-10-23 07:03:17.218 INFO  [restartedMain] c.p.luz_maira.LuzMairaApplication - Started LuzMairaApplication in 8.588 seconds (process running for 10.382)
+2026-10-23 07:03:18.332 INFO  [http-nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-10-23 07:03:18.333 INFO  [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
+2026-10-23 07:03:18.336 INFO  [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet - Completed initialization in 3 ms
+2026-10-23 07:03:18.881 INFO  [http-nio-8080-exec-1] com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2026-10-23 07:03:19.885 INFO  [http-nio-8080-exec-1] com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection ConnectionID:1 ClientConnectionId: 28e345c0-4f77-41e4-92a0-60bbba90dd79
+2026-10-23 07:03:19.885 INFO  [http-nio-8080-exec-1] com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2026-10-23 07:03:31.026 INFO  [http-nio-8080-exec-5] c.p.l.controller.AuthController - Inicio de sesión: admin@luzmayra.com (Administrador)
+2026-10-23 16:29:29.201 INFO  [background-preinit] o.h.validator.internal.util.Version - HV000001: Hibernate Validator 9.1.3.Final
+2026-10-23 16:29:29.326 INFO  [restartedMain] c.p.luz_maira.LuzMairaApplication - Starting LuzMairaApplication using Java 25.0.4.1 with PID 13248 (C:\Users\tilac\Documents\Tareas\git\ProyectoIntegrador_Panaderia\luz-maira\target\classes started by tilac in C:\Users\tilac\Documents\Tareas\git\ProyectoIntegrador_Panaderia)
+2026-10-23 16:29:29.328 DEBUG [restartedMain] c.p.luz_maira.LuzMairaApplication - Running with Spring Boot v4.1.1, Spring v7.0.9
+2026-10-23 16:29:29.330 INFO  [restartedMain] c.p.luz_maira.LuzMairaApplication - No active profile set, falling back to 1 default profile: "default"
+2026-10-23 16:29:29.482 INFO  [restartedMain] o.s.b.d.e.DevToolsPropertyDefaultsPostProcessor - Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+2026-10-23 16:29:29.483 INFO  [restartedMain] o.s.b.d.e.DevToolsPropertyDefaultsPostProcessor - For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+2026-10-23 16:29:31.925 INFO  [restartedMain] o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data MongoDB repositories in DEFAULT mode.
+2026-10-23 16:29:31.985 INFO  [restartedMain] o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 47 ms. Found 0 MongoDB repository interfaces.
+2026-10-23 16:29:33.753 INFO  [restartedMain] o.s.boot.tomcat.TomcatWebServer - Tomcat initialized with port 8080 (http)
+2026-10-23 16:29:33.786 INFO  [restartedMain] o.a.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8080"]
+2026-10-23 16:29:33.791 INFO  [restartedMain] o.a.catalina.core.StandardService - Starting service [Tomcat]
+2026-10-23 16:29:33.792 INFO  [restartedMain] o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/11.0.24]
+2026-10-23 16:29:33.933 INFO  [restartedMain] o.s.b.w.c.s.WebApplicationContextInitializer - Root WebApplicationContext: initialization completed in 4448 ms
+2026-10-23 16:29:34.133 INFO  [restartedMain] c.p.luz_maira.service.ImagenService - Las imágenes de productos se guardan en: C:\Users\tilac\Documents\Tareas\git\ProyectoIntegrador_Panaderia\luz-maira\src\main\resources\static\img\productos
+2026-10-23 16:29:34.136 INFO  [restartedMain] c.p.luz_maira.service.ImagenService - Las imágenes de materias se guardan en: C:\Users\tilac\Documents\Tareas\git\ProyectoIntegrador_Panaderia\luz-maira\src\main\resources\static\img\materias
+2026-10-23 16:29:34.139 INFO  [restartedMain] c.p.luz_maira.service.ImagenService - Las imágenes de proveedores se guardan en: C:\Users\tilac\Documents\Tareas\git\ProyectoIntegrador_Panaderia\luz-maira\src\main\resources\static\img\proveedores
+2026-10-23 16:29:34.990 INFO  [restartedMain] o.s.s.c.a.a.c.InitializeUserDetailsBeanManagerConfigurer$InitializeUserDetailsManagerConfigurer - Global AuthenticationManager configured with UserDetailsService bean with name dbUserDetailsService
+2026-10-23 16:29:35.494 INFO  [restartedMain] o.s.b.w.a.WelcomePageHandlerMapping - Adding welcome page: class path resource [static/index.html]
+2026-10-23 16:29:36.284 INFO  [restartedMain] org.mongodb.driver.client - MongoClient with metadata {"driver": {"name": "mongo-java-driver|spring-boot|sync", "version": "5.8.1"}, "os": {"type": "Windows", "name": "Windows 11", "architecture": "amd64", "version": "10.0"}, "platform": "Java/Eclipse Adoptium/25.0.4.1+1-LTS"} created with settings MongoClientSettings{readPreference=primary, writeConcern=WriteConcern{w=null, wTimeout=null ms, journal=null}, retryWrites=true, retryReads=true, readConcern=ReadConcern{level=null}, credential=null, transportSettings=null, commandListeners=[], codecRegistry=ProvidersCodecRegistry{codecProviders=[ValueCodecProvider{}, BsonValueCodecProvider{}, DBRefCodecProvider{}, DBObjectCodecProvider{}, DocumentCodecProvider{}, CollectionCodecProvider{}, IterableCodecProvider{}, MapCodecProvider{}, GeoJsonCodecProvider{}, GridFSFileCodecProvider{}, Jsr310CodecProvider{}, JsonObjectCodecProvider{}, BsonCodecProvider{}, com.mongodb.client.model.mql.ExpressionCodecProvider@1ecfb96f, com.mongodb.Jep395RecordCodecProvider@632eb31b, com.mongodb.KotlinCodecProvider@16a758d7, EnumCodecProvider{}]}, loggerSettings=LoggerSettings{maxDocumentLength=1000}, clusterSettings={hosts=[localhost:27017], srvServiceName=mongodb, mode=SINGLE, requiredClusterType=UNKNOWN, requiredReplicaSetName='null', serverSelector='null', clusterListeners='[]', serverSelectionTimeout='30000 ms', localThreshold='15 ms'}, socketSettings=SocketSettings{connectTimeoutMS=10000, readTimeoutMS=0, receiveBufferSize=0, proxySettings=ProxySettings{host=null, port=null, username=null, password=null}}, heartbeatSocketSettings=SocketSettings{connectTimeoutMS=10000, readTimeoutMS=10000, receiveBufferSize=0, proxySettings=ProxySettings{host=null, port=null, username=null, password=null}}, connectionPoolSettings=ConnectionPoolSettings{maxSize=100, minSize=0, maxWaitTimeMS=120000, maxConnectionLifeTimeMS=0, maxConnectionIdleTimeMS=0, maintenanceInitialDelayMS=0, maintenanceFrequencyMS=60000, connectionPoolListeners=[], maxConnecting=2}, serverSettings=ServerSettings{heartbeatFrequencyMS=10000, minHeartbeatFrequencyMS=500, serverMonitoringMode=AUTO, serverListeners='[]', serverMonitorListeners='[]'}, sslSettings=SslSettings{enabled=false, invalidHostNameAllowed=false, context=null}, applicationName='null', compressorList=[], uuidRepresentation=UNSPECIFIED, serverApi=null, autoEncryptionSettings=null, dnsClient=null, inetAddressResolver=null, contextProvider=null, timeoutMS=null}
+2026-10-23 16:29:36.366 INFO  [cluster-6adbd1c00c65f180e66e4dd7-localhost:27017] org.mongodb.driver.cluster - Monitor thread successfully connected to server with description ServerDescription{address=localhost:27017, type=STANDALONE, cryptd=false, state=CONNECTED, ok=true, minWireVersion=0, maxWireVersion=29, maxDocumentSize=16777216, logicalSessionTimeoutMinutes=30, roundTripTimeNanos=80582400, minRoundTripTimeNanos=0}
+2026-10-23 16:29:37.180 INFO  [restartedMain] o.a.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8080"]
+2026-10-23 16:29:37.234 INFO  [restartedMain] o.s.boot.tomcat.TomcatWebServer - Tomcat started on port 8080 (http) with context path '/'
+2026-10-23 16:29:37.249 INFO  [restartedMain] c.p.luz_maira.LuzMairaApplication - Started LuzMairaApplication in 9.557 seconds (process running for 11.959)
+2026-10-23 16:31:32.914 INFO  [background-preinit] o.h.validator.internal.util.Version - HV000001: Hibernate Validator 9.1.3.Final
+2026-10-23 16:31:33.007 INFO  [restartedMain] c.p.luz_maira.LuzMairaApplication - Starting LuzMairaApplication using Java 25.0.4.1 with PID 14104 (C:\Users\tilac\Documents\Tareas\git\ProyectoIntegrador_Panaderia\luz-maira\target\classes started by tilac in C:\Users\tilac\Documents\Tareas\git\ProyectoIntegrador_Panaderia)
+2026-10-23 16:31:33.008 DEBUG [restartedMain] c.p.luz_maira.LuzMairaApplication - Running with Spring Boot v4.1.1, Spring v7.0.9
+2026-10-23 16:31:33.009 INFO  [restartedMain] c.p.luz_maira.LuzMairaApplication - No active profile set, falling back to 1 default profile: "default"
+2026-10-23 16:31:33.103 INFO  [restartedMain] o.s.b.d.e.DevToolsPropertyDefaultsPostProcessor - Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+2026-10-23 16:31:33.104 INFO  [restartedMain] o.s.b.d.e.DevToolsPropertyDefaultsPostProcessor - For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+2026-10-23 16:31:34.926 INFO  [restartedMain] o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data MongoDB repositories in DEFAULT mode.
+2026-10-23 16:31:34.983 INFO  [restartedMain] o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 45 ms. Found 0 MongoDB repository interfaces.
+2026-10-23 16:31:36.447 INFO  [restartedMain] o.s.boot.tomcat.TomcatWebServer - Tomcat initialized with port 8080 (http)
+2026-10-23 16:31:36.483 INFO  [restartedMain] o.a.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8080"]
+2026-10-23 16:31:36.489 INFO  [restartedMain] o.a.catalina.core.StandardService - Starting service [Tomcat]
+2026-10-23 16:31:36.490 INFO  [restartedMain] o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/11.0.24]
+2026-10-23 16:31:36.616 INFO  [restartedMain] o.s.b.w.c.s.WebApplicationContextInitializer - Root WebApplicationContext: initialization completed in 3512 ms
+2026-10-23 16:31:36.824 INFO  [restartedMain] c.p.luz_maira.service.ImagenService - Las imágenes de productos se guardan en: C:\Users\tilac\Documents\Tareas\git\ProyectoIntegrador_Panaderia\luz-maira\src\main\resources\static\img\productos
+2026-10-23 16:31:36.826 INFO  [restartedMain] c.p.luz_maira.service.ImagenService - Las imágenes de materias se guardan en: C:\Users\tilac\Documents\Tareas\git\ProyectoIntegrador_Panaderia\luz-maira\src\main\resources\static\img\materias
+2026-10-23 16:31:36.828 INFO  [restartedMain] c.p.luz_maira.service.ImagenService - Las imágenes de proveedores se guardan en: C:\Users\tilac\Documents\Tareas\git\ProyectoIntegrador_Panaderia\luz-maira\src\main\resources\static\img\proveedores
+2026-10-23 16:31:37.483 INFO  [restartedMain] o.s.s.c.a.a.c.InitializeUserDetailsBeanManagerConfigurer$InitializeUserDetailsManagerConfigurer - Global AuthenticationManager configured with UserDetailsService bean with name dbUserDetailsService
+2026-10-23 16:31:37.804 INFO  [restartedMain] o.s.b.w.a.WelcomePageHandlerMapping - Adding welcome page: class path resource [static/index.html]
+2026-10-23 16:31:38.434 INFO  [restartedMain] org.mongodb.driver.client - MongoClient with metadata {"driver": {"name": "mongo-java-driver|spring-boot|sync", "version": "5.8.1"}, "os": {"type": "Windows", "name": "Windows 11", "architecture": "amd64", "version": "10.0"}, "platform": "Java/Eclipse Adoptium/25.0.4.1+1-LTS"} created with settings MongoClientSettings{readPreference=primary, writeConcern=WriteConcern{w=null, wTimeout=null ms, journal=null}, retryWrites=true, retryReads=true, readConcern=ReadConcern{level=null}, credential=null, transportSettings=null, commandListeners=[], codecRegistry=ProvidersCodecRegistry{codecProviders=[ValueCodecProvider{}, BsonValueCodecProvider{}, DBRefCodecProvider{}, DBObjectCodecProvider{}, DocumentCodecProvider{}, CollectionCodecProvider{}, IterableCodecProvider{}, MapCodecProvider{}, GeoJsonCodecProvider{}, GridFSFileCodecProvider{}, Jsr310CodecProvider{}, JsonObjectCodecProvider{}, BsonCodecProvider{}, com.mongodb.client.model.mql.ExpressionCodecProvider@352ecbca, com.mongodb.Jep395RecordCodecProvider@4ab1e805, com.mongodb.KotlinCodecProvider@3de9b79c, EnumCodecProvider{}]}, loggerSettings=LoggerSettings{maxDocumentLength=1000}, clusterSettings={hosts=[localhost:27017], srvServiceName=mongodb, mode=SINGLE, requiredClusterType=UNKNOWN, requiredReplicaSetName='null', serverSelector='null', clusterListeners='[]', serverSelectionTimeout='30000 ms', localThreshold='15 ms'}, socketSettings=SocketSettings{connectTimeoutMS=10000, readTimeoutMS=0, receiveBufferSize=0, proxySettings=ProxySettings{host=null, port=null, username=null, password=null}}, heartbeatSocketSettings=SocketSettings{connectTimeoutMS=10000, readTimeoutMS=10000, receiveBufferSize=0, proxySettings=ProxySettings{host=null, port=null, username=null, password=null}}, connectionPoolSettings=ConnectionPoolSettings{maxSize=100, minSize=0, maxWaitTimeMS=120000, maxConnectionLifeTimeMS=0, maxConnectionIdleTimeMS=0, maintenanceInitialDelayMS=0, maintenanceFrequencyMS=60000, connectionPoolListeners=[], maxConnecting=2}, serverSettings=ServerSettings{heartbeatFrequencyMS=10000, minHeartbeatFrequencyMS=500, serverMonitoringMode=AUTO, serverListeners='[]', serverMonitorListeners='[]'}, sslSettings=SslSettings{enabled=false, invalidHostNameAllowed=false, context=null}, applicationName='null', compressorList=[], uuidRepresentation=UNSPECIFIED, serverApi=null, autoEncryptionSettings=null, dnsClient=null, inetAddressResolver=null, contextProvider=null, timeoutMS=null}
+2026-10-23 16:31:38.484 INFO  [cluster-6adbd23a4b2e1fae7e0a1c0d-localhost:27017] org.mongodb.driver.cluster - Monitor thread successfully connected to server with description ServerDescription{address=localhost:27017, type=STANDALONE, cryptd=false, state=CONNECTED, ok=true, minWireVersion=0, maxWireVersion=29, maxDocumentSize=16777216, logicalSessionTimeoutMinutes=30, roundTripTimeNanos=47920100, minRoundTripTimeNanos=0}
+2026-10-23 16:31:39.060 INFO  [restartedMain] o.a.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8080"]
+2026-10-23 16:31:39.086 WARN  [restartedMain] o.s.b.w.s.s.c.AnnotationConfigServletWebServerApplicationContext - Exception encountered during context initialization - cancelling refresh attempt: org.springframework.context.ApplicationContextException: Failed to start bean 'webServerStartStop'
+2026-10-23 16:31:39.209 INFO  [restartedMain] o.s.b.a.l.ConditionEvaluationReportLogger - 
+
+Error starting ApplicationContext. To display the condition evaluation report re-run your application with 'debug' enabled.
+2026-10-23 16:31:39.257 ERROR [restartedMain] o.s.b.d.LoggingFailureAnalysisReporter - 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Web server failed to start. Port 8080 was already in use.
+
+Action:
+
+Identify and stop the process that's listening on port 8080 or configure this application to listen on another port.
+
+2026-10-23 16:31:48.144 INFO  [cluster-6adbd1c00c65f180e66e4dd7-localhost:27017] org.mongodb.driver.cluster - Exception in monitor thread while connecting to server localhost:27017
+com.mongodb.MongoNodeIsRecoveringException: Command execution failed on MongoDB server with error 11600 (InterruptedAtShutdown): 'interrupted at shutdown' on server localhost:27017. The full response is {"ok": 0.0, "errmsg": "interrupted at shutdown", "code": 11600, "codeName": "InterruptedAtShutdown"}
+	at com.mongodb.internal.connection.ProtocolHelper.createSpecialException(ProtocolHelper.java:264)
+	at com.mongodb.internal.connection.ProtocolHelper.getCommandFailureException(ProtocolHelper.java:206)
+	at com.mongodb.internal.connection.InternalStreamConnection.receiveCommandMessageResponse(InternalStreamConnection.java:570)
+	at com.mongodb.internal.connection.InternalStreamConnection.receive(InternalStreamConnection.java:519)
+	at com.mongodb.internal.connection.DefaultServerMonitor$ServerMonitor.doHeartbeat(DefaultServerMonitor.java:311)
+	at com.mongodb.internal.connection.DefaultServerMonitor$ServerMonitor.lookupServerDescription(DefaultServerMonitor.java:262)
+	at com.mongodb.internal.connection.DefaultServerMonitor$ServerMonitor.run(DefaultServerMonitor.java:203)
+2026-10-23 16:32:00.860 INFO  [background-preinit] o.h.validator.internal.util.Version - HV000001: Hibernate Validator 9.1.3.Final
+2026-10-23 16:32:00.947 INFO  [restartedMain] c.p.luz_maira.LuzMairaApplication - Starting LuzMairaApplication using Java 25.0.4.1 with PID 25412 (C:\Users\tilac\Documents\Tareas\git\ProyectoIntegrador_Panaderia\luz-maira\target\classes started by tilac in C:\Users\tilac\Documents\Tareas\git\ProyectoIntegrador_Panaderia)
+2026-10-23 16:32:00.948 DEBUG [restartedMain] c.p.luz_maira.LuzMairaApplication - Running with Spring Boot v4.1.1, Spring v7.0.9
+2026-10-23 16:32:00.950 INFO  [restartedMain] c.p.luz_maira.LuzMairaApplication - No active profile set, falling back to 1 default profile: "default"
+2026-10-23 16:32:01.048 INFO  [restartedMain] o.s.b.d.e.DevToolsPropertyDefaultsPostProcessor - Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+2026-10-23 16:32:01.049 INFO  [restartedMain] o.s.b.d.e.DevToolsPropertyDefaultsPostProcessor - For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+2026-10-23 16:32:02.572 INFO  [restartedMain] o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data MongoDB repositories in DEFAULT mode.
+2026-10-23 16:32:02.615 INFO  [restartedMain] o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 34 ms. Found 0 MongoDB repository interfaces.
+2026-10-23 16:32:03.966 INFO  [restartedMain] o.s.boot.tomcat.TomcatWebServer - Tomcat initialized with port 8080 (http)
+2026-10-23 16:32:04.003 INFO  [restartedMain] o.a.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8080"]
+2026-10-23 16:32:04.008 INFO  [restartedMain] o.a.catalina.core.StandardService - Starting service [Tomcat]
+2026-10-23 16:32:04.008 INFO  [restartedMain] o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/11.0.24]
+2026-10-23 16:32:04.135 INFO  [restartedMain] o.s.b.w.c.s.WebApplicationContextInitializer - Root WebApplicationContext: initialization completed in 3085 ms
+2026-10-23 16:32:04.335 INFO  [restartedMain] c.p.luz_maira.service.ImagenService - Las imágenes de productos se guardan en: C:\Users\tilac\Documents\Tareas\git\ProyectoIntegrador_Panaderia\luz-maira\src\main\resources\static\img\productos
+2026-10-23 16:32:04.342 INFO  [restartedMain] c.p.luz_maira.service.ImagenService - Las imágenes de materias se guardan en: C:\Users\tilac\Documents\Tareas\git\ProyectoIntegrador_Panaderia\luz-maira\src\main\resources\static\img\materias
+2026-10-23 16:32:04.344 INFO  [restartedMain] c.p.luz_maira.service.ImagenService - Las imágenes de proveedores se guardan en: C:\Users\tilac\Documents\Tareas\git\ProyectoIntegrador_Panaderia\luz-maira\src\main\resources\static\img\proveedores
+2026-10-23 16:32:04.996 INFO  [restartedMain] o.s.s.c.a.a.c.InitializeUserDetailsBeanManagerConfigurer$InitializeUserDetailsManagerConfigurer - Global AuthenticationManager configured with UserDetailsService bean with name dbUserDetailsService
+2026-10-23 16:32:05.345 INFO  [restartedMain] o.s.b.w.a.WelcomePageHandlerMapping - Adding welcome page: class path resource [static/index.html]
+2026-10-23 16:32:05.980 INFO  [cluster-6adbd2554cbe1a1895e60d17-localhost:27017] org.mongodb.driver.cluster - Exception in monitor thread while connecting to server localhost:27017
+com.mongodb.MongoSocketOpenException: Exception opening socket
+	at com.mongodb.internal.connection.SocketStream.lambda$open$0(SocketStream.java:85)
+	at java.base/java.util.Optional.orElseThrow(Unknown Source)
+	at com.mongodb.internal.connection.SocketStream.open(SocketStream.java:85)
+	at com.mongodb.internal.connection.InternalStreamConnection.open(InternalStreamConnection.java:233)
+	at com.mongodb.internal.connection.DefaultServerMonitor$ServerMonitor.setupNewConnectionAndGetInitialDescription(DefaultServerMonitor.java:282)
+	at com.mongodb.internal.connection.DefaultServerMonitor$ServerMonitor.lookupServerDescription(DefaultServerMonitor.java:253)
+	at com.mongodb.internal.connection.DefaultServerMonitor$ServerMonitor.run(DefaultServerMonitor.java:203)
+Caused by: java.net.ConnectException: Connection refused: getsockopt
+	at java.base/sun.nio.ch.Net.pollConnect(Native Method)
+	at java.base/sun.nio.ch.Net.pollConnectNow(Unknown Source)
+	at java.base/sun.nio.ch.NioSocketImpl.timedFinishConnect(Unknown Source)
+	at java.base/sun.nio.ch.NioSocketImpl.connect(Unknown Source)
+	at java.base/java.net.SocksSocketImpl.connect(Unknown Source)
+	at java.base/java.net.Socket.connect(Unknown Source)
+	at com.mongodb.internal.connection.SocketStreamHelper.initialize(SocketStreamHelper.java:76)
+	at com.mongodb.internal.connection.SocketStream.initializeSocket(SocketStream.java:104)
+	at com.mongodb.internal.connection.SocketStream.open(SocketStream.java:79)
+	... 4 common frames omitted
+2026-10-23 16:32:05.986 INFO  [restartedMain] org.mongodb.driver.client - MongoClient with metadata {"driver": {"name": "mongo-java-driver|spring-boot|sync", "version": "5.8.1"}, "os": {"type": "Windows", "name": "Windows 11", "architecture": "amd64", "version": "10.0"}, "platform": "Java/Eclipse Adoptium/25.0.4.1+1-LTS"} created with settings MongoClientSettings{readPreference=primary, writeConcern=WriteConcern{w=null, wTimeout=null ms, journal=null}, retryWrites=true, retryReads=true, readConcern=ReadConcern{level=null}, credential=null, transportSettings=null, commandListeners=[], codecRegistry=ProvidersCodecRegistry{codecProviders=[ValueCodecProvider{}, BsonValueCodecProvider{}, DBRefCodecProvider{}, DBObjectCodecProvider{}, DocumentCodecProvider{}, CollectionCodecProvider{}, IterableCodecProvider{}, MapCodecProvider{}, GeoJsonCodecProvider{}, GridFSFileCodecProvider{}, Jsr310CodecProvider{}, JsonObjectCodecProvider{}, BsonCodecProvider{}, com.mongodb.client.model.mql.ExpressionCodecProvider@504409df, com.mongodb.Jep395RecordCodecProvider@df2f539, com.mongodb.KotlinCodecProvider@3fc28072, EnumCodecProvider{}]}, loggerSettings=LoggerSettings{maxDocumentLength=1000}, clusterSettings={hosts=[localhost:27017], srvServiceName=mongodb, mode=SINGLE, requiredClusterType=UNKNOWN, requiredReplicaSetName='null', serverSelector='null', clusterListeners='[]', serverSelectionTimeout='30000 ms', localThreshold='15 ms'}, socketSettings=SocketSettings{connectTimeoutMS=10000, readTimeoutMS=0, receiveBufferSize=0, proxySettings=ProxySettings{host=null, port=null, username=null, password=null}}, heartbeatSocketSettings=SocketSettings{connectTimeoutMS=10000, readTimeoutMS=10000, receiveBufferSize=0, proxySettings=ProxySettings{host=null, port=null, username=null, password=null}}, connectionPoolSettings=ConnectionPoolSettings{maxSize=100, minSize=0, maxWaitTimeMS=120000, maxConnectionLifeTimeMS=0, maxConnectionIdleTimeMS=0, maintenanceInitialDelayMS=0, maintenanceFrequencyMS=60000, connectionPoolListeners=[], maxConnecting=2}, serverSettings=ServerSettings{heartbeatFrequencyMS=10000, minHeartbeatFrequencyMS=500, serverMonitoringMode=AUTO, serverListeners='[]', serverMonitorListeners='[]'}, sslSettings=SslSettings{enabled=false, invalidHostNameAllowed=false, context=null}, applicationName='null', compressorList=[], uuidRepresentation=UNSPECIFIED, serverApi=null, autoEncryptionSettings=null, dnsClient=null, inetAddressResolver=null, contextProvider=null, timeoutMS=null}
+2026-10-23 16:32:06.561 INFO  [restartedMain] o.a.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8080"]
+2026-10-23 16:32:06.605 INFO  [restartedMain] o.s.boot.tomcat.TomcatWebServer - Tomcat started on port 8080 (http) with context path '/'
+2026-10-23 16:32:06.622 INFO  [restartedMain] c.p.luz_maira.LuzMairaApplication - Started LuzMairaApplication in 6.749 seconds (process running for 8.567)
+2026-10-23 16:32:31.431 INFO  [http-nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-10-23 16:32:31.431 INFO  [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
+2026-10-23 16:32:31.433 INFO  [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet - Completed initialization in 1 ms
+2026-10-23 16:32:31.920 INFO  [http-nio-8080-exec-1] com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2026-10-23 16:32:33.001 INFO  [http-nio-8080-exec-1] com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection ConnectionID:1 ClientConnectionId: ecb6efe8-87b4-42e2-82a7-89cd8b5b5a11
+2026-10-23 16:32:33.005 INFO  [http-nio-8080-exec-1] com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2026-10-23 16:32:46.351 INFO  [http-nio-8080-exec-3] c.p.l.controller.AuthController - Inicio de sesión: admin@luzmayra.com (Administrador)
+2026-10-23 16:35:15.552 INFO  [http-nio-8080-exec-7] c.p.luz_maira.service.UsuarioService - Usuario creado: id=19, correo=carlos@gmail.com, idRol=1
+2026-10-23 16:35:15.711 INFO  [http-nio-8080-exec-3] c.p.l.controller.AuthController - Inicio de sesión: carlos@gmail.com (Cliente)
+2026-10-23 16:35:43.779 INFO  [http-nio-8080-exec-1] c.p.l.controller.AuthController - Inicio de sesión: admin@luzmayra.com (Administrador)
+2026-10-23 16:36:40.997 INFO  [http-nio-8080-exec-3] c.p.luz_maira.service.UsuarioService - Usuario creado: id=20, correo=carorumrum@gmail.com, idRol=2
+2026-10-23 16:36:53.271 INFO  [http-nio-8080-exec-8] c.p.l.controller.AuthController - Inicio de sesión: carorumrum@gmail.com (Cajero)
+2026-10-23 16:37:12.195 INFO  [http-nio-8080-exec-8] c.p.l.controller.AuthController - Inicio de sesión: admin@luzmayra.com (Administrador)
+2026-10-23 16:38:35.101 INFO  [http-nio-8080-exec-6] c.p.l.controller.AuthController - Inicio de sesión: carlos@gmail.com (Cliente)
+2026-10-23 16:39:01.099 INFO  [http-nio-8080-exec-3] c.p.luz_maira.service.PedidoService - Pedido 645 registrado por carlos@gmail.com (Cliente): tipo=Virtual, total=10.50, código=774
+2026-10-23 16:39:29.968 INFO  [http-nio-8080-exec-9] c.p.l.controller.AuthController - Inicio de sesión: despacho@luzmayra.com (Despachador)
+2026-10-23 16:40:09.092 INFO  [http-nio-8080-exec-5] c.p.l.controller.AuthController - Inicio de sesión: carlos@gmail.com (Cliente)
+2026-10-23 16:40:26.503 INFO  [http-nio-8080-exec-5] c.p.l.controller.AuthController - Inicio de sesión: despacho@luzmayra.com (Despachador)
+2026-10-23 16:41:41.434 INFO  [http-nio-8080-exec-4] c.p.l.controller.AuthController - Inicio de sesión: almacen@luzmayra.com (Almacenero)
+2026-10-23 16:42:04.066 INFO  [http-nio-8080-exec-5] c.p.l.controller.AuthController - Inicio de sesión: carlos@gmail.com (Cliente)
+2026-10-23 16:42:15.702 INFO  [http-nio-8080-exec-10] c.p.luz_maira.service.PedidoService - Pedido 646 registrado por carlos@gmail.com (Cliente): tipo=Delivery, total=42.00, código=458
+2026-10-23 16:42:32.976 INFO  [http-nio-8080-exec-9] c.p.l.controller.AuthController - Inicio de sesión: almacen@luzmayra.com (Almacenero)
+2026-10-23 16:43:58.456 INFO  [http-nio-8080-exec-9] c.p.l.controller.AuthController - Inicio de sesión: almacen@luzmayra.com (Almacenero)
+2026-10-23 16:46:39.466 INFO  [http-nio-8080-exec-3] c.p.l.controller.AuthController - Inicio de sesión: almacen@luzmayra.com (Almacenero)
+2026-10-23 16:46:48.704 INFO  [http-nio-8080-exec-1] c.p.l.controller.AuthController - Inicio de sesión: admin@luzmayra.com (Administrador)
+2026-10-23 16:47:45.979 INFO  [http-nio-8080-exec-5] c.p.l.controller.AuthController - Inicio de sesión: carlos@gmail.com (Cliente)
+2026-10-23 16:48:00.806 INFO  [http-nio-8080-exec-10] c.p.luz_maira.service.PedidoService - Pedido 647 registrado por carlos@gmail.com (Cliente): tipo=Virtual, total=225.00, código=788
+2026-10-23 16:48:13.714 INFO  [http-nio-8080-exec-1] c.p.l.controller.AuthController - Inicio de sesión: admin@luzmayra.com (Administrador)
+2026-10-23 17:07:12.666 INFO  [background-preinit] o.h.validator.internal.util.Version - HV000001: Hibernate Validator 9.1.3.Final
+2026-10-23 17:07:12.786 INFO  [restartedMain] c.p.luz_maira.LuzMairaApplication - Starting LuzMairaApplication using Java 25.0.4.1 with PID 16860 (C:\Users\tilac\Documents\Tareas\git\ProyectoIntegrador_Panaderia - copia\luz-maira\target\classes started by tilac in C:\Users\tilac\Documents\Tareas\git\ProyectoIntegrador_Panaderia - copia)
+2026-10-23 17:07:12.787 DEBUG [restartedMain] c.p.luz_maira.LuzMairaApplication - Running with Spring Boot v4.1.1, Spring v7.0.9
+2026-10-23 17:07:12.795 INFO  [restartedMain] c.p.luz_maira.LuzMairaApplication - No active profile set, falling back to 1 default profile: "default"
+2026-10-23 17:07:12.934 INFO  [restartedMain] o.s.b.d.e.DevToolsPropertyDefaultsPostProcessor - Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+2026-10-23 17:07:12.935 INFO  [restartedMain] o.s.b.d.e.DevToolsPropertyDefaultsPostProcessor - For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+2026-10-23 17:07:15.009 INFO  [restartedMain] o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data MongoDB repositories in DEFAULT mode.
+2026-10-23 17:07:15.081 INFO  [restartedMain] o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 56 ms. Found 0 MongoDB repository interfaces.
+2026-10-23 17:07:16.863 INFO  [restartedMain] o.s.boot.tomcat.TomcatWebServer - Tomcat initialized with port 8080 (http)
+2026-10-23 17:07:16.900 INFO  [restartedMain] o.a.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8080"]
+2026-10-23 17:07:16.906 INFO  [restartedMain] o.a.catalina.core.StandardService - Starting service [Tomcat]
+2026-10-23 17:07:16.907 INFO  [restartedMain] o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/11.0.24]
+2026-10-23 17:07:17.118 INFO  [restartedMain] o.s.b.w.c.s.WebApplicationContextInitializer - Root WebApplicationContext: initialization completed in 4181 ms
+2026-10-23 17:07:17.320 INFO  [restartedMain] c.p.luz_maira.service.ImagenService - Las imágenes de productos se guardan en: C:\Users\tilac\Documents\Tareas\git\ProyectoIntegrador_Panaderia - copia\luz-maira\src\main\resources\static\img\productos
+2026-10-23 17:07:17.337 INFO  [restartedMain] c.p.luz_maira.service.ImagenService - Las imágenes de materias se guardan en: C:\Users\tilac\Documents\Tareas\git\ProyectoIntegrador_Panaderia - copia\luz-maira\src\main\resources\static\img\materias
+2026-10-23 17:07:17.339 INFO  [restartedMain] c.p.luz_maira.service.ImagenService - Las imágenes de proveedores se guardan en: C:\Users\tilac\Documents\Tareas\git\ProyectoIntegrador_Panaderia - copia\luz-maira\src\main\resources\static\img\proveedores
+2026-10-23 17:07:18.202 INFO  [restartedMain] o.s.s.c.a.a.c.InitializeUserDetailsBeanManagerConfigurer$InitializeUserDetailsManagerConfigurer - Global AuthenticationManager configured with UserDetailsService bean with name dbUserDetailsService
+2026-10-23 17:07:18.643 INFO  [restartedMain] o.s.b.w.a.WelcomePageHandlerMapping - Adding welcome page: class path resource [static/index.html]
+2026-10-23 17:07:19.453 INFO  [restartedMain] org.mongodb.driver.client - MongoClient with metadata {"driver": {"name": "mongo-java-driver|spring-boot|sync", "version": "5.8.1"}, "os": {"type": "Windows", "name": "Windows 11", "architecture": "amd64", "version": "10.0"}, "platform": "Java/Eclipse Adoptium/25.0.4.1+1-LTS"} created with settings MongoClientSettings{readPreference=primary, writeConcern=WriteConcern{w=null, wTimeout=null ms, journal=null}, retryWrites=true, retryReads=true, readConcern=ReadConcern{level=null}, credential=null, transportSettings=null, commandListeners=[], codecRegistry=ProvidersCodecRegistry{codecProviders=[ValueCodecProvider{}, BsonValueCodecProvider{}, DBRefCodecProvider{}, DBObjectCodecProvider{}, DocumentCodecProvider{}, CollectionCodecProvider{}, IterableCodecProvider{}, MapCodecProvider{}, GeoJsonCodecProvider{}, GridFSFileCodecProvider{}, Jsr310CodecProvider{}, JsonObjectCodecProvider{}, BsonCodecProvider{}, com.mongodb.client.model.mql.ExpressionCodecProvider@227adeaa, com.mongodb.Jep395RecordCodecProvider@7ea413bc, com.mongodb.KotlinCodecProvider@46fd05b6, EnumCodecProvider{}]}, loggerSettings=LoggerSettings{maxDocumentLength=1000}, clusterSettings={hosts=[localhost:27017], srvServiceName=mongodb, mode=SINGLE, requiredClusterType=UNKNOWN, requiredReplicaSetName='null', serverSelector='null', clusterListeners='[]', serverSelectionTimeout='30000 ms', localThreshold='15 ms'}, socketSettings=SocketSettings{connectTimeoutMS=10000, readTimeoutMS=0, receiveBufferSize=0, proxySettings=ProxySettings{host=null, port=null, username=null, password=null}}, heartbeatSocketSettings=SocketSettings{connectTimeoutMS=10000, readTimeoutMS=10000, receiveBufferSize=0, proxySettings=ProxySettings{host=null, port=null, username=null, password=null}}, connectionPoolSettings=ConnectionPoolSettings{maxSize=100, minSize=0, maxWaitTimeMS=120000, maxConnectionLifeTimeMS=0, maxConnectionIdleTimeMS=0, maintenanceInitialDelayMS=0, maintenanceFrequencyMS=60000, connectionPoolListeners=[], maxConnecting=2}, serverSettings=ServerSettings{heartbeatFrequencyMS=10000, minHeartbeatFrequencyMS=500, serverMonitoringMode=AUTO, serverListeners='[]', serverMonitorListeners='[]'}, sslSettings=SslSettings{enabled=false, invalidHostNameAllowed=false, context=null}, applicationName='null', compressorList=[], uuidRepresentation=UNSPECIFIED, serverApi=null, autoEncryptionSettings=null, dnsClient=null, inetAddressResolver=null, contextProvider=null, timeoutMS=null}
+2026-10-23 17:07:19.460 INFO  [cluster-6adbda9786b6fcafe681df04-localhost:27017] org.mongodb.driver.cluster - Exception in monitor thread while connecting to server localhost:27017
+com.mongodb.MongoSocketOpenException: Exception opening socket
+	at com.mongodb.internal.connection.SocketStream.lambda$open$0(SocketStream.java:85)
+	at java.base/java.util.Optional.orElseThrow(Unknown Source)
+	at com.mongodb.internal.connection.SocketStream.open(SocketStream.java:85)
+	at com.mongodb.internal.connection.InternalStreamConnection.open(InternalStreamConnection.java:233)
+	at com.mongodb.internal.connection.DefaultServerMonitor$ServerMonitor.setupNewConnectionAndGetInitialDescription(DefaultServerMonitor.java:282)
+	at com.mongodb.internal.connection.DefaultServerMonitor$ServerMonitor.lookupServerDescription(DefaultServerMonitor.java:253)
+	at com.mongodb.internal.connection.DefaultServerMonitor$ServerMonitor.run(DefaultServerMonitor.java:203)
+Caused by: java.net.ConnectException: Connection refused: getsockopt
+	at java.base/sun.nio.ch.Net.pollConnect(Native Method)
+	at java.base/sun.nio.ch.Net.pollConnectNow(Unknown Source)
+	at java.base/sun.nio.ch.NioSocketImpl.timedFinishConnect(Unknown Source)
+	at java.base/sun.nio.ch.NioSocketImpl.connect(Unknown Source)
+	at java.base/java.net.SocksSocketImpl.connect(Unknown Source)
+	at java.base/java.net.Socket.connect(Unknown Source)
+	at com.mongodb.internal.connection.SocketStreamHelper.initialize(SocketStreamHelper.java:76)
+	at com.mongodb.internal.connection.SocketStream.initializeSocket(SocketStream.java:104)
+	at com.mongodb.internal.connection.SocketStream.open(SocketStream.java:79)
+	... 4 common frames omitted
+2026-10-23 17:07:20.232 INFO  [restartedMain] o.a.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8080"]
+2026-10-23 17:07:20.283 INFO  [restartedMain] o.s.boot.tomcat.TomcatWebServer - Tomcat started on port 8080 (http) with context path '/'
+2026-10-23 17:07:20.302 INFO  [restartedMain] c.p.luz_maira.LuzMairaApplication - Started LuzMairaApplication in 9.104 seconds (process running for 11.29)
+2026-10-23 17:07:46.439 INFO  [File Watcher] o.s.b.d.a.LocalDevToolsAutoConfiguration$RestartingClassPathChangeChangedEventListener - Restarting due to 172 class path changes (0 additions, 0 deletions, 172 modifications)
+2026-10-23 17:07:46.453 INFO  [Thread-1] o.s.boot.tomcat.GracefulShutdown - Commencing graceful shutdown. Waiting for active requests to complete
+2026-10-23 17:07:46.456 INFO  [tomcat-shutdown] o.a.coyote.http11.Http11NioProtocol - Pausing ProtocolHandler ["http-nio-8080"]
+2026-10-23 17:07:46.479 INFO  [tomcat-shutdown] o.s.boot.tomcat.GracefulShutdown - Graceful shutdown complete
+2026-10-23 17:07:46.481 INFO  [Thread-1] o.a.coyote.http11.Http11NioProtocol - Stopping ProtocolHandler ["http-nio-8080"]
+2026-10-23 17:07:46.809 INFO  [restartedMain] c.p.luz_maira.LuzMairaApplication - Starting LuzMairaApplication using Java 25.0.4.1 with PID 16860 (C:\Users\tilac\Documents\Tareas\git\ProyectoIntegrador_Panaderia - copia\luz-maira\target\classes started by tilac in C:\Users\tilac\Documents\Tareas\git\ProyectoIntegrador_Panaderia - copia)
+2026-10-23 17:07:46.811 DEBUG [restartedMain] c.p.luz_maira.LuzMairaApplication - Running with Spring Boot v4.1.1, Spring v7.0.9
+2026-10-23 17:07:46.811 INFO  [restartedMain] c.p.luz_maira.LuzMairaApplication - No active profile set, falling back to 1 default profile: "default"
+2026-10-23 17:07:47.605 INFO  [restartedMain] o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data MongoDB repositories in DEFAULT mode.
+2026-10-23 17:07:47.623 INFO  [restartedMain] o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 14 ms. Found 0 MongoDB repository interfaces.
+2026-10-23 17:07:47.904 INFO  [restartedMain] o.s.boot.tomcat.TomcatWebServer - Tomcat initialized with port 8080 (http)
+2026-10-23 17:07:47.906 INFO  [restartedMain] o.a.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8080"]
+2026-10-23 17:07:47.907 INFO  [restartedMain] o.a.catalina.core.StandardService - Starting service [Tomcat]
+2026-10-23 17:07:47.908 INFO  [restartedMain] o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/11.0.24]
+2026-10-23 17:07:47.991 INFO  [restartedMain] o.s.b.w.c.s.WebApplicationContextInitializer - Root WebApplicationContext: initialization completed in 1172 ms
+2026-10-23 17:07:48.034 INFO  [restartedMain] c.p.luz_maira.service.ImagenService - Las imágenes de productos se guardan en: C:\Users\tilac\Documents\Tareas\git\ProyectoIntegrador_Panaderia - copia\luz-maira\src\main\resources\static\img\productos
+2026-10-23 17:07:48.036 INFO  [restartedMain] c.p.luz_maira.service.ImagenService - Las imágenes de materias se guardan en: C:\Users\tilac\Documents\Tareas\git\ProyectoIntegrador_Panaderia - copia\luz-maira\src\main\resources\static\img\materias
+2026-10-23 17:07:48.037 INFO  [restartedMain] c.p.luz_maira.service.ImagenService - Las imágenes de proveedores se guardan en: C:\Users\tilac\Documents\Tareas\git\ProyectoIntegrador_Panaderia - copia\luz-maira\src\main\resources\static\img\proveedores
+2026-10-23 17:07:48.352 INFO  [restartedMain] o.s.s.c.a.a.c.InitializeUserDetailsBeanManagerConfigurer$InitializeUserDetailsManagerConfigurer - Global AuthenticationManager configured with UserDetailsService bean with name dbUserDetailsService
+2026-10-23 17:07:48.409 INFO  [restartedMain] o.s.b.w.a.WelcomePageHandlerMapping - Adding welcome page: class path resource [static/index.html]
+2026-10-23 17:07:48.519 INFO  [restartedMain] org.mongodb.driver.client - MongoClient with metadata {"driver": {"name": "mongo-java-driver|spring-boot|sync", "version": "5.8.1"}, "os": {"type": "Windows", "name": "Windows 11", "architecture": "amd64", "version": "10.0"}, "platform": "Java/Eclipse Adoptium/25.0.4.1+1-LTS"} created with settings MongoClientSettings{readPreference=primary, writeConcern=WriteConcern{w=null, wTimeout=null ms, journal=null}, retryWrites=true, retryReads=true, readConcern=ReadConcern{level=null}, credential=null, transportSettings=null, commandListeners=[], codecRegistry=ProvidersCodecRegistry{codecProviders=[ValueCodecProvider{}, BsonValueCodecProvider{}, DBRefCodecProvider{}, DBObjectCodecProvider{}, DocumentCodecProvider{}, CollectionCodecProvider{}, IterableCodecProvider{}, MapCodecProvider{}, GeoJsonCodecProvider{}, GridFSFileCodecProvider{}, Jsr310CodecProvider{}, JsonObjectCodecProvider{}, BsonCodecProvider{}, com.mongodb.client.model.mql.ExpressionCodecProvider@227adeaa, com.mongodb.Jep395RecordCodecProvider@7ea413bc, com.mongodb.KotlinCodecProvider@46fd05b6, EnumCodecProvider{}]}, loggerSettings=LoggerSettings{maxDocumentLength=1000}, clusterSettings={hosts=[localhost:27017], srvServiceName=mongodb, mode=SINGLE, requiredClusterType=UNKNOWN, requiredReplicaSetName='null', serverSelector='null', clusterListeners='[]', serverSelectionTimeout='30000 ms', localThreshold='15 ms'}, socketSettings=SocketSettings{connectTimeoutMS=10000, readTimeoutMS=0, receiveBufferSize=0, proxySettings=ProxySettings{host=null, port=null, username=null, password=null}}, heartbeatSocketSettings=SocketSettings{connectTimeoutMS=10000, readTimeoutMS=10000, receiveBufferSize=0, proxySettings=ProxySettings{host=null, port=null, username=null, password=null}}, connectionPoolSettings=ConnectionPoolSettings{maxSize=100, minSize=0, maxWaitTimeMS=120000, maxConnectionLifeTimeMS=0, maxConnectionIdleTimeMS=0, maintenanceInitialDelayMS=0, maintenanceFrequencyMS=60000, connectionPoolListeners=[], maxConnecting=2}, serverSettings=ServerSettings{heartbeatFrequencyMS=10000, minHeartbeatFrequencyMS=500, serverMonitoringMode=AUTO, serverListeners='[]', serverMonitorListeners='[]'}, sslSettings=SslSettings{enabled=false, invalidHostNameAllowed=false, context=null}, applicationName='null', compressorList=[], uuidRepresentation=UNSPECIFIED, serverApi=null, autoEncryptionSettings=null, dnsClient=null, inetAddressResolver=null, contextProvider=null, timeoutMS=null}
+2026-10-23 17:07:48.521 INFO  [cluster-6adbdab486b6fcafe681df05-localhost:27017] org.mongodb.driver.cluster - Exception in monitor thread while connecting to server localhost:27017
+com.mongodb.MongoSocketOpenException: Exception opening socket
+	at com.mongodb.internal.connection.SocketStream.lambda$open$0(SocketStream.java:85)
+	at java.base/java.util.Optional.orElseThrow(Unknown Source)
+	at com.mongodb.internal.connection.SocketStream.open(SocketStream.java:85)
+	at com.mongodb.internal.connection.InternalStreamConnection.open(InternalStreamConnection.java:233)
+	at com.mongodb.internal.connection.DefaultServerMonitor$ServerMonitor.setupNewConnectionAndGetInitialDescription(DefaultServerMonitor.java:282)
+	at com.mongodb.internal.connection.DefaultServerMonitor$ServerMonitor.lookupServerDescription(DefaultServerMonitor.java:253)
+	at com.mongodb.internal.connection.DefaultServerMonitor$ServerMonitor.run(DefaultServerMonitor.java:203)
+Caused by: java.net.ConnectException: Connection refused: getsockopt
+	at java.base/sun.nio.ch.Net.pollConnect(Native Method)
+	at java.base/sun.nio.ch.Net.pollConnectNow(Unknown Source)
+	at java.base/sun.nio.ch.NioSocketImpl.timedFinishConnect(Unknown Source)
+	at java.base/sun.nio.ch.NioSocketImpl.connect(Unknown Source)
+	at java.base/java.net.SocksSocketImpl.connect(Unknown Source)
+	at java.base/java.net.Socket.connect(Unknown Source)
+	at com.mongodb.internal.connection.SocketStreamHelper.initialize(SocketStreamHelper.java:76)
+	at com.mongodb.internal.connection.SocketStream.initializeSocket(SocketStream.java:104)
+	at com.mongodb.internal.connection.SocketStream.open(SocketStream.java:79)
+	... 4 common frames omitted
+2026-10-23 17:07:48.603 INFO  [restartedMain] o.a.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8080"]
+2026-10-23 17:07:48.610 INFO  [restartedMain] o.s.boot.tomcat.TomcatWebServer - Tomcat started on port 8080 (http) with context path '/'
+2026-10-23 17:07:48.617 INFO  [restartedMain] c.p.luz_maira.LuzMairaApplication - Started LuzMairaApplication in 1.936 seconds (process running for 39.605)
+2026-10-23 17:07:48.622 INFO  [restartedMain] o.s.b.d.a.ConditionEvaluationDeltaLoggingListener - Condition evaluation unchanged
+2026-10-23 17:07:52.392 INFO  [http-nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-10-23 17:07:52.392 INFO  [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
+2026-10-23 17:07:52.395 INFO  [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet - Completed initialization in 3 ms
+2026-10-23 17:07:52.868 INFO  [http-nio-8080-exec-1] com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2026-10-23 17:07:53.861 INFO  [http-nio-8080-exec-1] com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection ConnectionID:1 ClientConnectionId: 5c82d131-df76-49b6-8c52-92c753761582
+2026-10-23 17:07:53.865 INFO  [http-nio-8080-exec-1] com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2026-10-23 17:07:54.178 INFO  [http-nio-8080-exec-2] c.p.l.controller.AuthController - Inicio de sesión: almacen@luzmayra.com (Almacenero)
+2026-10-23 17:07:54.178 INFO  [http-nio-8080-exec-1] c.p.l.controller.AuthController - Inicio de sesión: almacen@luzmayra.com (Almacenero)
+2026-10-23 17:09:36.873 INFO  [http-nio-8080-exec-9] c.p.l.service.InventarioService - Registro del día: Salida de 8 Kilogramo (producto base 2)
+2026-10-23 17:10:21.023 INFO  [http-nio-8080-exec-2] c.p.l.service.InventarioService - Solicitud 1 creada: producto base 2, 20 Kilogramo
+2026-10-23 17:10:29.305 INFO  [http-nio-8080-exec-3] c.p.l.service.InventarioService - Solicitud 1 recibida: +20.00 Kilogramo al producto base 2
+2026-10-23 17:10:52.220 INFO  [http-nio-8080-exec-9] c.p.l.controller.AuthController - Inicio de sesión: carlos@gmail.com (Cliente)
+2026-10-23 17:11:05.198 INFO  [http-nio-8080-exec-10] c.p.luz_maira.service.PedidoService - Pedido 648 registrado por carlos@gmail.com (Cliente): tipo=Delivery, total=26.00, código=549
+2026-10-23 17:11:21.229 INFO  [http-nio-8080-exec-3] c.p.l.controller.AuthController - Inicio de sesión: almacen@luzmayra.com (Almacenero)
+2026-10-23 17:11:38.843 INFO  [http-nio-8080-exec-2] c.p.l.controller.AuthController - Inicio de sesión: despacho@luzmayra.com (Despachador)
+2026-10-23 17:12:14.235 WARN  [http-nio-8080-exec-3] c.p.luz_maira.service.EntregaService - Código incorrecto al confirmar el pedido 647
+2026-10-23 17:12:14.247 WARN  [http-nio-8080-exec-3] c.p.l.config.ManejadorErrores - Solicitud rechazada (400): El código no coincide con el del pedido
+2026-10-23 17:12:14.249 WARN  [http-nio-8080-exec-3] o.s.w.s.m.m.a.ExceptionHandlerExceptionResolver - Resolved [org.springframework.web.server.ResponseStatusException: 400 BAD_REQUEST "El código no coincide con el del pedido"]
+2026-10-23 17:13:31.477 INFO  [http-nio-8080-exec-10] c.p.l.controller.AuthController - Inicio de sesión: entrega@luzmayra.com (Entregador)
+2026-10-23 17:14:49.262 INFO  [http-nio-8080-exec-7] c.p.l.controller.AuthController - Inicio de sesión: almacen@luzmayra.com (Almacenero)
+2026-10-23 17:15:21.208 INFO  [http-nio-8080-exec-6] c.p.luz_maira.service.EntregaService - Pedido 630 asignado: conductor=1, vehículo=2
+2026-10-23 17:15:33.749 INFO  [http-nio-8080-exec-2] c.p.luz_maira.service.EntregaService - Pedido 646 asignado: conductor=3, vehículo=3
+2026-10-23 17:15:50.285 INFO  [http-nio-8080-exec-1] c.p.l.controller.AuthController - Inicio de sesión: entrega@luzmayra.com (Entregador)
+2026-10-23 17:16:16.370 INFO  [http-nio-8080-exec-3] c.p.l.controller.AuthController - Inicio de sesión: carlos@gmail.com (Cliente)
+2026-10-23 17:16:29.627 INFO  [http-nio-8080-exec-5] c.p.l.controller.AuthController - Inicio de sesión: entrega@luzmayra.com (Entregador)
+2026-10-23 17:16:38.773 INFO  [http-nio-8080-exec-9] c.p.luz_maira.service.EntregaService - Pedido 646 entregado; conductor y vehículo quedan disponibles
+2026-10-23 17:17:05.892 INFO  [http-nio-8080-exec-6] c.p.l.controller.AuthController - Inicio de sesión: admin@luzmayra.com (Administrador)

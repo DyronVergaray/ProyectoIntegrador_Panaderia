@@ -45,6 +45,20 @@ const UI = {
         return "S/ " + (Math.round(Number(numero) * 100) / 100).toFixed(2);
     },
 
+    // Fecha de hoy como yyyy-MM-dd (para el atributo min de los campos de fecha)
+    hoy(diasMas) {
+        const d = new Date();
+        d.setDate(d.getDate() + (diasMas || 0));
+        return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+    },
+
+    // Cantidad con su unidad en singular o plural: "1 Kilogramo", "25 Kilogramos"
+    cantidad(valor, unidad) {
+        const PLURAL = { Kilogramo: "Kilogramos", Gramo: "Gramos", Litro: "Litros", Unidad: "Unidades" };
+        const numero = Number(valor);
+        return numero + " " + (numero === 1 ? unidad : (PLURAL[unidad] || unidad));
+    },
+
     fecha(iso) {
         const partes = iso.split("-");
         return parseInt(partes[2], 10) + " " + MESES[parseInt(partes[1], 10) - 1] + " " + partes[0];
@@ -155,6 +169,56 @@ const UI = {
             return h("small", { class: "stock-linea" + (bajo ? " bajo" : ""), texto: "Stock: " + p.stock + " (mín. " + p.stockMinimo + ")" });
         }
         return bajo ? h("small", { class: "stock-linea bajo", texto: "¡Quedan " + p.stock + "!" }) : null;
+    },
+
+    // Hace elegibles algunas filas de una tabla ya dibujada (de a una). puedeElegir(i) dice si la fila i se puede elegir;
+    // alElegir(i) recibe la posición de la fila elegida, o -1 si se quitó la selección.
+    seleccionarFilas(contenedor, puedeElegir, alElegir) {
+        const filas = [...contenedor.querySelectorAll("tbody tr")];
+        filas.forEach((fila, i) => {
+            if (!puedeElegir(i)) {
+                return;
+            }
+            fila.classList.add("fila-selec");
+            fila.onclick = () => {
+                const yaElegida = fila.classList.contains("sel");
+                filas.forEach((f) => f.classList.remove("sel"));
+                if (!yaElegida) {
+                    fila.classList.add("sel");
+                }
+                alElegir(yaElegida ? -1 : i);
+            };
+        });
+    },
+
+    // Ventana con el detalle de un pedido (cliente, productos y total). El código de retiro solo aparece
+    // para quien puede verlo (cliente, cajera y administrador): el servidor no lo envía al personal operativo.
+    async verPedido(id) {
+        const dato = (etiqueta, valor) => h("p", {}, h("span", { texto: etiqueta }), valor);
+        try {
+            const d = await api("/api/pedidos/" + id);
+            if (!UI.ventanaPedido) {
+                UI.ventanaPedido = UI.modal({ id: "modal-detalle", titulo: "Detalle del Pedido", contenido: [] });
+            }
+            UI.ventanaPedido.ponerTitulo("Detalle del Pedido #" + d.id);
+            UI.ventanaPedido.poner([
+                h("div", { class: d.codigo ? "datos-detalle" : "" },
+                    h("div", {}, h("span", { class: "etiqueta", texto: "DATOS DEL CLIENTE" }),
+                        dato("Nombre:", d.cliente), dato("Teléfono:", d.telefono || "—"), dato("Email:", d.email),
+                        d.direccion ? dato("Dirección:", d.direccion) : null,
+                        dato("Tipo de Pedido:", h("span", { class: "chip chip-sencillo", texto: d.tipo }))),
+                    d.codigo ? h("div", { class: "caja-codigo" }, h("small", { texto: "CÓDIGO DE RETIRO" }),
+                        h("strong", { texto: d.codigo }), h("em", { texto: "Presentar código en caja al retirar" })) : null),
+                h("span", { class: "etiqueta", texto: "PRODUCTOS DEL PEDIDO" }),
+                UI.tabla(["Producto", ">Cant.", ">Precio Unit.", ">Subtotal"],
+                    d.items.map((i) => [i.producto, "× " + i.cantidad, UI.soles(i.precio), UI.soles(i.subtotal)])),
+                h("div", { class: "totales" }, h("p", {}, "Total: ", h("span", { class: "grande", texto: UI.soles(d.total) }))),
+                h("div", { class: "modal-pie" }, h("span", { texto: "Fecha de solicitud: " + UI.fecha(d.fechaSolicitud) }))
+            ]);
+            UI.ventanaPedido.abrir();
+        } catch (e) {
+            UI.toast(e.message, false);
+        }
     },
 
     // ---------- Ventanas (modales) ----------

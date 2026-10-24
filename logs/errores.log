@@ -62,3 +62,21 @@ Caused by: java.lang.ClassNotFoundException: TipoImagen
 	at org.springframework.boot.devtools.restart.classloader.RestartClassLoader.loadClass(RestartClassLoader.java:123)
 	at java.base/java.lang.ClassLoader.loadClass(Unknown Source)
 	... 44 common frames omitted
+2026-10-23 16:31:39.086 WARN  [restartedMain] o.s.b.w.s.s.c.AnnotationConfigServletWebServerApplicationContext - Exception encountered during context initialization - cancelling refresh attempt: org.springframework.context.ApplicationContextException: Failed to start bean 'webServerStartStop'
+2026-10-23 16:31:39.257 ERROR [restartedMain] o.s.b.d.LoggingFailureAnalysisReporter - 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Web server failed to start. Port 8080 was already in use.
+
+Action:
+
+Identify and stop the process that's listening on port 8080 or configure this application to listen on another port.
+
+2026-10-23 17:12:14.235 WARN  [http-nio-8080-exec-3] c.p.luz_maira.service.EntregaService - Código incorrecto al confirmar el pedido 647
+2026-10-23 17:12:14.247 WARN  [http-nio-8080-exec-3] c.p.l.config.ManejadorErrores - Solicitud rechazada (400): El código no coincide con el del pedido
+2026-10-23 17:12:14.249 WARN  [http-nio-8080-exec-3] o.s.w.s.m.m.a.ExceptionHandlerExceptionResolver - Resolved [org.springframework.web.server.ResponseStatusException: 400 BAD_REQUEST "El código no coincide con el del pedido"]

@@ -10,13 +10,14 @@
     <link rel="icon" type="image/png" href="img/favicon.png">
     <link rel="stylesheet" href="css/estilos.css">
 </head>
-<body class="" data-menu="almacen" data-lateral="buscador,resumen" data-resumen='["3 solicitudes en camino", "3 solicitudes recibidas"]'>
+<body class="" data-menu="almacen" data-lateral="buscador,resumen" data-resumen='["0 solicitudes en camino", "0 solicitudes recibidas"]'>
 <main class="principal" id="principal">
-<div class="encabezado-pagina"><div><h1 class="titulo-app">Solicitudes a Proveedores</h1><p class="sub">Seguimiento de productos base solicitados y fechas de recepción</p></div><button class="btn" data-abrir="solicitud">+ Nueva solicitud</button></div><div class="tabla-caja"><div class="tabla-scroll"><table><thead><tr><th>Proveedor</th><th>Producto base solicitado</th><th>Cantidad</th><th>Fecha de solicitud</th><th>Fecha estimada de recepción</th><th>Estado</th></tr></thead><tbody><tr data-filtrable><td>Alicorp</td><td>Agua</td><td><strong>10 Litros</strong></td><td>18 sep 2026</td><td>24 sep 2026</td><td><span class="chip chip-naranja"><i></i>En camino</span></td></tr><tr data-filtrable><td>Puratos Perú</td><td>Masa Madre</td><td><strong>5 Kilogramos</strong></td><td>17 sep 2026</td><td>23 sep 2026</td><td><span class="chip chip-naranja"><i></i>En camino</span></td></tr><tr data-filtrable><td>Casa Grande</td><td>Azúcar</td><td><strong>100 Gramos</strong></td><td>12 sep 2026</td><td>19 sep 2026</td><td><span class="chip chip-verde"><i></i>Recibido</span></td></tr><tr data-filtrable><td>La Calera</td><td>Huevos</td><td><strong>12 Unidades</strong></td><td>15 sep 2026</td><td>20 sep 2026</td><td><span class="chip chip-verde"><i></i>Recibido</span></td></tr><tr data-filtrable><td>Puratos Perú</td><td>Levadura</td><td><strong>300 Gramos</strong></td><td>19 sep 2026</td><td>26 sep 2026</td><td><span class="chip chip-naranja"><i></i>En camino</span></td></tr><tr data-filtrable><td>Machu Picchu Foods</td><td>Chocolate</td><td><strong>900 Gramos</strong></td><td>10 sep 2026</td><td>17 sep 2026</td><td><span class="chip chip-verde"><i></i>Recibido</span></td></tr></tbody></table></div><div class="tabla-pie"><span>6 solicitudes</span><span>Actualizado hoy, 10:30</span></div></div><div class="acciones-pie"><button class="btn" data-abrir="solicitud">Confirmar Recepción</button></div>
+<div class="encabezado-pagina"><div><h1 class="titulo-app">Solicitudes a Proveedores</h1><p class="sub">Seguimiento de productos base solicitados y fechas de recepción</p></div><button class="btn" id="btn-nueva">+ Nueva solicitud</button></div><div id="tabla-solicitudes"><p class="vacio">Cargando…</p></div><div class="acciones-pie"><button class="btn" id="btn-recibir">Confirmar Recepción</button></div>
 </main>
     <script src="js/config.js"></script>
     <script src="js/api.js"></script>
     <script src="js/ui.js"></script>
-    <script src="js/paginas/maqueta.js"></script>
+    <script src="js/lib/sweetalert2.all.min.js"></script>
+    <script src="js/paginas/solicitudes.js"></script>
 </body>
 </html>

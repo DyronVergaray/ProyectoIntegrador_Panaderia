@@ -10,13 +10,14 @@
     <link rel="icon" type="image/png" href="img/favicon.png">
     <link rel="stylesheet" href="css/estilos.css">
 </head>
-<body class="" data-menu="ninguno" data-lateral="buscador,resumen" data-accion="Despacho" data-primero="768" data-resumen='["3 por despachar", "3 despachados"]'>
+<body class="" data-menu="ninguno" data-lateral="buscador,resumen" data-accion="Despacho" data-api="/api/despacho" data-resumen='["0 por despachar", "0 despachados"]'>
 <main class="principal" id="principal">
-<h1 class="titulo-app">Pedidos Virtuales Para Despachar</h1><div class="tabla-caja"><div class="tabla-scroll"><table><thead><tr><th>Código</th><th>Estado</th><th>Ver información</th></tr></thead><tbody><tr data-filtrable><td><strong>768</strong></td><td><span class="chip chip-naranja"><i></i>Por despachar</span></td><td><button class="info oscuro" aria-label="Ver información del pedido 768" data-abrir="info" data-codigo="768">i</button></td></tr><tr data-filtrable><td><strong>635</strong></td><td><span class="chip chip-naranja"><i></i>Por despachar</span></td><td><button class="info oscuro" aria-label="Ver información del pedido 635" data-abrir="info" data-codigo="635">i</button></td></tr><tr data-filtrable><td><strong>276</strong></td><td><span class="chip chip-verde"><i></i>Despachado</span></td><td><button class="info" aria-label="Ver información del pedido 276" data-abrir="info" data-codigo="276">i</button></td></tr><tr data-filtrable><td><strong>294</strong></td><td><span class="chip chip-verde"><i></i>Despachado</span></td><td><button class="info" aria-label="Ver información del pedido 294" data-abrir="info" data-codigo="294">i</button></td></tr><tr data-filtrable><td><strong>121</strong></td><td><span class="chip chip-naranja"><i></i>Por despachar</span></td><td><button class="info oscuro" aria-label="Ver información del pedido 121" data-abrir="info" data-codigo="121">i</button></td></tr><tr data-filtrable><td><strong>995</strong></td><td><span class="chip chip-verde"><i></i>Despachado</span></td><td><button class="info" aria-label="Ver información del pedido 995" data-abrir="info" data-codigo="995">i</button></td></tr></tbody></table></div><div class="tabla-pie"><span>6 pedidos</span><span>Actualizado hoy, 10:30</span></div></div><div class="acciones-pie"><button class="btn" data-abrir="codigo">Confirmar Despachamiento</button></div>
+<h1 class="titulo-app">Pedidos Virtuales Para Despachar</h1><p class="sub">Selecciona el pedido que retira el cliente y confirma con el código de 3 dígitos que él te muestra</p><div id="tabla-pedidos"><p class="vacio">Cargando…</p></div><div class="acciones-pie"><button class="btn" id="btn-confirmar">Confirmar Despachamiento</button></div>
 </main>
     <script src="js/config.js"></script>
     <script src="js/api.js"></script>
     <script src="js/ui.js"></script>
-    <script src="js/paginas/maqueta.js"></script>
+    <script src="js/lib/sweetalert2.all.min.js"></script>
+    <script src="js/paginas/confirmar-pedidos.js"></script>
 </body>
 </html>

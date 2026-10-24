@@ -41,9 +41,12 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.POST, "/api/pedidos").hasAnyRole("Cliente", "Cajero")
                 .requestMatchers(HttpMethod.GET, "/api/pedidos/mios").hasRole("Cliente")
                 .requestMatchers(HttpMethod.GET, "/api/pedidos").hasAnyRole("Cajero", "Administrador")
-                .requestMatchers(HttpMethod.GET, "/api/pedidos/*").hasAnyRole("Cliente", "Cajero", "Administrador")
+                .requestMatchers(HttpMethod.GET, "/api/pedidos/*").hasAnyRole("Cliente", "Cajero", "Administrador", "Almacenero", "Despachador", "Entregador")
                 .requestMatchers(HttpMethod.GET, "/api/stock").hasAnyRole("Almacenero", "Administrador")
                 .requestMatchers("/api/materias/**", "/api/proveedores/**").hasAnyRole("Almacenero", "Administrador")   // listar, crear, editar, imagen
+                .requestMatchers("/api/asignaciones/**", "/api/movimientos/**", "/api/solicitudes/**").hasAnyRole("Almacenero", "Administrador")
+                .requestMatchers("/api/despacho/**").hasRole("Despachador")        // pedidos Virtuales
+                .requestMatchers("/api/entregas/**").hasRole("Entregador")         // Delivery y Personalizados
                 .requestMatchers("/api/usuarios/**", "/api/roles", "/api/dashboard/**").hasRole("Administrador")
                 .requestMatchers("/api/**").denyAll()
 

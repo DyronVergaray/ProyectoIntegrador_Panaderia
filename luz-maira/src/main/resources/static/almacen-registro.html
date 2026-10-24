@@ -12,11 +12,12 @@
 </head>
 <body class="" data-menu="almacen" data-lateral="buscador">
 <main class="principal" id="principal">
-<div class="encabezado-pagina"><div><h1 class="titulo-app">Registro del día</h1><p class="sub">Entradas y salidas de productos base</p></div><button class="btn" data-abrir="registro">+ Nuevo registro</button></div><div class="tabla-caja"><div class="tabla-scroll"><table><thead><tr><th>Fecha</th><th>Producto base</th><th>Cantidad</th><th>Descripción</th></tr></thead><tbody><tr data-filtrable><td>12 oct 2026</td><td>Harina</td><td>25 Kilogramos</td><td>Salida: producción de pan</td></tr><tr data-filtrable><td>12 oct 2026</td><td>Huevos</td><td>24 Unidades</td><td>Salida: pasteles del día</td></tr><tr data-filtrable><td>11 oct 2026</td><td>Azúcar</td><td>10 Kilogramos</td><td>Ingreso: recepción de proveedor</td></tr><tr data-filtrable><td>11 oct 2026</td><td>Levadura</td><td>300 Gramos</td><td>Salida: producción de pan</td></tr></tbody></table></div><div class="tabla-pie"><span>4 registros</span><span>Actualizado hoy, 10:30</span></div></div>
+<div class="encabezado-pagina"><div><h1 class="titulo-app">Registro del día</h1><p class="sub">Entradas y salidas de productos base. Cada registro actualiza el stock.</p></div><button class="btn" id="btn-nuevo">+ Nuevo registro</button></div><div id="tabla-registro"><p class="vacio">Cargando…</p></div>
 </main>
     <script src="js/config.js"></script>
     <script src="js/api.js"></script>
     <script src="js/ui.js"></script>
-    <script src="js/paginas/maqueta.js"></script>
+    <script src="js/lib/sweetalert2.all.min.js"></script>
+    <script src="js/paginas/registro.js"></script>
 </body>
 </html>

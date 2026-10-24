@@ -95,10 +95,11 @@ public class DashboardDAO extends BaseDAO {
                 (rs, n) -> new Dashboard.EstadoCantidad(rs.getString(1), rs.getInt(2)), w.args());
     }
 
-    /** Consumo de materias primas en el periodo (solo responde al periodo y a los días marcados). */
+    /** Consumo de materias primas en el periodo (solo responde al periodo y a los días marcados). Solo cuenta las salidas. */
     public List<MateriaBruta> materias(FiltroDashboard f) {
         Clausula w = new Clausula().y("rd.fecha BETWEEN ? AND ?", Date.valueOf(f.desde()), Date.valueOf(f.hasta()));
         w.en("rd.fecha", f.dias().stream().map(Date::valueOf).toList());
+        w.y("ISNULL(lm.descripcion, '') NOT LIKE 'Ingreso%'");       // las entradas de materia prima no son consumo
         return jdbc.query("SELECT m.nombre_materia, u.nombre_medicion, SUM(lm.cantidad_materia), "
                 + "MAX(TRY_CAST(m.stock AS DECIMAL(12, 2))), MAX(m.stock_minimo) "
                 + "FROM Lista_Materia lm "

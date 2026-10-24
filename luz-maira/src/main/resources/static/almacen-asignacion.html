@@ -12,11 +12,12 @@
 </head>
 <body class="" data-menu="almacen" data-lateral="buscador">
 <main class="principal" id="principal">
-<h1 class="titulo-app">Delivery</h1><div class="tabla-caja"><div class="tabla-scroll"><table><thead><tr><th>ID</th><th>Tipo</th><th>Fecha de solicitud</th><th>Fecha entregada</th><th>Estado</th></tr></thead><tbody><tr data-filtrable><td>190</td><td>Virtual</td><td>22 sep 2026</td><td>22 sep 2026</td><td><span class="chip chip-naranja"><i></i>Por asignar</span></td></tr><tr data-filtrable><td>213</td><td>Virtual</td><td>20 sep 2026</td><td>20 sep 2026</td><td><span class="chip chip-naranja"><i></i>Por asignar</span></td></tr><tr data-filtrable><td>541</td><td>Virtual</td><td>19 sep 2026</td><td>19 sep 2026</td><td><span class="chip chip-verde"><i></i>Asignado</span></td></tr><tr data-filtrable><td>123</td><td>Personalizado</td><td>18 sep 2026</td><td>24 sep 2026</td><td><span class="chip chip-verde"><i></i>Asignado</span></td></tr><tr data-filtrable><td>543</td><td>Virtual</td><td>17 sep 2026</td><td>17 sep 2026</td><td><span class="chip chip-naranja"><i></i>Por asignar</span></td></tr><tr data-filtrable><td>125</td><td>Virtual</td><td>17 sep 2026</td><td>17 sep 2026</td><td><span class="chip chip-verde"><i></i>Entregado</span></td></tr></tbody></table></div><div class="tabla-pie"><span>6 solicitudes</span><span>Actualizado hoy, 10:30</span></div></div><div class="acciones-pie"><button class="btn" data-abrir="asignar">Asignar Delivery</button></div>
+<h1 class="titulo-app">Delivery</h1><p class="sub">Asigna un conductor y un vehículo a los pedidos Delivery y Personalizados</p><div id="tabla-asignaciones"><p class="vacio">Cargando…</p></div><div class="acciones-pie"><button class="btn" id="btn-asignar">Asignar Delivery</button></div>
 </main>
     <script src="js/config.js"></script>
     <script src="js/api.js"></script>
     <script src="js/ui.js"></script>
-    <script src="js/paginas/maqueta.js"></script>
+    <script src="js/lib/sweetalert2.all.min.js"></script>
+    <script src="js/paginas/asignacion.js"></script>
 </body>
 </html>

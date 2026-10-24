@@ -4,7 +4,7 @@ Arquitectura: **Vista (HTML/CSS/JS) → Controller → Service → DAO (JdbcTemp
 
 ## Cómo ponerlo a funcionar
 1. En SQL Server ejecuta, en orden: `01_schema.sql`, `02_datos_demo.sql`, `03_roles_codigos_imagenes.sql`,
-   `04_stock_y_minimos.sql` y `05_imagenes_materias_proveedores.sql` (tablas, datos de demostración, columna de imagen
+   `04_stock_y_minimos.sql`, `05_imagenes_materias_proveedores.sql`, `06_imagenes_demo.sql` y `07_conductores_vehiculos_demo.sql` (tablas, datos de demostración, columna de imagen
    + tipo "Presencial" + códigos de 3 dígitos, stock / stock mínimo, y fotos de productos base y proveedores).
    Si tu usuario SQL no puede iniciar sesión, ejecuta antes `00_usuario_sql.sql` (crea el usuario `pan`).
    **Sin los scripts 03, 04 y 05 la aplicación falla** (faltan las columnas `imagen`, `stock`, `stock_minimo` y `descripcion`).
@@ -62,6 +62,22 @@ En la barra lateral, bloque "Estado del stock": **Productos con poco stock** (st
 agotados) y **Desabastecidos** (stock en 0). Se pueden combinar con la búsqueda y las categorías; si se marcan los dos salen los
 que cumplan cualquiera. Los panes no controlan stock, así que nunca aparecen en estos filtros. Solo el administrador puede usarlos
 (`GET /api/productos?pocoStock=true&desabastecidos=true`).
+
+## Despacho, delivery y almacén (pantallas operativas)
+Todas leen y guardan en la BD (ya no son maquetas). Ejecuta también `07_conductores_vehiculos_demo.sql` (conductores y vehículos de ejemplo).
+
+| Rol | Pantalla | Qué hace |
+|---|---|---|
+| Despachador | `despachador.html` | Pedidos **Virtuales**: elige el pedido, pide al cliente su código de 3 dígitos y confirma → el pedido pasa a Entregado. |
+| Almacenero / Admin | Almacén → **Asignación-Delivery** | Asigna cada pedido **Delivery / Personalizado** a un conductor y un vehículo disponibles (quedan Ocupado / En ruta). |
+| Entregador | `entregador.html` | Ve los Delivery / Personalizados ya asignados y confirma con el código del cliente → Entregado, y el conductor y el vehículo quedan disponibles. |
+| Almacenero / Admin | Almacén → **Registro del día** | Anota ingresos y salidas de productos base; cada registro actualiza el stock (la salida no puede superar lo que hay). |
+| Almacenero / Admin | Almacén → **Solicitud Proveedores** | Crea solicitudes a un proveedor (quedan "En camino"); **Confirmar Recepción** las pasa a "Recibido", suma el stock y deja un Ingreso en el registro del día. |
+
+Reglas: el estado del pedido en la BD sigue siendo Pendiente / Entregado (el dashboard no cambia); "asignado" significa tener fila en
+`Pedido_Conductor` y `Pedido_Vehiculo`. El código del pedido **no** se muestra al despachador, entregador ni almacenero (solo al cliente,
+la cajera y el admin). En `Lista_Materia` el tipo de movimiento va al inicio de la descripción ("Ingreso: ..." / "Salida: ..."); el
+consumo del dashboard solo cuenta las salidas. Las cantidades del registro del día son enteras (la columna es INT): para medios kilos se registra en gramos.
 
 ## Portada pública
 - El **catálogo completo** se ve sin iniciar sesión, con búsqueda y filtro por categorías (el admin es el único que ve productos agotados).

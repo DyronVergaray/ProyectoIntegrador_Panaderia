@@ -1,8 +1,10 @@
 package com.panaderia.luz_maira.controller;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -54,10 +56,20 @@ public class PedidoController {
         return dao.listar(null, usuario.getId());
     }
 
-    /** Todos los pedidos (cajera y administrador). */
+    /**
+     * Todos los pedidos (cajera y administrador). Sin parámetros devuelve los más recientes.
+     * Filtros opcionales: q (N.º, código, cliente o correo), tipo, estado, desde / hasta (AAAA-MM-DD),
+     * orden (fecha | codigo) y dir (asc | desc).
+     */
     @GetMapping("/pedidos")
-    public List<Pedidos.Resumen> pedidos(@RequestParam(required = false) String tipo) {
-        return dao.listar(tipo, null);
+    public List<Pedidos.Resumen> pedidos(@RequestParam(required = false) String q,
+                                         @RequestParam(required = false) String tipo,
+                                         @RequestParam(required = false) String estado,
+                                         @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate desde,
+                                         @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate hasta,
+                                         @RequestParam(defaultValue = "fecha") String orden,
+                                         @RequestParam(defaultValue = "desc") String dir) {
+        return dao.historial(q, tipo, estado, desde, hasta, orden, "asc".equalsIgnoreCase(dir));
     }
 
     @GetMapping("/pedidos/{id}")

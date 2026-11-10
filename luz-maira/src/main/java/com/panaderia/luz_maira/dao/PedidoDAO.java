@@ -27,7 +27,22 @@ public class PedidoDAO extends BaseDAO {
                 (rs, n) -> new TipoPedido(rs.getInt(1), rs.getString(2)));
     }
 
-    /** Lista pedidos; tipo y clienteId son filtros opcionales. */
+    private static final String SELECT_RESUMEN = "SELECT %s pg.id_pedido, u.primer_nombre + ' ' + u.primer_apellido, tp.nombre_tipo, "
+            + "CONVERT(VARCHAR(10), pg.pedido_fecha, 23), CONVERT(VARCHAR(10), pg.fecha_asignada, 23), "
+            + "pg.estado_pedido, c.precio_total, cd.codigo "
+            + "FROM Pedido_Gestion pg JOIN Carrito c ON c.id_carrito = pg.id_carrito "
+            + "JOIN Usuario u ON u.id_usuario = c.id_usuario "
+            + "JOIN Credenciales_usuario ce ON ce.id_credenciales = u.id_credenciales "
+            + "JOIN Tipo_Pedido tp ON tp.id_tipo = pg.id_tipo "
+            + "LEFT JOIN Codigo cd ON cd.id_pedido = pg.id_pedido";
+
+    private List<Pedidos.Resumen> consultar(String top, Clausula donde, String orden) {
+        return jdbc.query(String.format(SELECT_RESUMEN, top) + donde.sql() + " ORDER BY " + orden,
+                (rs, n) -> new Pedidos.Resumen(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getString(4),
+                        rs.getString(5), rs.getString(6), rs.getBigDecimal(7), rs.getString(8)), donde.args());
+    }
+
+    /** Lista pedidos (más recientes primero); tipo y clienteId son filtros opcionales. */
     public List<Pedidos.Resumen> listar(String tipo, Integer clienteId) {
         Clausula donde = new Clausula();
         if (tipo != null && !tipo.isBlank()) {
@@ -36,15 +51,44 @@ public class PedidoDAO extends BaseDAO {
         if (clienteId != null) {
             donde.y("c.id_usuario = ?", clienteId);
         }
-        String sql = "SELECT TOP 300 pg.id_pedido, u.primer_nombre + ' ' + u.primer_apellido, tp.nombre_tipo, "
-                + "CONVERT(VARCHAR(10), pg.pedido_fecha, 23), CONVERT(VARCHAR(10), pg.fecha_asignada, 23), "
-                + "pg.estado_pedido, c.precio_total "
-                + "FROM Pedido_Gestion pg JOIN Carrito c ON c.id_carrito = pg.id_carrito "
-                + "JOIN Usuario u ON u.id_usuario = c.id_usuario "
-                + "JOIN Tipo_Pedido tp ON tp.id_tipo = pg.id_tipo"
-                + donde.sql() + " ORDER BY pg.pedido_fecha DESC, pg.id_pedido DESC";
-        return jdbc.query(sql, (rs, n) -> new Pedidos.Resumen(rs.getInt(1), rs.getString(2), rs.getString(3),
-                rs.getString(4), rs.getString(5), rs.getString(6), rs.getBigDecimal(7)), donde.args());
+        return consultar("TOP 300", donde, "pg.pedido_fecha DESC, pg.id_pedido DESC");
+    }
+
+    /**
+     * Historial completo del administrador. Todos los filtros son opcionales:
+     * texto (N.º de pedido, código, nombre del cliente o correo), tipo, estado y rango de fechas (inclusive).
+     * orden: "fecha" o "codigo"; ascendente o descendente.
+     */
+    public List<Pedidos.Resumen> historial(String texto, String tipo, String estado, java.time.LocalDate desde,
+                                           java.time.LocalDate hasta, String orden, boolean ascendente) {
+        Clausula donde = new Clausula();
+        if (texto != null && !texto.isBlank()) {
+            String t = texto.trim();
+            String patron = "%" + t.replace("[", "[[]").replace("%", "[%]").replace("_", "[_]") + "%";
+            // El N.º de pedido solo se compara cuando el texto es un número (evita errores de conversión)
+            String id = t.matches("\\d{1,9}") ? t : "-1";
+            donde.y("(pg.id_pedido = ? OR cd.codigo LIKE ? OR ce.email LIKE ? OR "
+                    + "(u.primer_nombre + ' ' + u.primer_apellido + ' ' + ISNULL(u.segundo_apellido, '')) LIKE ?)",
+                    Integer.parseInt(id), patron, patron, patron);
+        }
+        if (tipo != null && !tipo.isBlank()) {
+            donde.y("tp.nombre_tipo = ?", tipo);
+        }
+        if (estado != null && !estado.isBlank()) {
+            donde.y("pg.estado_pedido = ?", estado);
+        }
+        if (desde != null) {
+            donde.y("pg.pedido_fecha >= ?", Date.valueOf(desde));
+        }
+        if (hasta != null) {
+            donde.y("pg.pedido_fecha < ?", Date.valueOf(hasta.plusDays(1)));
+        }
+        // La columna de orden sale de una lista fija (nunca del texto que envía el usuario)
+        String sentido = ascendente ? " ASC" : " DESC";
+        String ordenSql = "codigo".equals(orden)
+                ? "cd.codigo" + sentido + ", pg.id_pedido" + sentido
+                : "pg.pedido_fecha" + sentido + ", pg.id_pedido" + sentido;
+        return consultar("TOP 1000", donde, ordenSql);
     }
 
     /** Detalle completo; lanza EmptyResultDataAccessException (404) si no existe. */

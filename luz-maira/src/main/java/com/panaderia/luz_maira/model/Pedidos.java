@@ -9,7 +9,7 @@ public final class Pedidos {
     private Pedidos() { }
 
     public record Resumen(int id, String cliente, String tipo, String fechaSolicitud,
-                          String fechaEstimada, String estado, BigDecimal total) { }
+                          String fechaEstimada, String estado, BigDecimal total, String codigo) { }
 
     /** Respuesta al consolidar un pedido: el código de 3 dígitos se genera en el servidor. */
     public record Confirmacion(int idPedido, String codigo, BigDecimal total) { }

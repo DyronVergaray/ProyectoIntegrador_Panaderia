@@ -215,6 +215,28 @@ td.num, th.num { text-align: right; }
 .insignia { position: absolute; top: -2px; right: -2px; min-width: 15px; height: 15px; border-radius: 50%; background: var(--cafe); color: #fff; font-size: .55rem; display: grid; place-items: center; }
 .menu-movil { display: none; border: 1px solid var(--tinta); background: transparent; border-radius: 6px; padding: .2rem .6rem; font-size: 1.1rem; }
 .promo { background: #fdd9ae; text-align: center; padding: .55rem 1rem; font-size: .8rem; font-weight: 500; color: var(--cafe); }
+/* Slider de promociones (bajo el menú). Una diapositiva visible a la vez; flechas y puntos para cambiar */
+.promo-slider { position: relative; display: flex; align-items: center; justify-content: center; gap: .5rem; background: #fdd9ae; color: var(--cafe); padding: .45rem 2.8rem; font-size: .8rem; font-weight: 500; }
+.promo-pista { flex: 1; overflow: hidden; min-height: 1.4em; }
+.promo-carril { display: flex; transition: transform .7s ease; }
+.promo-slide { flex: 0 0 100%; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.promo-flecha { position: absolute; top: 50%; transform: translateY(-50%); width: 26px; height: 26px; border: 0; border-radius: 50%; background: rgba(91, 58, 37, .12); color: var(--cafe); font-size: 1.1rem; line-height: 1; cursor: pointer; }
+.promo-flecha:first-child { left: .8rem; }
+.promo-flecha:not(:first-child) { right: .8rem; }
+.promo-flecha:hover { background: rgba(91, 58, 37, .25); }
+.promo-puntos { position: absolute; bottom: 2px; left: 50%; transform: translateX(-50%); display: flex; gap: 4px; }
+.promo-punto { width: 6px; height: 6px; padding: 0; border: 0; border-radius: 50%; background: rgba(91, 58, 37, .3); cursor: pointer; }
+.promo-punto.activo { background: var(--cafe); }
+/* Casilla "Aplicar promociones" del carrito y líneas de regalo en recibo e historial */
+.caja-promo { margin-top: .8rem; padding: .55rem .7rem; border: 1px dashed var(--ambar); border-radius: 8px; background: #fff8ec; }
+.caja-promo .check { font-weight: 700; color: var(--cafe); }
+.caja-promo small { display: block; color: var(--suave); font-size: .68rem; margin-top: .15rem; }
+.regalo { color: #2f7d4f; font-weight: 700; }
+.recibo-promo { text-align: left; border-top: 1px dashed var(--linea); margin-top: .5rem; padding-top: .5rem; font-size: .75rem; }
+.recibo-promo strong { display: block; color: #2f7d4f; letter-spacing: .04em; font-size: .65rem; }
+.promo-detalle { margin: .8rem 0; padding: .6rem .8rem; border-radius: 8px; background: #fff8ec; border: 1px dashed var(--ambar); font-size: .8rem; }
+.promo-detalle strong { color: #2f7d4f; }
+@media print { .promo-slider { display: none; } }
 .contenedor { width: min(1080px, 100% - 3rem); margin: 0 auto; }
 .hero { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: center; padding: 3.5rem 0 4rem; }
 .eyebrow { font-size: .65rem; font-weight: 700; letter-spacing: .1em; color: var(--ambar); text-transform: uppercase; }

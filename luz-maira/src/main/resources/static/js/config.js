@@ -9,21 +9,21 @@ const MENUS = {
         ["Solicitud Proveedores", "almacen-solicitudes.html"], ["Proveedores", "almacen-proveedores.html"],
         ["Asignación-Delivery", "almacen-asignacion.html"]],
     admin: [["Crear Usuarios", "admin-usuarios.html"], ["Productos", "admin-productos.html"],
-        ["Pedidos Personalizados", "admin-pedidos.html"], ["Entregadores y vehículos", "admin-flota.html"],
-        ["Dashboard", "admin-dashboard.html"], ["Almacén", "almacen-productos.html"]],
+        ["Historial de pedidos", "admin-historial.html"], ["Pedidos Personalizados", "admin-pedidos.html"], ["Entregadores y vehículos", "admin-flota.html"],
+        ["Promociones", "admin-promociones.html"], ["Dashboard", "admin-dashboard.html"], ["Almacén", "almacen-productos.html"]],
     ninguno: []
 };
 
 // Color de cada estado de pedido (los no listados salen en naranja)
 const ESTADO_COLOR = {
     Entregado: "verde", Despachado: "verde", Recibido: "verde", Asignado: "verde", Disponible: "verde", Ocupado: "naranja", "En ruta": "naranja", "No disponible": "rojo", Mantenimiento: "rojo",
-    Cancelado: "rojo", Agotado: "rojo"
+    Cancelado: "rojo", Agotado: "rojo", Vigente: "verde", Pausada: "rojo"
 };
 
 // Menú lateral del administrador (también aparece al entrar a las pantallas del almacén)
 const ENLACES_ADMIN = [["Dashboard", "admin-dashboard.html"], ["Productos", "admin-productos.html"],
-    ["Pedidos Personalizados", "admin-pedidos.html"], ["Entregadores y vehículos", "admin-flota.html"],
-    ["Crear Usuarios", "admin-usuarios.html"], ["Almacén", "almacen-productos.html"]];
+    ["Historial de pedidos", "admin-historial.html"], ["Pedidos Personalizados", "admin-pedidos.html"], ["Entregadores y vehículos", "admin-flota.html"],
+    ["Promociones", "admin-promociones.html"], ["Crear Usuarios", "admin-usuarios.html"], ["Almacén", "almacen-productos.html"]];
 
 // Descripción de cada rol en las tarjetas de "Crear Nuevo Usuario"
 const DESCRIPCION_ROL = {

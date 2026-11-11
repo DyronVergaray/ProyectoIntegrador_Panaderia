@@ -13,12 +13,14 @@ import jakarta.validation.constraints.Size;
  * Pedido que envía el cliente (o la cajera) al consolidar.
  * No lleva precios ni código: el servidor toma los precios de la BD y genera el código de 3 dígitos.
  * fecha/hora (yyyy-MM-dd / HH:mm) solo se usan en pedidos Personalizados; direccion, en Delivery.
+ * aplicarPromociones: casilla que marca el cliente o la cajera; el premio lo calcula el servidor.
  */
 public record PedidoForm(
         Integer idTipo,
         String fecha,
         String hora,
         @Size(max = 50, message = "La dirección admite máximo 50 caracteres") String direccion,
+        Boolean aplicarPromociones,
         @NotEmpty(message = "Agrega al menos un producto al pedido")
         @Size(max = 60, message = "El pedido tiene demasiados productos") List<@Valid Linea> items) {
 

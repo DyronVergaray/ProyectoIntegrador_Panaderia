@@ -12,6 +12,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import com.panaderia.luz_maira.model.Pedidos;
+import com.panaderia.luz_maira.model.Promocion;
 import com.panaderia.luz_maira.model.TipoPedido;
 
 /** Tablas: Pedido_Gestion, Carrito, Carrito_Objetos, Codigo y Tipo_Pedido. */
@@ -110,9 +111,12 @@ public class PedidoDAO extends BaseDAO {
                     (r, i) -> new Pedidos.Item(r.getString(1), r.getInt(2), r.getBigDecimal(3),
                             r.getBigDecimal(3).multiply(BigDecimal.valueOf(r.getInt(2)))),
                     rs.getInt(10));
+            List<Promocion.Aplicada> promociones = jdbc.query(
+                    "SELECT nombre_promocion, producto, veces, cantidad FROM Pedido_Promocion WHERE id_pedido = ? ORDER BY id_pedido_promocion",
+                    (r, i) -> new Promocion.Aplicada(r.getString(1), r.getString(2), r.getInt(3), r.getInt(4)), rs.getInt(1));
             return new Pedidos.Detalle(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getString(4),
                     rs.getString(5), rs.getString(6), rs.getString(7), rs.getString(8), rs.getString(9),
-                    items, rs.getBigDecimal(11));
+                    items, rs.getBigDecimal(11), promociones);
         }, id);
     }
 

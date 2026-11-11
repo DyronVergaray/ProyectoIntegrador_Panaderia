@@ -224,7 +224,11 @@ const UI = {
                         h("strong", { texto: d.codigo }), h("em", { texto: "Presentar código en caja al retirar" })) : null),
                 h("span", { class: "etiqueta", texto: "PRODUCTOS DEL PEDIDO" }),
                 UI.tabla(["Producto", ">Cant.", ">Precio Unit.", ">Subtotal"],
-                    d.items.map((i) => [i.producto, "× " + i.cantidad, UI.soles(i.precio), UI.soles(i.subtotal)])),
+                    d.items.map((i) => Number(i.precio) === 0
+                        ? [h("span", {}, i.producto + " ", h("span", { class: "regalo", texto: "(Regalo)" })), "× " + i.cantidad, h("span", { class: "regalo", texto: "Gratis" }), UI.soles(0)]
+                        : [i.producto, "× " + i.cantidad, UI.soles(i.precio), UI.soles(i.subtotal)])),
+                ...(d.promociones || []).map((p) => h("div", { class: "promo-detalle" }, h("strong", { texto: "🎁 Promoción aplicada: " + p.nombre }),
+                    h("p", { texto: "Te llevaste " + p.cantidad + " × " + p.producto + " gratis (" + p.veces + (p.veces === 1 ? " vez" : " veces") + ")" }))),
                 h("div", { class: "totales" }, h("p", {}, "Total: ", h("span", { class: "grande", texto: UI.soles(d.total) }))),
                 h("div", { class: "modal-pie" }, h("span", { texto: "Fecha de solicitud: " + UI.fecha(d.fechaSolicitud) }))
             ]);
@@ -550,7 +554,12 @@ const UI = {
         const panel = datos.panel ? h("aside", { class: "panel-pedido", id: "panel", "aria-label": "Tu pedido" }) : null;
         const app = h("div", { class: "app " + (panel ? "con-panel " : "") + (datos.appclase || "") }, lateral, principal, panel);
         const menu = adminEnAlmacen ? [["← Panel Admin", "admin-dashboard.html"]].concat(MENUS.almacen) : (MENUS[datos.menu] || []);
-        document.body.prepend(UI.cabecera(menu), app);
+        const cabecera = UI.cabecera(menu);
+        document.body.prepend(cabecera, app);
+        // El cliente y la cajera ven el slider de promociones bajo el menú
+        if ((datos.modo === "cliente" || datos.modo === "cajera") && typeof Promos !== "undefined") {
+            await Promos.montar(cabecera);
+        }
     }
 };
 

@@ -185,6 +185,9 @@ function dibujarFiltros() {
     };
 })();
 
+// Slider de promociones justo debajo del menú
+Promos.montar(document.querySelector("header.cabecera"));
+
 // Favoritos: mismo componente de tarjeta que el catálogo
 Catalogo.favoritos(document.getElementById("favoritos"), "cliente", irAlCatalogo);
 

@@ -12,11 +12,11 @@ public final class Pedidos {
                           String fechaEstimada, String estado, BigDecimal total, String codigo) { }
 
     /** Respuesta al consolidar un pedido: el código de 3 dígitos se genera en el servidor. */
-    public record Confirmacion(int idPedido, String codigo, BigDecimal total) { }
+    public record Confirmacion(int idPedido, String codigo, BigDecimal total, List<Promocion.Aplicada> promociones) { }
 
     public record Item(String producto, int cantidad, BigDecimal precio, BigDecimal subtotal) { }
 
     public record Detalle(int id, String cliente, String telefono, String email, String direccion,
                           String tipo, String codigo, String fechaSolicitud, String estado,
-                          List<Item> items, BigDecimal total) { }
+                          List<Item> items, BigDecimal total, List<Promocion.Aplicada> promociones) { }
 }

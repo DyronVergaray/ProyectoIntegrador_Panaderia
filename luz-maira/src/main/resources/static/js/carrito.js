@@ -13,17 +13,23 @@ const Carrito = {
         const confirmar = h("button", { class: "btn", id: "btn-confirmar", onclick: () => this.confirmar() }, "Confirmar Compra");
         const panel = document.getElementById("panel");
 
+        // Casilla para aplicar las promociones vigentes (solo si el administrador tiene alguna activa)
+        this.chkPromo = h("input", { type: "checkbox", id: "aplicar-promos", onchange: () => this.dibujar() });
+        this.notaPromo = h("small", { texto: "" });
+        this.cajaPromo = h("div", { class: "caja-promo", hidden: Promos.lista.length === 0 },
+            h("label", { class: "check", for: "aplicar-promos" }, this.chkPromo, h("span", { texto: "Aplicar promociones" })), this.notaPromo);
+
         if (modo === "cajera") {
             this.dinero = h("input", { id: "dinero", class: "campo-simple", type: "number", min: "0", step: "0.10", placeholder: "Dinero recibido (S/)", "aria-label": "Dinero recibido", style: "letter-spacing:0" });
             this.vuelto = h("span", { class: "precio", texto: UI.soles(0) });
             this.dinero.oninput = () => this.actualizarVuelto();
-            panel.append(h("h2", { texto: "Tu Pedido" }), this.lineas, filaTotal,
+            panel.append(h("h2", { texto: "Tu Pedido" }), this.lineas, filaTotal, this.cajaPromo,
                 h("label", { class: "etiqueta", for: "dinero", style: "margin-top:.8rem" }, "DINERO (RECIBIDO)"), this.dinero,
                 h("div", { class: "vuelto" }, h("span", { texto: "Vuelto:" }), this.vuelto), confirmar);
         } else {
             this.tiposCont = h("div", { id: "tipos-entrega" });
             this.extra = h("div", { id: "datos-entrega" });
-            panel.append(h("h2", { texto: "Tu Pedido" }), this.lineas, filaTotal,
+            panel.append(h("h2", { texto: "Tu Pedido" }), this.lineas, filaTotal, this.cajaPromo,
                 h("span", { class: "etiqueta", style: "margin-top:.8rem", texto: "¿CÓMO LO RECIBES?" }), this.tiposCont, this.extra, confirmar,
                 h("p", { class: "aviso", texto: "Al confirmar recibirás un código de 3 dígitos para retirar tu pedido." }));
             this.cargarTipos();
@@ -129,9 +135,27 @@ const Carrito = {
                 h("span", { class: "monto", texto: UI.soles(i.precio * i.cantidad) }))));
         }
         this.total.innerText = UI.soles(this.suma());
+        this.dibujarPromos();
         if (this.dinero) {
             this.actualizarVuelto();
         }
+    },
+
+    // Vista previa de lo que ganaría la compra (informativa: el servidor vuelve a calcularlo al confirmar)
+    dibujarPromos() {
+        const ganadas = Promos.lista.map((p) => ({ p: p, g: Promos.premio(p, this.suma(), this.items) })).filter((x) => x.g);
+        if (!this.chkPromo.checked) {
+            this.notaPromo.innerText = ganadas.length ? "Tu compra califica: marca la casilla para llevarte el regalo." : "Marca la casilla para que se aplique si tu compra califica.";
+        } else {
+            this.notaPromo.innerText = ganadas.length
+                ? "🎁 Te llevas: " + ganadas.map((x) => x.g.cantidad + " × " + x.p.producto).join(", ")
+                : "Aún no alcanzas el monto de ninguna promoción.";
+        }
+    },
+
+    // Promociones que aplicó el servidor (para recibo y mensaje de confirmación)
+    textoPromos(promociones) {
+        return (promociones || []).map((p) => p.cantidad + " × " + p.producto + " gratis (" + p.nombre + ")");
     },
 
     actualizarVuelto() {
@@ -147,7 +171,7 @@ const Carrito = {
             if (!this.items.length) {
                 throw new Error("Agrega al menos un producto al pedido");
             }
-            const cuerpo = { items: this.items.map((i) => ({ idProducto: i.id, cantidad: i.cantidad })) };
+            const cuerpo = { items: this.items.map((i) => ({ idProducto: i.id, cantidad: i.cantidad })), aplicarPromociones: this.chkPromo.checked };
             let recibido = 0;
 
             if (this.modo === "cajera") {
@@ -186,6 +210,7 @@ const Carrito = {
             } else {
                 this.mostrarCodigo(respuesta);
                 this.items = [];
+                this.chkPromo.checked = false;
                 this.dibujar();
             }
         } catch (e) {
@@ -202,6 +227,8 @@ const Carrito = {
             contenido: [
                 h("div", { class: "caja-codigo" }, h("small", { texto: "TU CÓDIGO DE RETIRO" }),
                     h("strong", { texto: pedido.codigo }), h("em", { texto: "Preséntalo al retirar o recibir tu pedido" })),
+                (pedido.promociones || []).length ? h("div", { class: "promo-detalle" }, h("strong", { texto: "🎁 Promoción aplicada" }),
+                    ...this.textoPromos(pedido.promociones).map((t) => h("p", { texto: t }))) : null,
                 h("p", { class: "aviso", texto: "Pedido N.º " + pedido.idPedido + " · Total " + UI.soles(pedido.total) + ". Puedes volver a ver tu código en Ver Historial." })],
             botones: [{ texto: "Entendido", onclick: (cerrar) => { cerrar(); ventana.el.remove(); } }]
         });
@@ -224,11 +251,15 @@ const Carrito = {
                 this.items.map((i) => h("div", { class: "linea-pedido" }, h("span", { class: "cantidad", texto: i.cantidad + "x" }),
                     h("div", {}, h("strong", { texto: i.nombre }), h("small", { texto: i.cantidad + " × " + UI.soles(i.precio) })),
                     h("span", { class: "monto", texto: UI.soles(i.precio * i.cantidad) }))),
+                (pedido.promociones || []).length ? h("div", { class: "recibo-promo" }, h("strong", { texto: "PROMOCIÓN APLICADA" }),
+                    pedido.promociones.map((p) => h("div", { class: "linea-pedido" }, h("span", { class: "cantidad", texto: p.cantidad + "x" }),
+                        h("div", {}, h("strong", { texto: p.producto + " (Regalo)" }), h("small", { texto: p.nombre })),
+                        h("span", { class: "monto regalo", texto: "Gratis" })))) : null,
                 h("div", { class: "fila-total" }, h("span", { texto: "Dinero Recibido:" }), h("strong", { texto: UI.soles(recibido) })),
                 filaSimple("Total:", UI.soles(total), "precio"),
                 filaSimple("Vuelto:", UI.soles(Math.round((recibido - total) * 100) / 100), "precio")),
             botones: [{ texto: "Imprimir", onclick: () => window.print() },
-                { texto: "Cerrar", clase: "btn-claro", onclick: (cerrar) => { cerrar(); recibo.el.remove(); this.items = []; this.dinero.value = ""; this.dibujar(); } }]
+                { texto: "Cerrar", clase: "btn-claro", onclick: (cerrar) => { cerrar(); recibo.el.remove(); this.items = []; this.dinero.value = ""; this.chkPromo.checked = false; this.dibujar(); } }]
         });
         recibo.abrir();
     }

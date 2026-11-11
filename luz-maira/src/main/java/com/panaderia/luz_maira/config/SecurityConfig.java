@@ -32,7 +32,7 @@ public class SecurityConfig {
                 // ----- Público -----
                 .requestMatchers("/", "/index.html", "/css/**", "/js/**", "/img/**", "/favicon.ico", "/error").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/login", "/api/registro", "/api/logout").permitAll()
-                .requestMatchers(HttpMethod.GET, "/api/categorias", "/api/productos", "/api/productos/favoritos").permitAll()   // catálogo visible sin iniciar sesión
+                .requestMatchers(HttpMethod.GET, "/api/categorias", "/api/productos", "/api/productos/favoritos", "/api/promociones").permitAll()   // catálogo visible sin iniciar sesión
 
                 // ----- API por rol -----
                 .requestMatchers(HttpMethod.GET, "/api/me").authenticated()
@@ -47,7 +47,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/asignaciones/**", "/api/movimientos/**", "/api/solicitudes/**").hasAnyRole("Almacenero", "Administrador")
                 .requestMatchers("/api/despacho/**").hasRole("Despachador")        // pedidos Virtuales
                 .requestMatchers("/api/entregas/**").hasRole("Entregador")         // Delivery y Personalizados
-                .requestMatchers("/api/usuarios/**", "/api/roles", "/api/dashboard/**", "/api/entregadores/**", "/api/vehiculos/**").hasRole("Administrador")
+                .requestMatchers("/api/usuarios/**", "/api/roles", "/api/dashboard/**", "/api/entregadores/**", "/api/vehiculos/**", "/api/promociones/**").hasRole("Administrador")
                 .requestMatchers("/api/**").denyAll()
 
                 // ----- Páginas por rol -----

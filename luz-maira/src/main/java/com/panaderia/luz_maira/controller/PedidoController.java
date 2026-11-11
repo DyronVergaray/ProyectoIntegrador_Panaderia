@@ -82,7 +82,7 @@ public class PedidoController {
         // El código lo muestra el cliente al recibir su pedido: despachador, entregador y almacenero no lo ven, para que confirmarlo tenga sentido
         if (usuario.getRol().equals("Despachador") || usuario.getRol().equals("Entregador") || usuario.getRol().equals("Almacenero")) {
             return new Pedidos.Detalle(detalle.id(), detalle.cliente(), detalle.telefono(), detalle.email(), detalle.direccion(),
-                    detalle.tipo(), null, detalle.fechaSolicitud(), detalle.estado(), detalle.items(), detalle.total());
+                    detalle.tipo(), null, detalle.fechaSolicitud(), detalle.estado(), detalle.items(), detalle.total(), detalle.promociones());
         }
         return detalle;
     }

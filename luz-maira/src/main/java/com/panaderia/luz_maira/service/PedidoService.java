@@ -7,7 +7,10 @@ import java.sql.Time;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeParseException;
+import java.math.RoundingMode;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -18,8 +21,10 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.panaderia.luz_maira.dao.PedidoDAO;
+import com.panaderia.luz_maira.dao.PromocionDAO;
 import com.panaderia.luz_maira.model.PedidoForm;
 import com.panaderia.luz_maira.model.Pedidos;
+import com.panaderia.luz_maira.model.Promocion;
 import com.panaderia.luz_maira.model.TipoPedido;
 import com.panaderia.luz_maira.security.UsuarioAutenticado;
 
@@ -30,11 +35,16 @@ public class PedidoService {
     private static final Logger log = LoggerFactory.getLogger(PedidoService.class);
     private static final int INTENTOS_CODIGO = 100;
     private final PedidoDAO dao;
+    private final PromocionDAO promociones;
     private final SecureRandom azar = new SecureRandom();
 
-    public PedidoService(PedidoDAO dao) {
+    public PedidoService(PedidoDAO dao, PromocionDAO promociones) {
         this.dao = dao;
+        this.promociones = promociones;
     }
+
+    /** Premio ya calculado de una promoción: qué producto se regala y cuántas unidades. */
+    private record Premio(Promocion promocion, int veces, int idProducto, PedidoDAO.ProductoPedido producto, int cantidad) { }
 
     @Transactional
     public Pedidos.Confirmacion crear(UsuarioAutenticado usuario, PedidoForm f) {
@@ -83,6 +93,9 @@ public class PedidoService {
             total = total.add(producto.precio().multiply(BigDecimal.valueOf(e.getValue())));
         }
 
+        // Promociones: solo si el cliente o la cajera marcaron la casilla. El premio se calcula aquí, nunca en el navegador.
+        List<Premio> premios = Boolean.TRUE.equals(f.aplicarPromociones()) ? calcularPremios(total, cantidades) : List.of();
+
         int idCarrito = dao.insertarCarrito(usuario.getId(), total);
         for (Map.Entry<Integer, Integer> e : cantidades.entrySet()) {
             PedidoDAO.ProductoPedido producto = productos.get(e.getKey());
@@ -93,14 +106,68 @@ public class PedidoService {
                 throw error("El stock de " + producto.nombre() + " acaba de cambiar. Intenta de nuevo.");
             }
         }
+        // Los regalos se guardan como productos a precio S/ 0.00 (y descuentan stock como cualquier otro)
+        for (Premio premio : premios) {
+            dao.insertarItem(idCarrito, premio.idProducto(), premio.cantidad(), BigDecimal.ZERO);
+            if (premio.producto().stock() != null && !dao.descontarStock(premio.idProducto(), premio.cantidad())) {
+                throw error("El stock de " + premio.producto().nombre() + " acaba de cambiar. Intenta de nuevo.");
+            }
+        }
         int idPedido = dao.insertarPedido(idCarrito, tipo.id(), Date.valueOf(fecha), Time.valueOf(hora),
                 enCaja ? "Entregado" : "Pendiente", direccion);
+
+        List<Promocion.Aplicada> aplicadas = new ArrayList<>();
+        for (Premio premio : premios) {
+            Promocion.Aplicada aplicada = new Promocion.Aplicada(premio.promocion().nombre(), premio.producto().nombre(),
+                    premio.veces(), premio.cantidad());
+            promociones.registrarAplicada(idPedido, aplicada);
+            aplicadas.add(aplicada);
+        }
 
         String codigo = generarCodigo();
         dao.insertarCodigo(idPedido, codigo);
         log.info("Pedido {} registrado por {} ({}): tipo={}, total={}, código={}",
                 idPedido, usuario.getUsername(), usuario.getRol(), tipo.nombre(), total, codigo);
-        return new Pedidos.Confirmacion(idPedido, codigo, total);
+        return new Pedidos.Confirmacion(idPedido, codigo, total, aplicadas);
+    }
+
+    /**
+     * Revisa cada promoción vigente contra la compra (total en S/ o unidades de un producto). Por cada bloque completo
+     * (hasta maxVeces) se regalan cantidadRegalo unidades. Si el producto de regalo tiene stock limitado, se
+     * regala lo que quede después de lo que el cliente ya compró; si no queda nada, esa promoción no se aplica.
+     */
+    private List<Premio> calcularPremios(BigDecimal total, Map<Integer, Integer> cantidades) {
+        List<Promocion> vigentes = promociones.vigentes();
+        if (vigentes.isEmpty()) {
+            return List.of();
+        }
+        List<Premio> premios = new ArrayList<>();
+        Map<Integer, Integer> regalado = new LinkedHashMap<>();     // unidades ya regaladas por producto en este pedido
+        Map<Integer, PedidoDAO.ProductoPedido> regalos = dao.productosParaPedido(
+                vigentes.stream().map(Promocion::idProducto).toList());
+        for (Promocion promo : vigentes) {
+            // Bloques completos que cumple la compra: por monto (total / monto) o por unidades compradas del producto
+            int bloques = promo.tipo().equals(Promocion.MONTO)
+                    ? total.divideToIntegralValue(promo.montoMinimo()).setScale(0, RoundingMode.DOWN).intValue()
+                    : cantidades.getOrDefault(promo.idProductoCondicion(), 0) / promo.cantidadCondicion();
+            int veces = Math.min(bloques, promo.maxVeces());
+            PedidoDAO.ProductoPedido producto = regalos.get(promo.idProducto());
+            if (veces < 1 || producto == null) {
+                continue;
+            }
+            int cantidad = veces * promo.cantidadRegalo();
+            if (producto.stock() != null) {
+                int ocupado = cantidades.getOrDefault(promo.idProducto(), 0) + regalado.getOrDefault(promo.idProducto(), 0);
+                cantidad = Math.min(cantidad, producto.stock() - ocupado);
+            }
+            if (cantidad < 1) {
+                log.info("Promoción '{}' sin aplicar: no queda stock de {}", promo.nombre(), producto.nombre());
+                continue;
+            }
+            regalado.merge(promo.idProducto(), cantidad, Integer::sum);
+            premios.add(new Premio(promo, veces, promo.idProducto(), producto, cantidad));
+        }
+        return premios;
     }
 
     /** Código aleatorio de 3 dígitos (100 a 999) que no esté en uso por otro pedido pendiente. */

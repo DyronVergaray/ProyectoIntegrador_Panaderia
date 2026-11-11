@@ -74,6 +74,10 @@ public class ManejadorErrores {
     @ExceptionHandler(DataAccessException.class)
     ResponseEntity<Map<String, String>> baseDeDatos(DataAccessException e) {
         log.error("Error de base de datos", e);
+        // Los errores de Spring Data MongoDB vienen de paquetes que contienen "mongodb"
+        if (e.getClass().getName().contains("mongodb") || e.getMostSpecificCause().getClass().getName().contains("mongodb")) {
+            return error(503, "No se pudo acceder a MongoDB. Revisa que el servicio esté encendido (mongodb://localhost:27017).");
+        }
         return error(503, "No se pudo acceder a la base de datos. Revisa que SQL Server esté encendido y los datos de conexión.");
     }
 

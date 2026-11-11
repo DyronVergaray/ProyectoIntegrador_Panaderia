@@ -6,7 +6,6 @@ import java.sql.Date;
 import java.sql.Time;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.time.format.DateTimeParseException;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -52,7 +51,7 @@ public class PedidoService {
 
         // La cajera siempre registra ventas "Presencial"; el cliente elige entre Virtual, Delivery y Personalizado
         TipoPedido tipo = enCaja ? dao.tipoPorNombre("Presencial") : dao.tipoPorId(f.idTipo());
-        if (tipo == null || (!enCaja && tipo.nombre().equals("Presencial"))) {
+        if (tipo == null || (!enCaja && (tipo.nombre().equals("Presencial") || tipo.nombre().equals("Personalizado")))) {
             throw error("Tipo de pedido no válido. Si falta 'Presencial', ejecuta database/03_roles_codigos_imagenes.sql");
         }
 
@@ -62,16 +61,6 @@ public class PedidoService {
         String direccion = null;
         if (tipo.nombre().equals("Delivery")) {
             direccion = textoObligatorio(f.direccion(), "Ingresa la dirección para el delivery");
-        } else if (tipo.nombre().equals("Personalizado")) {
-            try {
-                fecha = LocalDate.parse(textoObligatorio(f.fecha(), "Elige la fecha del pedido personalizado"));
-                hora = LocalTime.parse(textoObligatorio(f.hora(), "Elige la hora del pedido personalizado"));
-            } catch (DateTimeParseException e) {
-                throw error("La fecha u hora del pedido no es válida");
-            }
-            if (fecha.isBefore(LocalDate.now())) {
-                throw error("La fecha del pedido no puede estar en el pasado");
-            }
         }
 
         // Une productos repetidos y toma precios y stock de la base de datos
@@ -168,6 +157,28 @@ public class PedidoService {
             premios.add(new Premio(promo, veces, promo.idProducto(), producto, cantidad));
         }
         return premios;
+    }
+
+    /**
+     * Crea el pedido SQL de una solicitud personalizada aceptada por el administrador.
+     * El carrito lleva un solo producto base ("Pedido personalizado") con el precio acordado. Queda "Pendiente"
+     * y sigue el flujo normal: código de 3 dígitos, entrega e historial del cliente.
+     */
+    @Transactional
+    public Pedidos.Confirmacion crearPersonalizado(int idCliente, BigDecimal precio, LocalDate fecha, LocalTime hora, String direccion) {
+        TipoPedido tipo = dao.tipoPorNombre("Personalizado");
+        Integer idProducto = dao.idProductoPersonalizado();
+        if (tipo == null || idProducto == null) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
+                    "Falta el producto base de pedidos personalizados. Ejecuta database/12_producto_personalizado.sql");
+        }
+        int idCarrito = dao.insertarCarrito(idCliente, precio);
+        dao.insertarItem(idCarrito, idProducto, 1, precio);
+        int idPedido = dao.insertarPedido(idCarrito, tipo.id(), Date.valueOf(fecha), Time.valueOf(hora), "Pendiente", direccion);
+        String codigo = generarCodigo();
+        dao.insertarCodigo(idPedido, codigo);
+        log.info("Pedido personalizado {} creado para el cliente {}: total={}, código={}", idPedido, idCliente, precio, codigo);
+        return new Pedidos.Confirmacion(idPedido, codigo, precio, List.of());
     }
 
     /** Código aleatorio de 3 dígitos (100 a 999) que no esté en uso por otro pedido pendiente. */

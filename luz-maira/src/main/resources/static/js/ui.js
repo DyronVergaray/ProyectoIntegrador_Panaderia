@@ -222,6 +222,8 @@ const UI = {
                         dato("Tipo de Pedido:", h("span", { class: "chip chip-sencillo", texto: d.tipo }))),
                     d.codigo ? h("div", { class: "caja-codigo" }, h("small", { texto: "CÓDIGO DE RETIRO" }),
                         h("strong", { texto: d.codigo }), h("em", { texto: "Presentar código en caja al retirar" })) : null),
+                (d.especificaciones || []).length ? h("div", { class: "especificaciones" }, h("span", { class: "etiqueta", texto: "CARACTERÍSTICAS DEL PEDIDO PERSONALIZADO" }),
+                    ...d.especificaciones.map((c) => dato(c.etiqueta + ":", c.valor))) : null,
                 h("span", { class: "etiqueta", texto: "PRODUCTOS DEL PEDIDO" }),
                 UI.tabla(["Producto", ">Cant.", ">Precio Unit.", ">Subtotal"],
                     d.items.map((i) => Number(i.precio) === 0
@@ -230,7 +232,7 @@ const UI = {
                 ...(d.promociones || []).map((p) => h("div", { class: "promo-detalle" }, h("strong", { texto: "🎁 Promoción aplicada: " + p.nombre }),
                     h("p", { texto: "Te llevaste " + p.cantidad + " × " + p.producto + " gratis (" + p.veces + (p.veces === 1 ? " vez" : " veces") + ")" }))),
                 h("div", { class: "totales" }, h("p", {}, "Total: ", h("span", { class: "grande", texto: UI.soles(d.total) }))),
-                h("div", { class: "modal-pie" }, h("span", { texto: "Fecha de solicitud: " + UI.fecha(d.fechaSolicitud) }))
+                h("div", { class: "modal-pie" }, h("span", { texto: "Fecha de solicitud: " + UI.fecha(d.fechaSolicitud) }), h("span", {}, "Estado: ", UI.chip(d.estado)))
             ]);
             UI.ventanaPedido.abrir();
         } catch (e) {
@@ -255,7 +257,8 @@ const UI = {
         return {
             el: el, cerrar: cerrar,
             abrir() { el.hidden = false; },
-            poner(nodos) { cuerpo.replaceChildren(...[].concat(nodos)); },
+            // Los null/undefined/false se ignoran (así un h(...) condicional no se imprime como la palabra "null")
+            poner(nodos) { cuerpo.replaceChildren(...[].concat(nodos).filter((n) => n !== null && n !== undefined && n !== false)); },
             ponerTitulo(texto) { encabezado.innerText = texto; }
         };
     },
@@ -345,7 +348,8 @@ const UI = {
     // Formulario en ventana.
     // campos: { id, etiqueta, tipo (text|number|select|password|imagen...), opciones:[{valor,texto}], placeholder, requerido, maxlength, accept }
     // alCambiar(controles, etiquetas): se llama cuando cambia un campo y al abrir (sirve para mostrar u ocultar campos).
-    modalForm({ id, titulo, etiqueta, campos, boton, alGuardar, alCambiar }) {
+    // ancho: "doble" muestra los campos en 2 columnas (un campo con completo: true ocupa las 2)
+    modalForm({ id, titulo, etiqueta, campos, boton, alGuardar, alCambiar, ancho }) {
         const mensaje = h("div", { class: "mensaje", role: "alert" });
         const controles = {};
         const etiquetas = {};
@@ -361,7 +365,7 @@ const UI = {
                 : h("input", { type: c.tipo || "text", placeholder: c.placeholder, maxlength: c.maxlength, min: c.min, step: c.step });
             control.onchange = () => { if (alCambiar) { alCambiar(controles, etiquetas); } };
             controles[c.id] = control;
-            etiquetas[c.id] = h("label", { class: "campo" }, h("span", { texto: c.etiqueta }), control);
+            etiquetas[c.id] = h("label", { class: "campo" + (c.completo ? " completo" : "") }, h("span", { texto: c.etiqueta }), control);
             return etiquetas[c.id];
         });
 
@@ -389,7 +393,8 @@ const UI = {
         };
 
         const modal = UI.modal({
-            id: id, etiqueta: etiqueta, titulo: titulo, ancho: "angosto", contenido: [filas, mensaje],
+            id: id, etiqueta: etiqueta, titulo: titulo, ancho: ancho === "doble" ? "doble" : "angosto",
+            contenido: [ancho === "doble" ? h("div", { class: "form-grid" }, filas) : filas, mensaje],
             botones: [{ texto: "Cancelar", clase: "btn-claro", onclick: (cerrar) => cerrar() }, { texto: boton, onclick: guardar }]
         });
         return Object.assign(modal, {
@@ -553,7 +558,9 @@ const UI = {
         }
         const panel = datos.panel ? h("aside", { class: "panel-pedido", id: "panel", "aria-label": "Tu pedido" }) : null;
         const app = h("div", { class: "app " + (panel ? "con-panel " : "") + (datos.appclase || "") }, lateral, principal, panel);
-        const menu = adminEnAlmacen ? [["← Panel Admin", "admin-dashboard.html"]].concat(MENUS.almacen) : (MENUS[datos.menu] || []);
+        // "Pedido personalizado" es solo del cliente: la cajera comparte el historial pero no ve ese enlace
+        const sinPersonalizado = (lista) => UI.usuario.rol === "Cliente" ? lista : lista.filter(([, enlace]) => enlace !== "personalizado.html");
+        const menu = sinPersonalizado(adminEnAlmacen ? [["← Panel Admin", "admin-dashboard.html"]].concat(MENUS.almacen) : (MENUS[datos.menu] || []));
         const cabecera = UI.cabecera(menu);
         document.body.prepend(cabecera, app);
         // El cliente y la cajera ven el slider de promociones bajo el menú

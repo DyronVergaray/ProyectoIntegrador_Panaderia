@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pedido personalizado - Panadería Luz Mayra</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@700&family=Cormorant+Garamond:wght@600;700&family=DM+Sans:wght@400;500;700&family=Fraunces:wght@600;700&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/png" href="img/favicon.png">
+    <link rel="stylesheet" href="css/estilos.css">
+</head>
+<body class="" data-menu="personalizado" data-appclase="sin-lateral">
+<main class="principal pagina-personalizado" id="principal">
+<div class="encabezado-pagina"><div><h1 class="titulo-app">Pedido personalizado</h1>
+<p class="sub">Tortas, bocaditos y más, hechos a tu medida. La panadería revisa tu solicitud, te da un precio y, al aceptarla, se crea tu pedido.</p></div></div>
+<div class="pers-grid">
+<form class="pers-form" id="form-personalizado" novalidate>
+  <section class="pers-paso"><h2><b>1</b> ¿Qué necesitas?</h2>
+    <div class="opciones" role="radiogroup" aria-label="Tipo de producto"><label class="opcion"><input type="radio" name="p-tipo" value="Torta"><span>🎂 Torta</span></label><label class="opcion"><input type="radio" name="p-tipo" value="Cupcakes"><span>🧁 Cupcakes</span></label><label class="opcion"><input type="radio" name="p-tipo" value="Bocaditos / salados"><span>🥟 Bocaditos / salados</span></label><label class="opcion"><input type="radio" name="p-tipo" value="Pan (pedido grande)"><span>🥖 Pan (pedido grande)</span></label><label class="opcion"><input type="radio" name="p-tipo" value="Otro"><span>✨ Otro</span></label></div>
+    <label class="campo"><span>Describe tu pedido</span><textarea id="p-descripcion" maxlength="500" rows="3" placeholder="Ej. Torta de cumpleaños de 2 pisos con tema de dinosaurios"></textarea></label>
+    <div class="par"><label class="campo"><span>Porciones o unidades</span><input id="p-porciones" type="number" min="1" max="500" step="1" placeholder="Ej. 20"></label>
+    <label class="campo"><span>Sabor <em>(opcional)</em></span><input id="p-sabor" type="text" maxlength="60" placeholder="Vainilla, chocolate…"></label></div>
+  </section>
+  <section class="pers-paso"><h2><b>2</b> Personalízalo</h2>
+    <label class="campo"><span>Decoración <em>(opcional)</em></span><textarea id="p-decoracion" maxlength="300" rows="2" placeholder="Colores, figuras, referencias…"></textarea></label>
+    <div class="par"><label class="campo"><span>Dedicatoria <em>(opcional)</em></span><input id="p-dedicatoria" type="text" maxlength="80" placeholder="Texto que irá en el pedido"></label>
+    <label class="campo"><span>Alergias o restricciones <em>(opcional)</em></span><input id="p-alergias" type="text" maxlength="200" placeholder="Sin frutos secos, sin gluten…"></label></div>
+  </section>
+  <section class="pers-paso"><h2><b>3</b> ¿Cuándo y cómo lo recibes?</h2>
+    <div class="par"><label class="campo"><span>Fecha de entrega</span><input id="p-fecha" type="date"></label>
+    <label class="campo"><span>Hora de entrega</span><input id="p-hora" type="time"></label></div>
+    <div class="opciones dos" role="radiogroup" aria-label="Modalidad">
+      <label class="opcion grande"><input type="radio" name="p-modalidad" value="Recojo" checked><span><strong>🏪 Recojo en tienda</strong><small>Pasas a recogerlo</small></span></label>
+      <label class="opcion grande"><input type="radio" name="p-modalidad" value="Delivery"><span><strong>🛵 Delivery</strong><small>Te lo llevamos</small></span></label>
+    </div>
+    <label class="campo" id="campo-direccion" hidden><span>Dirección de entrega</span><input id="p-direccion" type="text" maxlength="50" placeholder="Calle, número, distrito"></label>
+  </section>
+  <div class="pers-pie"><div class="mensaje" id="p-mensaje" role="alert"></div><button type="submit" class="btn" id="p-enviar">Enviar solicitud</button></div>
+</form>
+<aside class="pers-lateral">
+  <div class="pers-como"><h3>¿Cómo funciona?</h3>
+    <ol><li><b>Cuéntanos</b> qué necesitas con el formulario.</li><li><b>Te respondemos</b> con el precio final o un motivo si no podemos.</li><li><b>Si aceptamos</b>, se crea tu pedido y recibes tu código de 3 dígitos.</li></ol>
+    <p class="nota">Pide con al menos 2 días de anticipación.</p></div>
+  <h3 class="lateral-titulo">Mis solicitudes</h3>
+  <div id="tabla-solicitudes"><p class="vacio">Cargando…</p></div>
+</aside>
+</div>
+</main>
+    <script src="js/config.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/paginas/personalizado.js?v=2"></script>
+</body>
+</html>

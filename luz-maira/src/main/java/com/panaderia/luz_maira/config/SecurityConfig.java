@@ -39,6 +39,10 @@ public class SecurityConfig {
                 .requestMatchers("/api/productos/**").hasRole("Administrador")          // crear, editar, imagen
                 .requestMatchers("/api/tipos-pedido").hasAnyRole("Cliente", "Cajero")
                 .requestMatchers(HttpMethod.POST, "/api/pedidos").hasAnyRole("Cliente", "Cajero")
+                .requestMatchers(HttpMethod.POST, "/api/personalizados").hasRole("Cliente")
+                .requestMatchers(HttpMethod.GET, "/api/personalizados/mias").hasRole("Cliente")
+                .requestMatchers(HttpMethod.PUT, "/api/personalizados/*/cancelar").hasRole("Cliente")
+                .requestMatchers("/api/calificaciones/**").hasRole("Cliente")
                 .requestMatchers(HttpMethod.GET, "/api/pedidos/mios").hasRole("Cliente")
                 .requestMatchers(HttpMethod.GET, "/api/pedidos").hasAnyRole("Cajero", "Administrador")
                 .requestMatchers(HttpMethod.GET, "/api/pedidos/*").hasAnyRole("Cliente", "Cajero", "Administrador", "Almacenero", "Despachador", "Entregador")
@@ -47,11 +51,11 @@ public class SecurityConfig {
                 .requestMatchers("/api/asignaciones/**", "/api/movimientos/**", "/api/solicitudes/**").hasAnyRole("Almacenero", "Administrador")
                 .requestMatchers("/api/despacho/**").hasRole("Despachador")        // pedidos Virtuales
                 .requestMatchers("/api/entregas/**").hasRole("Entregador")         // Delivery y Personalizados
-                .requestMatchers("/api/usuarios/**", "/api/roles", "/api/dashboard/**", "/api/entregadores/**", "/api/vehiculos/**", "/api/promociones/**").hasRole("Administrador")
+                .requestMatchers("/api/usuarios/**", "/api/roles", "/api/dashboard/**", "/api/entregadores/**", "/api/vehiculos/**", "/api/promociones/**", "/api/personalizados/**", "/api/personalizados").hasRole("Administrador")
                 .requestMatchers("/api/**").denyAll()
 
                 // ----- Páginas por rol -----
-                .requestMatchers("/catalogo.html").hasRole("Cliente")
+                .requestMatchers("/catalogo.html", "/personalizado.html").hasRole("Cliente")
                 .requestMatchers("/historial.html").hasAnyRole("Cliente", "Cajero")
                 .requestMatchers("/cajera.html").hasRole("Cajero")
                 .requestMatchers("/almacen-*.html").hasAnyRole("Almacenero", "Administrador")

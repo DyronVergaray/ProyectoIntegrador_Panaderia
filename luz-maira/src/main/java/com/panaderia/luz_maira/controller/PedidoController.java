@@ -3,6 +3,8 @@ package com.panaderia.luz_maira.controller;
 import java.time.LocalDate;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -22,6 +24,7 @@ import com.panaderia.luz_maira.model.Pedidos;
 import com.panaderia.luz_maira.model.TipoPedido;
 import com.panaderia.luz_maira.security.UsuarioAutenticado;
 import com.panaderia.luz_maira.service.PedidoService;
+import com.panaderia.luz_maira.service.PersonalizadoService;
 
 import jakarta.validation.Valid;
 
@@ -31,16 +34,20 @@ import jakarta.validation.Valid;
 public class PedidoController {
 
     private final PedidoDAO dao;
+    private static final Logger log = LoggerFactory.getLogger(PedidoController.class);
     private final PedidoService servicio;
+    private final PersonalizadoService personalizados;
 
-    public PedidoController(PedidoDAO dao, PedidoService servicio) {
+    public PedidoController(PedidoDAO dao, PedidoService servicio, PersonalizadoService personalizados) {
         this.dao = dao;
         this.servicio = servicio;
+        this.personalizados = personalizados;
     }
 
     @GetMapping("/tipos-pedido")
     public List<TipoPedido> tipos() {
-        return dao.tipos().stream().filter(t -> !t.nombre().equals("Presencial")).toList();
+        // Presencial es de la cajera; Personalizado se pide con su propio formulario (personalizado.html)
+        return dao.tipos().stream().filter(t -> !t.nombre().equals("Presencial") && !t.nombre().equals("Personalizado")).toList();
     }
 
     /** Consolida el pedido del cliente (o la venta de la cajera) y devuelve el código de 3 dígitos. */
@@ -79,10 +86,20 @@ public class PedidoController {
             throw new EmptyResultDataAccessException(1);
         }
         Pedidos.Detalle detalle = dao.detalle(id);
+        // Si es un pedido personalizado, se agregan las características que el cliente llenó en el formulario (MongoDB)
+        if (detalle.tipo().equals("Personalizado")) {
+            try {
+                detalle = new Pedidos.Detalle(detalle.id(), detalle.cliente(), detalle.telefono(), detalle.email(), detalle.direccion(),
+                        detalle.tipo(), detalle.codigo(), detalle.fechaSolicitud(), detalle.estado(), detalle.items(), detalle.total(),
+                        detalle.promociones(), personalizados.especificaciones(id));
+            } catch (RuntimeException e) {
+                log.warn("No se pudieron leer las características del pedido {} en MongoDB: {}", id, e.getMessage());
+            }
+        }
         // El código lo muestra el cliente al recibir su pedido: despachador, entregador y almacenero no lo ven, para que confirmarlo tenga sentido
         if (usuario.getRol().equals("Despachador") || usuario.getRol().equals("Entregador") || usuario.getRol().equals("Almacenero")) {
             return new Pedidos.Detalle(detalle.id(), detalle.cliente(), detalle.telefono(), detalle.email(), detalle.direccion(),
-                    detalle.tipo(), null, detalle.fechaSolicitud(), detalle.estado(), detalle.items(), detalle.total(), detalle.promociones());
+                    detalle.tipo(), null, detalle.fechaSolicitud(), detalle.estado(), detalle.items(), detalle.total(), detalle.promociones(), detalle.especificaciones());
         }
         return detalle;
     }

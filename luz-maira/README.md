@@ -4,7 +4,7 @@ Arquitectura: **Vista (HTML/CSS/JS) → Controller → Service → DAO (JdbcTemp
 
 ## Cómo ponerlo a funcionar
 1. En SQL Server ejecuta, en orden: `01_schema.sql`, `02_datos_demo.sql`, `03_roles_codigos_imagenes.sql`,
-   `04_stock_y_minimos.sql`, `05_imagenes_materias_proveedores.sql`, `06_imagenes_demo.sql` y `07_conductores_vehiculos_demo.sql` (tablas, datos de demostración, columna de imagen
+   `04_stock_y_minimos.sql`, `05_imagenes_materias_proveedores.sql`, `06_imagenes_demo.sql`, `07_conductores_vehiculos_demo.sql`, `08_entregadores_credenciales.sql` y `09_producto_eliminado.sql` (tablas, datos de demostración, columna de imagen
    + tipo "Presencial" + códigos de 3 dígitos, stock / stock mínimo, y fotos de productos base y proveedores).
    Si tu usuario SQL no puede iniciar sesión, ejecuta antes `00_usuario_sql.sql` (crea el usuario `pan`).
    **Sin los scripts 03, 04 y 05 la aplicación falla** (faltan las columnas `imagen`, `stock`, `stock_minimo` y `descripcion`).
@@ -79,6 +79,14 @@ Reglas: el estado del pedido en la BD sigue siendo Pendiente / Entregado (el das
 la cajera y el admin). En `Lista_Materia` el tipo de movimiento va al inicio de la descripción ("Ingreso: ..." / "Salida: ..."); el
 consumo del dashboard solo cuenta las salidas. Las cantidades del registro del día son enteras (la columna es INT): para medios kilos se registra en gramos.
 
+## Eliminar productos (baja lógica)
+- En Admin → Productos, al editar un producto aparece **Eliminar** (pide confirmación). No se borra nada: el producto pasa a la
+  categoría **"Producto eliminado"** (script `09_producto_eliminado.sql`; no cambia la estructura de las tablas), así se conserva el historial de pedidos.
+- Solo el **administrador y el almacenero** ven esa categoría y esos productos (marcando "Producto eliminado" en el filtro de categorías del
+  admin o del stock del almacén). No salen en el catálogo del cliente ni de la cajera, ni en favoritos, ni en las alertas de stock, y no se pueden comprar.
+- **Devolver:** el administrador abre el producto eliminado (botón "↺ Devolver"), elige su categoría y pulsa **Devolver** (el mismo botón que antes decía "Eliminar"). El botón solo aparece al editar productos ya creados, nunca al añadir uno nuevo.
+- API: `DELETE /api/productos/{id}` (solo administrador).
+
 ## Portada pública
 - El **catálogo completo** se ve sin iniciar sesión, con búsqueda y filtro por categorías (el admin es el único que ve productos agotados).
 - Al intentar agregar un producto (o abrir el carrito) sin sesión sale un aviso de SweetAlert2 y, al aceptarlo, se abre el panel de perfil para iniciar sesión o registrarse. Un cliente con sesión pasa a su catálogo de pedidos.
@@ -118,3 +126,42 @@ almacen@luzmayra.com / Almacen123 · despacho@luzmayra.com / Despacho123 · entr
   Cada HTML solo trae su contenido propio; la cabecera y la barra lateral se inyectan según los `data-*` del `<body>`.
 - `js/api.js`: único lugar con `fetch`. `js/catalogo.js`: listado de productos. `js/carrito.js`: panel "Tu Pedido".
 - `js/paginas/*.js`: un script por pantalla (tienda, admin-productos, usuarios, pedidos, dashboard, inicio, maqueta).
+
+## Promociones (administrador)
+
+- **SQL**: ejecutar `database/10_promociones.sql` (crea `Promocion` y `Pedido_Promocion`; deja de ejemplo "por cada S/ 100, 6 cupcakes" si existe un producto con "cupcake" en el nombre). Se puede ejecutar varias veces.
+- **Administrador**: menú *Promociones* (`admin-promociones.html`). Crea, edita, pausa y elimina promociones. Cada una dice: *por cada S/ X de compra, el cliente se lleva N unidades de un producto gratis, hasta M veces por pedido*, con fechas opcionales.
+- **Slider**: las promociones vigentes (activas y dentro de fechas) se muestran justo debajo del menú en el inicio, el panel del cliente y el de la cajera (`js/promos.js`, endpoint público `GET /api/promociones`).
+- **Casilla "Aplicar promociones"**: en el panel "Tu Pedido" del cliente y de la cajera. Solo si está marcada, el servidor (`PedidoService.calcularPremios`) calcula el premio, agrega el regalo al pedido a S/ 0.00, descuenta su stock y guarda el registro en `Pedido_Promocion`. Si no queda stock del regalo, se regala lo que quede.
+- **Dónde se ve**: en el recibo de la cajera (el que se imprime/guarda en PDF), en el mensaje de confirmación del cliente y en el detalle del pedido (historial del cliente, de la cajera y del administrador).
+- Eliminar una promoción no altera pedidos anteriores: `Pedido_Promocion` guarda su propia copia del nombre y el producto.
+
+### Tipos de promoción y slider (actualización)
+
+- **SQL**: ejecutar también `database/11_promociones_tipos.sql` (después del 10).
+- **Por monto**: "por cada S/ 100 de compra, llévate 6 cupcakes".
+- **Por cantidad**: "por cada 3 Pan francés que compres, llévate 1 Pan de yema". El servidor cuenta las unidades compradas del producto de la condición.
+- **Slider**: con varias promociones vigentes el carril se desplaza solo hacia la izquierda cada 4 segundos, en bucle continuo; se detiene al pasar el mouse y tiene flechas y puntos.
+
+## MongoDB: pedidos personalizados y calificaciones
+
+SQL Server sigue guardando usuarios, productos y pedidos. MongoDB (base `luzmayra`) guarda lo que cambia de forma de un caso a otro:
+
+| Colección | Qué guarda |
+|---|---|
+| `solicitudes_personalizadas` | Formulario del pedido personalizado (tipo, descripción, sabor, porciones, decoración, dedicatoria, alergias, entrega, precio y nota del admin, N.º de pedido SQL al aceptarse) |
+| `calificaciones` | Calificación de un pedido entregado: 4 aspectos de 1 a 5, ¿nos recomendarías? y comentario (una por pedido) |
+
+**Puesta en marcha**
+1. Tener MongoDB corriendo en `localhost:27017` (instalación local o `docker run -d -p 27017:27017 --name mongo mongo`). Otra dirección: variable de entorno `MONGO_URI`.
+2. Ejecutar `database/12_producto_personalizado.sql` en SQL Server (crea el producto base "Pedido personalizado", oculto del catálogo).
+3. Opcional: `mongosh luzmayra database/mongodb_inicial.js` (crea índices; la app crea las colecciones sola). Para ver los datos: MongoDB Compass.
+
+**Flujo del pedido personalizado**
+1. Cliente: menú *Pedido personalizado* → llena el formulario (mínimo 2 días de anticipación) → queda `Solicitada`. Puede cancelarla mientras nadie la responda.
+2. Administrador: menú *Solicitudes personalizadas* → ve el detalle → **Aceptar** con precio final (se crea el pedido en SQL, con su código de 3 dígitos, y sigue el flujo normal de entrega) o **Rechazar** con un motivo.
+3. El cliente ve el estado, el precio y la respuesta en *Mis solicitudes*; el pedido creado muestra las características en su detalle.
+La opción "Personalizado" ya no aparece en el carrito del catálogo.
+
+**Calificaciones**: en *Ver Historial*, cada pedido `Entregado` muestra el botón **★ Calificar** (una sola vez; luego "Calificado"). El servidor comprueba que el pedido sea del cliente y esté entregado.
+Si MongoDB está apagado, el resto del sistema sigue funcionando; solo fallan las funciones de personalizados y calificaciones, con un mensaje claro.

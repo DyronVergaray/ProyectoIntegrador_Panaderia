@@ -11,16 +11,16 @@
     let idEditando = null;      // null = nueva promoción
 
     const formulario = UI.modalForm({
-        id: "modal-promocion", titulo: "Promoción", boton: "Guardar",
+        id: "modal-promocion", titulo: "Promoción", boton: "Guardar", ancho: "doble",
         campos: [
-            { id: "nombre", etiqueta: "Nombre", requerido: true, maxlength: 80, placeholder: "Cupcakes gratis" },
-            { id: "descripcion", etiqueta: "Texto del slider (opcional)", maxlength: 200, placeholder: "Por cada S/ 100 llévate 6 cupcakes" },
-            { id: "tipo", etiqueta: "La promoción se gana…", tipo: "select", requerido: true,
+            { id: "nombre", etiqueta: "Nombre", completo: true, requerido: true, maxlength: 80, placeholder: "Cupcakes gratis" },
+            { id: "descripcion", etiqueta: "Texto del slider (opcional)", completo: true, maxlength: 200, placeholder: "Por cada S/ 100 llévate 6 cupcakes" },
+            { id: "tipo", etiqueta: "La promoción se gana…", completo: true, tipo: "select", requerido: true,
                 opciones: [{ valor: "MONTO", texto: "Por monto de compra (S/)" }, { valor: "CANTIDAD", texto: "Por cantidad comprada de un producto" }] },
             { id: "montoMinimo", etiqueta: "Por cada S/ de compra", tipo: "number", requerido: true, min: 0.1, step: "0.10" },
-            { id: "idProductoCondicion", etiqueta: "Producto que debe comprar", tipo: "select", requerido: true },
+            { id: "idProductoCondicion", etiqueta: "Producto que debe comprar", completo: true, tipo: "select", requerido: true },
             { id: "cantidadCondicion", etiqueta: "Por cada ¿cuántas unidades compradas?", tipo: "number", requerido: true, min: 1, step: "1" },
-            { id: "idProducto", etiqueta: "Producto de regalo", tipo: "select", requerido: true },
+            { id: "idProducto", etiqueta: "Producto de regalo", completo: true, tipo: "select", requerido: true },
             { id: "cantidadRegalo", etiqueta: "Unidades de regalo por cada bloque", tipo: "number", requerido: true, min: 1, step: "1" },
             { id: "maxVeces", etiqueta: "Máximo de veces por pedido", tipo: "number", requerido: true, min: 1, step: "1" },
             { id: "fechaInicio", etiqueta: "Válida desde (opcional)", tipo: "date" },
@@ -140,9 +140,9 @@
                 h("span", {}, h("strong", { texto: p.nombre }), h("br"), h("small", { texto: Promos.texto(p) })),
                 Promos.condicion(p) + " (máx. " + p.maxVeces + (p.maxVeces === 1 ? " vez" : " veces") + ")",
                 p.cantidadRegalo + " × " + p.producto, vigencia(p), estado(p),
-                h("div", { class: "fila" },
-                    h("button", { class: "pastilla-chica", onclick: () => editar(p) }, "✎ Editar"),
-                    h("button", { class: "pastilla-chica", onclick: () => eliminar(p) }, "🗑 Eliminar"))]),
+                h("div", { class: "acciones" },
+                    h("button", { class: "pastilla-chica pc-claro", onclick: () => editar(p) }, "✎ Editar"),
+                    h("button", { class: "pastilla-chica pc-no", onclick: () => eliminar(p) }, "🗑 Eliminar"))]),
             promociones.length + (promociones.length === 1 ? " promoción" : " promociones")));
     }
 

@@ -116,7 +116,7 @@ public class PedidoDAO extends BaseDAO {
                     (r, i) -> new Promocion.Aplicada(r.getString(1), r.getString(2), r.getInt(3), r.getInt(4)), rs.getInt(1));
             return new Pedidos.Detalle(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getString(4),
                     rs.getString(5), rs.getString(6), rs.getString(7), rs.getString(8), rs.getString(9),
-                    items, rs.getBigDecimal(11), promociones);
+                    items, rs.getBigDecimal(11), promociones, List.of());
         }, id);
     }
 
@@ -181,6 +181,18 @@ public class PedidoDAO extends BaseDAO {
     public boolean codigoEnUso(String codigo) {
         return existe("SELECT COUNT(*) FROM Codigo cd JOIN Pedido_Gestion pg ON pg.id_pedido = cd.id_pedido "
                 + "WHERE cd.codigo = ? AND pg.estado_pedido = 'Pendiente'", codigo);
+    }
+
+    /** Estado actual de un pedido (Pendiente, Entregado...). */
+    public String estadoDe(int idPedido) {
+        List<String> estados = jdbc.queryForList("SELECT estado_pedido FROM Pedido_Gestion WHERE id_pedido = ?", String.class, idPedido);
+        return estados.isEmpty() ? null : estados.get(0);
+    }
+
+    /** Id del producto base "Pedido personalizado" (ver database/12_producto_personalizado.sql); null si no existe. */
+    public Integer idProductoPersonalizado() {
+        List<Integer> ids = jdbc.queryForList("SELECT TOP 1 id_producto FROM Producto WHERE nombre_producto = 'Pedido personalizado'", Integer.class);
+        return ids.isEmpty() ? null : ids.get(0);
     }
 
     public boolean esDelCliente(int idPedido, int idUsuario) {

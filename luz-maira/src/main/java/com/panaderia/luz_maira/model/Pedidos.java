@@ -14,9 +14,12 @@ public final class Pedidos {
     /** Respuesta al consolidar un pedido: el código de 3 dígitos se genera en el servidor. */
     public record Confirmacion(int idPedido, String codigo, BigDecimal total, List<Promocion.Aplicada> promociones) { }
 
+    /** Par etiqueta/valor para mostrar las características de un pedido personalizado. */
+    public record Campo(String etiqueta, String valor) { }
+
     public record Item(String producto, int cantidad, BigDecimal precio, BigDecimal subtotal) { }
 
     public record Detalle(int id, String cliente, String telefono, String email, String direccion,
                           String tipo, String codigo, String fechaSolicitud, String estado,
-                          List<Item> items, BigDecimal total, List<Promocion.Aplicada> promociones) { }
+                          List<Item> items, BigDecimal total, List<Promocion.Aplicada> promociones, List<Campo> especificaciones) { }
 }

@@ -444,3 +444,14 @@ button.categoria-chip { font: inherit; font-weight: 700; cursor: pointer; }
     #modal-recibo .modal-botones, #modal-recibo .cerrar { display: none !important; }
     .recibo { break-inside: avoid; page-break-inside: avoid; }
 }
+
+/* Historial de pedidos del administrador: barra de filtros */
+.filtros-historial { display: grid; grid-template-columns: repeat(auto-fit, minmax(215px, 1fr)); gap: .6rem .8rem; align-items: end; margin: 1rem 0 .4rem; }
+.filtros-historial .campo { margin-bottom: 0; }
+.filtros-historial .btn-borde { padding: .5rem 1rem; font-size: .8rem; }
+
+/* Botón Eliminar / Devolver de la ventana de edición: mismo tamaño y forma que Cancelar y Guardar (.btn), a la izquierda */
+.btn-peligro { background: var(--blanco); color: #b3392b; border: 1px solid #b3392b; margin-right: auto; }
+.btn-peligro:hover { background: #b3392b; color: #fff; filter: none; }
+.btn-devolver { color: #2f7d4a; border-color: #2f7d4a; }
+.btn-devolver:hover { background: #2f7d4a; color: #fff; }

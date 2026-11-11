@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -28,7 +29,10 @@ import com.panaderia.luz_maira.service.ProductoService;
 
 import jakarta.validation.Valid;
 
-/** /api/categorias, /api/productos, /api/productos/favoritos y /api/stock. Permisos en SecurityConfig. */
+/**
+ * /api/categorias, /api/productos, /api/productos/favoritos y /api/stock. Permisos en SecurityConfig.
+ * Los productos eliminados (categoría "Producto eliminado") solo los ve el administrador y el almacenero.
+ */
 @RestController
 @RequestMapping("/api")
 public class ProductoController {
@@ -43,9 +47,14 @@ public class ProductoController {
         this.imagenes = imagenes;
     }
 
+    /** Administrador y almacenero pueden ver los productos eliminados; los demás no (ni siquiera la categoría). */
+    private boolean puedeVerEliminados(UsuarioAutenticado usuario) {
+        return usuario != null && (usuario.getRol().equals("Administrador") || usuario.getRol().equals("Almacenero"));
+    }
+
     @GetMapping("/categorias")
-    public List<Categoria> categorias() {
-        return dao.categorias();
+    public List<Categoria> categorias(@AuthenticationPrincipal UsuarioAutenticado usuario) {
+        return dao.categorias(puedeVerEliminados(usuario));
     }
 
     /**
@@ -62,7 +71,7 @@ public class ProductoController {
                                     @RequestParam(defaultValue = "false") boolean pocoStock,
                                     @RequestParam(defaultValue = "false") boolean desabastecidos) {
         boolean esAdmin = usuario != null && usuario.getRol().equals("Administrador");
-        return dao.buscar(q, categorias, !esAdmin, esAdmin && pocoStock, esAdmin && desabastecidos);
+        return dao.buscar(q, categorias, !esAdmin, esAdmin && pocoStock, esAdmin && desabastecidos, puedeVerEliminados(usuario));
     }
 
     @GetMapping("/productos/favoritos")
@@ -86,6 +95,13 @@ public class ProductoController {
     public ResponseEntity<Map<String, Object>> crear(@Valid @RequestBody ProductoForm form) {
         int id = servicio.crear(form);
         return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("id", id, "mensaje", "Producto creado correctamente"));
+    }
+
+    /** Baja lógica: el producto pasa a la categoría "Producto eliminado" (no se borra de la base de datos). */
+    @DeleteMapping("/productos/{id}")
+    public Map<String, String> eliminar(@PathVariable int id) {
+        servicio.eliminar(id);
+        return Map.of("mensaje", "Producto eliminado. Puedes verlo en la categoría 'Producto eliminado'");
     }
 
     @PutMapping("/productos/{id}")

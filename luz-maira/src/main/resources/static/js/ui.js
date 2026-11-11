@@ -108,6 +108,19 @@ const UI = {
         });
     },
 
+    // Pregunta de confirmación (SweetAlert2; si no está cargada usa confirm). Devuelve true si el usuario acepta.
+    async confirmar(titulo, texto, botonAceptar) {
+        if (typeof Swal === "undefined") {
+            return window.confirm(titulo + (texto ? "\n" + texto : ""));
+        }
+        const r = await Swal.fire({
+            icon: "warning", title: titulo, text: texto, showCancelButton: true,
+            confirmButtonText: botonAceptar || "Aceptar", cancelButtonText: "Cancelar",
+            confirmButtonColor: "#b3392b", cancelButtonColor: "#8a7a6c"
+        });
+        return r.isConfirmed;
+    },
+
     estado(contenedor, texto) {
         console.log(texto);
         contenedor.replaceChildren(h("p", { class: "vacio", texto: texto }));
@@ -145,7 +158,7 @@ const UI = {
     // dentro de su recuadro y el precio y el botón quedan siempre a la misma altura.
     tarjetaProducto(p, modo, alAccion) {
         const accion = modo === "admin"
-            ? h("button", { class: "pastilla-chica", onclick: () => alAccion(p) }, "✎ Editar")
+            ? h("button", { class: "pastilla-chica", onclick: () => alAccion(p) }, p.categoria === "Producto eliminado" ? "↺ Devolver" : "✎ Editar")
             : h("button", { class: "mas", "aria-label": "Agregar " + p.nombre + " al pedido", onclick: () => alAccion(p) }, "+");
         return h("article", { class: "tarjeta" },
             UI.foto(p.imagen, p.nombre),

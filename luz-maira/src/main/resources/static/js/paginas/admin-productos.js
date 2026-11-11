@@ -1,8 +1,17 @@
-/* ===== Admin: gestión de productos (filtros, añadir y editar) ===== */
+/* ===== Admin: gestión de productos (filtros, añadir, editar, eliminar y restaurar) =====
+   "Eliminar" no borra: pasa el producto a la categoría "Producto eliminado" (solo la ven admin y almacenero).
+   El botón Eliminar solo aparece al editar un producto ya creado; si el producto está eliminado, el mismo botón
+   pasa a decir "Devolver producto" y lo regresa al catálogo con la categoría que se elija. */
 (async function () {
     await UI.listo;
     const grilla = document.getElementById("grilla");
     let idEditando = null;
+    const ELIMINADO = "Producto eliminado";
+    // Categorías que se pueden elegir en el formulario ("Producto eliminado" solo se asigna con el botón Eliminar)
+    const categoriasElegibles = () => UI.categorias.filter((c) => c.nombre !== ELIMINADO);
+    // Un solo botón con dos funciones: "Eliminar" (producto activo) o "Devolver" (producto eliminado)
+    const botonEliminar = h("button", { class: "btn btn-peligro", type: "button", texto: "Eliminar", hidden: true });
+    let productoEliminado = false;
 
     // Los panes no controlan stock: al elegir esa categoría se ocultan los campos de stock
     const esPan = (idCategoria) => {
@@ -63,20 +72,55 @@
             UI.disparar();
         }
     });
-    formulario.ponerOpciones("idCategoria", UI.categorias.map((c) => ({ valor: c.id, texto: c.nombre })));
+    formulario.ponerOpciones("idCategoria", categoriasElegibles().map((c) => ({ valor: c.id, texto: c.nombre })));
+    formulario.el.querySelector(".modal-botones").prepend(botonEliminar);   // a la izquierda de Cancelar / Guardar
+
+    // El botón Guardar del formulario (el último de la ventana): se oculta cuando el producto está eliminado
+    const botonGuardar = formulario.el.querySelector(".modal-botones .btn:last-child");
+
+    botonEliminar.onclick = async () => {
+        if (productoEliminado) {
+            botonGuardar.click();       // guardar con la categoría elegida = devolver el producto al catálogo
+            return;
+        }
+        if (!(await UI.confirmar("¿Eliminar este producto?", "Dejará de verse en el catálogo. Podrás restaurarlo desde la categoría 'Producto eliminado'.", "Sí, eliminar"))) {
+            return;
+        }
+        try {
+            const r = await api("/api/productos/" + idEditando, "DELETE");
+            formulario.cerrar();
+            UI.alerta("success", r.mensaje);
+            UI.disparar();
+        } catch (e) {
+            UI.alerta("error", e.message);
+        }
+    };
 
     function editar(producto) {
         idEditando = producto.id;
-        formulario.abrir({ nombre: producto.nombre, idCategoria: producto.idCategoria,
+        const eliminado = producto.categoria === ELIMINADO;
+        // Un producto eliminado se restaura eligiendo una categoría; uno activo se puede eliminar
+        const opciones = categoriasElegibles().map((c) => ({ valor: c.id, texto: c.nombre }));
+        formulario.ponerOpciones("idCategoria", eliminado ? [{ valor: "", texto: "— Elige la categoría para restaurarlo —" }].concat(opciones) : opciones);
+        productoEliminado = eliminado;
+        botonEliminar.hidden = false;       // solo se abre con productos ya creados
+        botonEliminar.textContent = eliminado ? "Devolver" : "Eliminar";
+        botonEliminar.classList.toggle("btn-devolver", eliminado);
+        botonGuardar.hidden = eliminado;
+        formulario.abrir({ nombre: producto.nombre, idCategoria: eliminado ? "" : producto.idCategoria,
             descripcion: producto.descripcion || "", precio: producto.precio,
             stock: producto.stock === null ? "" : producto.stock,
             stockMinimo: producto.stockMinimo === null ? "" : producto.stockMinimo,
-            imagen: producto.imagen }, "Editar producto");
+            imagen: producto.imagen }, eliminado ? "Devolver producto" : "Editar producto");
     }
 
     document.getElementById("btn-nuevo").onclick = () => {
         idEditando = null;
-        formulario.abrir({ idCategoria: UI.categorias.length ? UI.categorias[0].id : "" }, "Añadir producto");
+        botonEliminar.hidden = true;        // un producto nuevo no se puede eliminar
+        botonGuardar.hidden = false;
+        productoEliminado = false;
+        formulario.ponerOpciones("idCategoria", categoriasElegibles().map((c) => ({ valor: c.id, texto: c.nombre })));
+        formulario.abrir({ idCategoria: categoriasElegibles().length ? categoriasElegibles()[0].id : "" }, "Añadir producto");
     };
 
     UI.alFiltrar = () => Catalogo.cargar(grilla, "admin", editar);

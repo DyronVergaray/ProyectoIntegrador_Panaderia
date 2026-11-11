@@ -137,7 +137,9 @@ public class PedidoDAO extends BaseDAO {
     public Map<Integer, ProductoPedido> productosParaPedido(Collection<Integer> idsProducto) {
         Clausula donde = new Clausula().en("id_producto", List.copyOf(idsProducto));
         Map<Integer, ProductoPedido> productos = new HashMap<>();
-        jdbc.query("SELECT id_producto, nombre_producto, precio_unitario, stock FROM Producto" + donde.sql(),
+        // Los productos eliminados (categoría "Producto eliminado") no se pueden comprar aunque alguien tenga el carrito abierto
+        jdbc.query("SELECT id_producto, nombre_producto, precio_unitario, stock FROM Producto" + donde.sql()
+                        + " AND id_categoriaProducto NOT IN (SELECT id_categoriaProducto FROM Categoria_Producto WHERE nombre_categoria = 'Producto eliminado')",
                 rs -> {
                     int stock = rs.getInt(4);
                     boolean sinControl = rs.wasNull();      // los panes tienen stock NULL: no se controla

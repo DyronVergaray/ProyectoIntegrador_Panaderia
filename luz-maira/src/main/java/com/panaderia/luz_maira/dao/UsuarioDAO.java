@@ -43,6 +43,11 @@ public class UsuarioDAO extends BaseDAO {
         return existe("SELECT COUNT(*) FROM Credenciales_usuario WHERE email = ?", email);
     }
 
+    /** ¿Algún usuario (distinto de excluirIdUsuario, si se indica) ya tiene este teléfono? */
+    public boolean existeTelefono(String telefono, Integer excluirIdUsuario) {
+        return existe("SELECT COUNT(*) FROM Usuario WHERE telefono = ? AND id_usuario <> ?", telefono, excluirIdUsuario == null ? -1 : excluirIdUsuario);
+    }
+
     public boolean existeRol(int idRol) {
         return existe("SELECT COUNT(*) FROM Roles WHERE id_rol = ?", idRol);
     }

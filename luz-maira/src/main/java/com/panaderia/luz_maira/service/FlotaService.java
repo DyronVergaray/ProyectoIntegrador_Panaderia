@@ -58,6 +58,9 @@ public class FlotaService {
         dao.actualizarConductor(id, f, estado);
         Integer idUsuario = dao.idUsuarioDe(id);
         if (idUsuario != null) {
+            if (f.telefono() != null && !f.telefono().isBlank() && usuarios.existeTelefono(f.telefono().trim(), idUsuario)) {
+                throw error(HttpStatus.CONFLICT, "Ya existe un usuario con ese número de teléfono");
+            }
             dao.actualizarUsuario(idUsuario, f);
         }
         log.info("Entregador actualizado: id={}, estado={}", id, estado);

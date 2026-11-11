@@ -53,6 +53,9 @@ public class UsuarioService {
         if (dao.existeEmail(email)) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Ya existe un usuario con ese correo");
         }
+        if (f.telefono() != null && !f.telefono().isBlank() && dao.existeTelefono(f.telefono().trim(), null)) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Ya existe un usuario con ese número de teléfono");
+        }
         int idCredenciales = dao.insertarCredenciales(email, codificador.encode(f.password()));
         int id = dao.insertarUsuario(f, idRol, idCredenciales);
         log.info("Usuario creado: id={}, correo={}, idRol={}", id, email, idRol);
